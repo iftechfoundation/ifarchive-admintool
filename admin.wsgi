@@ -47,9 +47,11 @@ def uhan_Home(env):
     return 'Hello world...\n'
 
 def uhan_DebugDump(env):
+    yield 'sys.version: %s\n' % (sys.version,)
     yield 'sys.path: %s\n' % (sys.path,)
+    yield 'environ:\n'
     for key, val in env.items():
-        yield '%s: %s\n' % (key, val,)
+        yield '  %s: %s\n' % (key, val,)
 
 
 handlers = [

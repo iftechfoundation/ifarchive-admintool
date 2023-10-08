@@ -19,7 +19,10 @@ class TinyApp:
                 continue
             status = '200 OK'
             ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
-            output = han.handler(environ)
+            output = []
+            for ln in han.handler(environ):
+                output.append(ln)
+            output = ''.join(output)
             break
         else:
             han = None
@@ -44,10 +47,9 @@ def uhan_Home(env):
     return 'Hello world...\n'
 
 def uhan_DebugDump(env):
-    ls = []
+    yield 'sys.path: %s\n' % (sys.path,)
     for key, val in env.items():
-        ls.append('%s: %s\n' % (key, val,))
-    return ''.join(ls)
+        yield '%s: %s\n' % (key, val,)
 
 
 handlers = [

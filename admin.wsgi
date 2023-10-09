@@ -47,7 +47,7 @@ class TinyApp:
         try:
             req = TinyRequest(self, environ)
             ls = self.process(req)
-            output = ''.join(ls)
+            output = ''.join(ls)  # Gotta do this before looking at req
             status = req.status
             content_type = req.content_type
             boutput = output.encode()
@@ -59,8 +59,7 @@ class TinyApp:
         except Exception as ex:
             status = '500 Internal Error'
             ls = traceback.format_exception(ex)
-            ls.insert(0, status+'\n\n')
-            output = ''.join(ls)
+            output = status + '\n\n' + ''.join(ls)
             content_type = PLAINTEXT
             boutput = output.encode()
 

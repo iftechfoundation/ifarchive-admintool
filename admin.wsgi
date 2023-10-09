@@ -65,7 +65,10 @@ class ReqHandler:
         raise NotImplementedError('POST not implemented')
 
     def do_head(self, env):
-        raise NotImplementedError('HEAD not implemented')
+        for val in self.do_get(env):
+            # Accumulate total size?
+            pass
+        yield ''
 
 class han_Home(ReqHandler):
     def do_get(self, env):

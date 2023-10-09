@@ -13,6 +13,7 @@ class AdminApp(TinyApp):
         TinyApp.__init__(self, hanclasses)
         
         self.db = sqlite3.connect(DB_PATH)
+        self.db.isolation_level = None   # autocommit
 
 class han_Home(ReqHandler):
     def do_get(self, req):
@@ -30,8 +31,8 @@ class han_DebugDump(ReqHandler):
 class han_DebugUsers(ReqHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
-        cur = self.app.db.cursor()
-        res = cur.execute("SELECT * FROM users")
+        curs = self.app.db.cursor()
+        res = curs.execute("SELECT * FROM users")
         while True:
             tup = res.fetchone()
             if not tup:

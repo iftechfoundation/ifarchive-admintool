@@ -12,6 +12,8 @@ class TinyRequest:
         self.path_info = env.get('PATH_INFO', '')
         self.request_uri = env.get('REQUEST_URI', self.path_info)
 
+        ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
+        
 class TinyApp:
     def __init__(self, hanclasses):
         self.handlers = []
@@ -27,7 +29,6 @@ class TinyApp:
             if not match:
                 continue
             status = '200 OK'
-            ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
             if req.request_method == 'GET':
                 dofunc = han.do_get
             elif req.request_method == 'POST':

@@ -4,10 +4,11 @@ import os
 import re
 
 class TinyApp:
-    def __init__(self, handlers):
-        self.handlers = handlers
-        for han in self.handlers:
-            han.setapp(self)
+    def __init__(self, hanclasses):
+        self.handlers = []
+        for pat, cla in hanclasses:
+            han = cla(self, pat)
+            self.handlers.append(han)
 
     def application(self, environ, start_response):
         request_method = environ.get('REQUEST_METHOD')
@@ -50,15 +51,12 @@ class TinyApp:
         yield boutput
 
 class ReqHandler:
-    def __init__(self, pat):
-        self.app = None
+    def __init__(self, app, pat):
+        self.app = app
         
         if not pat.endswith('$'):
             pat += '$'
         self.pat = re.compile(pat)
-
-    def setapp(self, app):
-        self.app = app
 
     def do_get(self, env):
         raise NotImplementedError('GET not implemented')
@@ -82,8 +80,8 @@ class han_DebugDump(ReqHandler):
             yield '  %s: %s\n' % (key, val,)
 
 handlers = [
-    han_Home(''),
-    han_DebugDump('/debugdump'),
+    ('', han_Home),
+    ('/debugdump', han_DebugDump),
 ]
 
 application = TinyApp(handlers).application

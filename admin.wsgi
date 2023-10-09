@@ -10,6 +10,7 @@ class TinyRequest:
         
         self.request_method = env.get('REQUEST_METHOD', '?')
         self.path_info = env.get('PATH_INFO', '')
+        self.request_uri = env.get('REQUEST_URI', self.path_info)
 
 class TinyApp:
     def __init__(self, hanclasses):
@@ -36,8 +37,7 @@ class TinyApp:
             else:
                 han = None
                 status = '405 Method Not Allowed'
-                val = environ.get('REQUEST_URI', req.path_info)
-                output = 'Not allowed: %s, %s' % (req.request_method, val,)
+                output = 'Not allowed: %s, %s' % (req.request_method, req.request_uri,)
                 break
             output = []
             for ln in dofunc(req):
@@ -47,8 +47,7 @@ class TinyApp:
         else:
             han = None
             status = '404 Not Found'
-            val = environ.get('REQUEST_URI', req.path_info)
-            output = 'Not found: %s' % (val,)
+            output = 'Not found: %s' % (req.request_uri,)
             
         boutput = output.encode()
 

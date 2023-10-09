@@ -52,14 +52,15 @@ class TinyApp:
             content_type = req.content_type
             boutput = output.encode()
         except HTTPError as ex:
-            output = ex.msg
             status = ex.status
+            output = status + '\n\n' + ex.msg
             content_type = PLAINTEXT
             boutput = output.encode()
         except Exception as ex:
-            ls = traceback.format_exception(ex)
-            output = ''.join(ls)
             status = '500 Internal Error'
+            ls = traceback.format_exception(ex)
+            ls.insert(0, status+'\n\n')
+            output = ''.join(ls)
             content_type = PLAINTEXT
             boutput = output.encode()
 

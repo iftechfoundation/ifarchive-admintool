@@ -62,10 +62,10 @@ class ReqHandler:
         raise NotImplementedError('GET not implemented')
 
     def do_post(self, env):
-        raise NotImplementedError('GET not implemented')
+        raise NotImplementedError('POST not implemented')
 
     def do_head(self, env):
-        raise NotImplementedError('GET not implemented')
+        raise NotImplementedError('HEAD not implemented')
 
 class han_Home(ReqHandler):
     def do_get(self, env):

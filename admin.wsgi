@@ -66,6 +66,7 @@ class TinyApp:
             output = status + '\n\n' + ''.join(ls)
             content_type = PLAINTEXT
             boutput = output.encode()
+            print(output)   # To Apache error log
 
         response_headers = [
             ('Content-Type', content_type),
@@ -136,3 +137,4 @@ handlers = [
 ]
 
 application = TinyApp(handlers).application
+

@@ -98,6 +98,24 @@ class TinyApp:
 
         return dofunc(req)
 
+    def test_dump(self, uri):
+        env = {
+            'REQUEST_METHOD': 'GET',
+            'PATH_INFO': uri,
+            'REQUEST_URI': uri,
+        }
+        
+        def start_response(status, headers):
+            print(status)
+            for key, val in headers:
+                print(key+':', val)
+                
+        ls = application(env, start_response)
+        val = b''.join(ls)
+        print()
+        print(val.decode())
+
+
 class ReqHandler:
     def __init__(self, app, pat):
         self.app = app
@@ -142,17 +160,4 @@ if __name__ == '__main__':
     uri = ''
     if len(sys.argv) > 1:
         uri = sys.argv[1]
-    env = {
-        'REQUEST_METHOD': 'GET',
-        'PATH_INFO': uri,
-        'REQUEST_URI': uri,
-    }
-    def start_response(status, headers):
-        print(status)
-        for key, val in headers:
-            print(key+':', val)
-    ls = application(env, start_response)
-    val = b''.join(ls)
-    print()
-    print(val.decode())
-
+    application.__self__.test_dump(uri)

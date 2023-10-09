@@ -2,6 +2,10 @@ import sys
 import time
 import os
 import re
+import traceback
+
+PLAINTEXT = 'text/plain'
+HTML = 'text/html; charset=utf-8'
 
 class TinyRequest:
     def __init__(self, app, env):
@@ -13,6 +17,20 @@ class TinyRequest:
         self.request_uri = env.get('REQUEST_URI', self.path_info)
 
         ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
+
+        self.status = '200 OK'
+        self.content_type = HTML
+
+    def set_status(self, val):
+        self.status = val
+
+    def set_content_type(self, val):
+        self.content_type = val
+
+class HTTPError(Exception):
+    def __init__(self, status, msg):
+        self.status = status
+        self.msg = msg
         
 class TinyApp:
     def __init__(self, hanclasses):
@@ -22,40 +40,58 @@ class TinyApp:
             self.handlers.append(han)
 
     def application(self, environ, start_response):
-        req = TinyRequest(self, environ)
-        
-        for han in self.handlers:
-            match = han.pat.match(req.path_info)
-            if not match:
-                continue
-            status = '200 OK'
-            if req.request_method == 'GET':
-                dofunc = han.do_get
-            elif req.request_method == 'POST':
-                dofunc = han.do_post
-            elif req.request_method == 'HEAD':
-                dofunc = han.do_head
-            else:
-                han = None
-                status = '405 Method Not Allowed'
-                output = 'Not allowed: %s, %s' % (req.request_method, req.request_uri,)
-                break
-            output = []
-            for ln in dofunc(req):
-                output.append(ln)
-            output = ''.join(output)
-            break
-        else:
-            han = None
-            status = '404 Not Found'
-            output = 'Not found: %s' % (req.request_uri,)
-            
-        boutput = output.encode()
 
-        response_headers = [('Content-Type', 'text/plain'),
-                            ('Content-Length', str(len(boutput)))]
+        content_type = PLAINTEXT
+        req = None
+        
+        try:
+            req = TinyRequest(self, environ)
+            output = self.process(req)
+            status = req.status
+            content_type = req.content_type
+            boutput = output.encode()
+        except HTTPError as ex:
+            status = ex.status
+            content_type = PLAINTEXT
+            output = ex.msg
+            boutput = output.encode()
+        except Exception as ex:
+            status = '500 Internal Error'
+            content_type = PLAINTEXT
+            ls = traceback.format_exception(ex)
+            output = ''.join(ls)
+            boutput = output.encode()
+
+        response_headers = [
+            ('Content-Type', content_type),
+            ('Content-Length', str(len(boutput)))
+        ]
+        ### more headers from req
         start_response(status, response_headers)
         yield boutput
+
+    def process(self, req):
+        for han in self.handlers:
+            match = han.pat.match(req.path_info)
+            if match:
+                break
+        else:
+            msg = 'Not found: %s' % (req.request_uri,)
+            raise HTTPError('404 Not Found', msg)
+        
+        if req.request_method == 'GET':
+            dofunc = han.do_get
+        elif req.request_method == 'POST':
+            dofunc = han.do_post
+        elif req.request_method == 'HEAD':
+            dofunc = han.do_head
+        else:
+            msg = 'Not allowed: %s, %s' % (req.request_method, req.request_uri,)
+            raise HTTPError('405 Method Not Allowed', msg)
+        output = []
+        for ln in dofunc(req):
+            output.append(ln)
+        return ''.join(output)
 
 class ReqHandler:
     def __init__(self, app, pat):
@@ -79,10 +115,11 @@ class ReqHandler:
 
 class han_Home(ReqHandler):
     def do_get(self, req):
-        yield 'Hello world...\n'
+        yield '<html>Hello world...\n</html>'
 
 class han_DebugDump(ReqHandler):
     def do_get(self, req):
+        req.set_content_type(PLAINTEXT)
         yield 'sys.version: %s\n' % (sys.version,)
         yield 'sys.path: %s\n' % (sys.path,)
         yield 'environ:\n'

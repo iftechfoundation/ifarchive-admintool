@@ -138,3 +138,21 @@ handlers = [
 
 application = TinyApp(handlers).application
 
+if __name__ == '__main__':
+    uri = ''
+    if len(sys.argv) > 1:
+        uri = sys.argv[1]
+    env = {
+        'REQUEST_METHOD': 'GET',
+        'PATH_INFO': uri,
+        'REQUEST_URI': uri,
+    }
+    def start_response(status, headers):
+        print(status)
+        for key, val in headers:
+            print(key+':', val)
+    ls = application(env, start_response)
+    val = b''.join(ls)
+    print()
+    print(val.decode())
+

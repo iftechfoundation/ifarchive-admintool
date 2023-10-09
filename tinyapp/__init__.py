@@ -5,35 +5,6 @@ import traceback
 PLAINTEXT = 'text/plain'
 HTML = 'text/html; charset=utf-8'
 
-class TinyRequest:
-    def __init__(self, app, env):
-        self.env = env
-        self.app = app
-        
-        self.request_method = env.get('REQUEST_METHOD', '?')
-        self.path_info = env.get('PATH_INFO', '')
-        self.request_uri = env.get('REQUEST_URI', self.path_info)
-
-        ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
-
-        self.status = '200 OK'
-        self.content_type = HTML
-        self.headers = []
-
-    def set_status(self, val):
-        self.status = val
-
-    def set_content_type(self, val):
-        self.content_type = val
-
-    def add_header(self, key, val):
-        self.headers.append( (key, val) )
-
-class HTTPError(Exception):
-    def __init__(self, status, msg):
-        self.status = status
-        self.msg = msg
-        
 class TinyApp:
     def __init__(self, hanclasses):
         self.handlers = []
@@ -133,3 +104,34 @@ class ReqHandler:
             # Accumulate total size?
             pass
         yield ''
+
+
+class TinyRequest:
+    def __init__(self, app, env):
+        self.env = env
+        self.app = app
+        
+        self.request_method = env.get('REQUEST_METHOD', '?')
+        self.path_info = env.get('PATH_INFO', '')
+        self.request_uri = env.get('REQUEST_URI', self.path_info)
+
+        ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
+
+        self.status = '200 OK'
+        self.content_type = HTML
+        self.headers = []
+
+    def set_status(self, val):
+        self.status = val
+
+    def set_content_type(self, val):
+        self.content_type = val
+
+    def add_header(self, key, val):
+        self.headers.append( (key, val) )
+
+class HTTPError(Exception):
+    def __init__(self, status, msg):
+        self.status = status
+        self.msg = msg
+        

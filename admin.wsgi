@@ -20,12 +20,16 @@ class TinyRequest:
 
         self.status = '200 OK'
         self.content_type = HTML
+        self.headers = []
 
     def set_status(self, val):
         self.status = val
 
     def set_content_type(self, val):
         self.content_type = val
+
+    def add_header(self, key, val):
+        self.headers.append( (key, val) )
 
 class HTTPError(Exception):
     def __init__(self, status, msg):
@@ -67,7 +71,8 @@ class TinyApp:
             ('Content-Type', content_type),
             ('Content-Length', str(len(boutput)))
         ]
-        ### more headers from req
+        if req and req.headers:
+            response_headers.extend(req.headers)
         start_response(status, response_headers)
         yield boutput
 

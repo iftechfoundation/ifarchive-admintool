@@ -40,6 +40,8 @@ class TinyApp:
 class ReqHandler:
     def __init__(self, pat, handler, method='GET'):
         self.method = method
+        if not pat.endswith('$'):
+            pat += '$'
         self.pat = re.compile(pat)
         self.handler = handler
 
@@ -55,8 +57,8 @@ def uhan_DebugDump(env):
 
 
 handlers = [
-    ReqHandler('$', uhan_Home),
-    ReqHandler('/debugdump$', uhan_DebugDump),
+    ReqHandler('', uhan_Home),
+    ReqHandler('/debugdump', uhan_DebugDump),
 ]
 
 application = TinyApp(handlers).application

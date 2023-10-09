@@ -46,20 +46,21 @@ class TinyApp:
         
         try:
             req = TinyRequest(self, environ)
-            output = self.process(req)
+            ls = self.process(req)
+            output = ''.join(ls)
             status = req.status
             content_type = req.content_type
             boutput = output.encode()
         except HTTPError as ex:
+            output = ex.msg
             status = ex.status
             content_type = PLAINTEXT
-            output = ex.msg
             boutput = output.encode()
         except Exception as ex:
-            status = '500 Internal Error'
-            content_type = PLAINTEXT
             ls = traceback.format_exception(ex)
             output = ''.join(ls)
+            status = '500 Internal Error'
+            content_type = PLAINTEXT
             boutput = output.encode()
 
         response_headers = [
@@ -88,10 +89,8 @@ class TinyApp:
         else:
             msg = 'Not allowed: %s, %s' % (req.request_method, req.request_uri,)
             raise HTTPError('405 Method Not Allowed', msg)
-        output = []
-        for ln in dofunc(req):
-            output.append(ln)
-        return ''.join(output)
+
+        return dofunc(req)
 
 class ReqHandler:
     def __init__(self, app, pat):

@@ -99,17 +99,35 @@ handlers = [
     ('/debugdump', han_DebugDump),
 ]
 
-application = AdminApp(handlers).application
+appinstance = AdminApp(handlers)
+application = appinstance.application
+
+
+def db_create():
+    curs = appinstance.db.cursor()
+    res = curs.execute('SELECT name FROM sqlite_master')
+    tables = [ tup[0] for tup in res.fetchall() ]
+    if 'users' in tables:
+        print('"users" table exists')
+    else:
+        print('creating "users" table...')
+        res = curs.execute('CREATE TABLE users(name unique, email unique, pw, pwsalt, roles)')
+    if 'sessions' in tables:
+        print('"sessions" table exists')
+    else:
+        print('creating "sessions" table...')
+        res = curs.execute('CREATE TABLE sessions(name, cookie unique, start)')
+
 
 if __name__ == '__main__':
     import optparse
 
-    popt = optparse.OptionParser(usage='admin.wsgi startdb | adduser | test')
+    popt = optparse.OptionParser(usage='admin.wsgi createdb | adduser | test')
     (opts, args) = popt.parse_args()
 
     if not args:
         print('command-line use:')
-        print('  admin.wsgi startdb: create database tables')
+        print('  admin.wsgi createdb: create database tables')
         print('  admin.wsgi adduser name email pw roles: add a user')
         print('  admin.wsgi test [ URI ]: print page to stdout')
         sys.exit(-1)
@@ -120,7 +138,11 @@ if __name__ == '__main__':
         uri = ''
         if args:
             uri = args[0]
-        application.__self__.test_dump(uri)
+        appinstance.test_dump(uri)
+    elif cmd == 'createdb':
+        db_create()
+    elif cmd == 'adduser':
+        db_add_user(args)
     else:
         print('command not recognized: %s' % (cmd,))
         print('Usage: %s' % (popt.usage,))

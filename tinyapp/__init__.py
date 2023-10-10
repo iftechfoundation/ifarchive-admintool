@@ -44,6 +44,11 @@ class TinyApp:
         ]
         if req and req.headers:
             response_headers.extend(req.headers)
+        if req and len(req.newcookies):
+            ls = str(req.newcookies).split('\n')
+            for hdr in ls:
+                key, _, val = hdr.strip().partition(':')
+                response_headers.append( (key.strip(), val.strip()) )
         start_response(status, response_headers)
         yield boutput
 
@@ -122,13 +127,13 @@ class TinyRequest:
                 self.cookies.load(env['HTTP_COOKIE'])
             except:
                 pass
+        self.newcookies = cookies.SimpleCookie()
 
         ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
 
         self.status = '200 OK'
         self.content_type = HTML
         self.headers = []
-        self.rawheaders = []
 
     def set_status(self, val):
         self.status = val
@@ -139,10 +144,14 @@ class TinyRequest:
     def add_header(self, key, val):
         self.headers.append( (key, val) )
 
-    def add_rawheader(self, hdr):
-        key, _, val = hdr.partition(':')
-        val = val.strip()
-        self.headers.append( (key, val) )
+    def set_cookie(self, key, val, httponly=False, secure=False, maxage=None):
+        self.newcookies[key] = val
+        if httponly:
+            self.newcookies[key]['httponly'] = True
+        if secure:
+            self.newcookies[key]['secure'] = True
+        if maxage is not None:
+            self.newcookies[key]['max-age'] = maxage
 
 class HTTPError(Exception):
     def __init__(self, status, msg):

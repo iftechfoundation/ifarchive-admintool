@@ -1,7 +1,6 @@
 import sys
 import time
 import os
-from http import cookies
 
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -35,12 +34,8 @@ def xsrf_cookie(han):
             req._xsrf = req.cookies['_xsrf'].value
         else:
             req._xsrf = random_bytes(16)
-            cookie = cookies.SimpleCookie()
-            cookie['_xsrf'] = req._xsrf
-            ###cookie['_xsrf']['secure'] = True
-            cookie['_xsrf']['httponly'] = True
-            hdr = str(cookie)
-            req.add_rawheader(hdr)
+            ### also secure=True?
+            req.set_cookie('_xsrf', req._xsrf, httponly=True)
             
         return han(self, req)
     

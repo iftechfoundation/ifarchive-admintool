@@ -123,7 +123,8 @@ class TinyRequest:
         if 'wsgi.input' in env:
             try:
                 val = env['wsgi.input'].read()
-                self.input = urllib.parse.parse_qs(val.decode())
+                if len(val):
+                    self.input = urllib.parse.parse_qs(val.decode())
             except:
                 pass
         # could check env['QUERY_STRING'] as well

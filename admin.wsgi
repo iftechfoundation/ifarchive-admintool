@@ -38,6 +38,14 @@ class AdminApp(TinyApp):
         )
         self.jenv.globals['approot'] = self.approot
 
+    def render(self, template, req, **params):
+        tem = self.jenv.get_template(template)
+        map = { 'req':req }
+        if params:
+            map.update(params)
+        yield tem.render(**map)
+
+
 class User:
     def __init__(self, name, sessionid, roles):
         self.name = name
@@ -65,15 +73,9 @@ class han_Home(ReqHandler):
     @before(find_user)
     def do_get(self, req):
         if not req._user:
-            template = self.app.jenv.get_template('login.html')
-            yield template.render(
-                req=req)
-            return
+            return self.app.render('login.html', req)
 
-        template = self.app.jenv.get_template('front.html')
-        yield template.render(
-            req=req)
-        
+        return self.app.render('front.html', req)
 
     def do_post(self, req):
         formname = req.get_input_field('name')
@@ -87,21 +89,15 @@ class han_Home(ReqHandler):
             res = curs.execute('SELECT name, pw, pwsalt, roles FROM users WHERE name = ?', (formname,))
         tup = res.fetchone()
         if not tup:
-            template = self.app.jenv.get_template('login.html')
-            yield template.render(
-                formerror='The name and password do not match.',
-	            req=req)
-            return
+            return self.app.render('login.html', req,
+                                   formerror='The name and password do not match.')
+        
         name, pw, pwsalt, roles = tup
-
         formsalted = pwsalt + b':' + formpw.encode()
         formcrypted = hashlib.sha1(formsalted).hexdigest()
         if formcrypted != pw:
-            template = self.app.jenv.get_template('login.html')
-            yield template.render(
-                formerror='The name and password do not match.',
-	            req=req)
-            return
+            return self.app.render('login.html', req,
+                                   formerror='The name and password do not match.')
 
         ### set name cookie for future logins? (filled into login.html form)
 
@@ -207,6 +203,7 @@ if __name__ == '__main__':
         print('  admin.wsgi createdb: create database tables')
         print('  admin.wsgi adduser name email pw roles: add a user')
         print('  admin.wsgi test [ URI ]: print page to stdout')
+        ### cleanup
         sys.exit(-1)
 
     cmd = args.pop(0)

@@ -31,14 +31,19 @@ def random_bytes(count):
         
 def xsrf_cookie(han):
     def wrapper(self, req):
-        val = random_bytes(16)
-        cookie = cookies.SimpleCookie()
-        cookie['_xsrf'] = val
-        ###cookie['_xsrf']['secure'] = True
-        cookie['_xsrf']['httponly'] = True
-        hdr = str(cookie)
-        req.add_rawheader(hdr)
+        if '_xsrf' in req.cookies:
+            req._xsrf = req.cookies['_xsrf'].value
+        else:
+            req._xsrf = random_bytes(16)
+            cookie = cookies.SimpleCookie()
+            cookie['_xsrf'] = req._xsrf
+            ###cookie['_xsrf']['secure'] = True
+            cookie['_xsrf']['httponly'] = True
+            hdr = str(cookie)
+            req.add_rawheader(hdr)
+            
         return han(self, req)
+    
     return wrapper
         
 class han_Home(ReqHandler):

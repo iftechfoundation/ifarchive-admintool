@@ -1,5 +1,6 @@
 import re
 import traceback
+from http import cookies
 
 
 PLAINTEXT = 'text/plain'
@@ -114,6 +115,13 @@ class TinyRequest:
         self.request_method = env.get('REQUEST_METHOD', '?')
         self.path_info = env.get('PATH_INFO', '')
         self.request_uri = env.get('REQUEST_URI', self.path_info)
+        
+        self.cookies = cookies.SimpleCookie()
+        if 'HTTP_COOKIE' in env:
+            try:
+                self.cookies.load(env['HTTP_COOKIE'])
+            except:
+                pass
 
         ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
 

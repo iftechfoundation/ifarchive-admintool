@@ -8,13 +8,14 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from tinyapp import TinyApp, ReqHandler
 from tinyapp import PLAINTEXT
 from tinyapp import before
+import tinyapp.auth
 
 DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'
 TEMPLATE_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/lib'
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
-        TinyApp.__init__(self, hanclasses, wrapall=[ xsrf_cookie ])
+        TinyApp.__init__(self, hanclasses, wrapall=[ tinyapp.auth.xsrf_cookie ])
         
         self.db = sqlite3.connect(DB_PATH)
         self.db.isolation_level = None   # autocommit
@@ -25,19 +26,6 @@ class AdminApp(TinyApp):
             keep_trailing_newline = True,
         )
 
-def random_bytes(count):
-    byt = os.urandom(count)
-    return bytes.hex(byt)
-        
-def xsrf_cookie(req, han):
-    if '_xsrf' in req.cookies:
-        req._xsrf = req.cookies['_xsrf'].value
-    else:
-        req._xsrf = random_bytes(16)
-        ### also secure=True?
-        req.set_cookie('_xsrf', req._xsrf, httponly=True)
-    return han(req)
-            
 class han_Home(ReqHandler):
     def do_get(self, req):
         template = self.app.jenv.get_template('front.html')

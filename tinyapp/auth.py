@@ -16,6 +16,6 @@ def xsrf_check_post(req, han):
         if ('_xsrf' not in req.input
             or not req.input['_xsrf']
             or req.input['_xsrf'][0] != req._xsrf):
-            raise HTTPError('400 Bad Request', 'XSRF header mismatch')
+            raise HTTPError('400 Bad Request', 'XSRF mismatch')
     return han(req)
     

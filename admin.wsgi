@@ -10,7 +10,7 @@ from tinyapp.app import TinyApp
 from tinyapp.constants import PLAINTEXT
 from tinyapp.handler import ReqHandler, before
 import tinyapp.auth
-from tinyapp.exceptions import HTTPError, HTTPRedirectPost
+from tinyapp.excepts import HTTPError, HTTPRedirectPost
 
 DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'
 TEMPLATE_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/lib'

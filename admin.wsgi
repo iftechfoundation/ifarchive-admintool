@@ -10,12 +10,14 @@ from tinyapp.app import TinyApp
 from tinyapp.constants import PLAINTEXT
 from tinyapp.handler import ReqHandler, before
 from tinyapp.excepts import HTTPError, HTTPRedirectPost
-from tinyapp.util import random_bytes
+from tinyapp.util import random_bytes, time_now
 import tinyapp.auth
 
 ### config
 DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'
 TEMPLATE_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/lib'
+
+MAX_SESSION_AGE = 10*60*60*24  # 10 days
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -67,10 +69,18 @@ class han_Home(ReqHandler):
 	            req=req)
             return
 
-        ### set name cookie for future logins? (filled in in login.html)
+        ### set name cookie for future logins? (filled into login.html form)
 
-        ### create session
-        raise HTTPRedirectPost('/') ###
+        cookie = random_bytes(20)
+        req.set_cookie('sessionid', cookie, maxage=MAX_SESSION_AGE, httponly=True)
+        ### also secure=True?
+        now = time_now()
+        ipaddr = req.env.get('REMOTE_ADDR', '?')
+        
+        curs = self.app.db.cursor()
+        curs.execute('INSERT INTO sessions VALUES (?, ?, ?, ?, ?)', (name, cookie, ipaddr, now, now))
+        
+        raise HTTPRedirectPost(self.app.approot)
         
 class han_DebugDump(ReqHandler):
     def do_get(self, req):
@@ -87,12 +97,20 @@ class han_DebugUsers(ReqHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
         curs = self.app.db.cursor()
+        yield 'Users:\n'
         res = curs.execute("SELECT * FROM users")
         while True:
             tup = res.fetchone()
             if not tup:
                 break
-            yield '%s\n' % (str(tup),)
+            yield '- %s\n' % (str(tup),)
+        yield 'Sessions:\n'
+        res = curs.execute("SELECT * FROM sessions")
+        while True:
+            tup = res.fetchone()
+            if not tup:
+                break
+            yield '- %s\n' % (str(tup),)
 
 handlers = [
     ('', han_Home),
@@ -117,7 +135,7 @@ def db_create():
         print('"sessions" table exists')
     else:
         print('creating "sessions" table...')
-        curs.execute('CREATE TABLE sessions(name, cookie unique, start)')
+        curs.execute('CREATE TABLE sessions(name, cookie unique, ipaddr, starttime, refreshtime)')
 
 
 def db_add_user(args):
@@ -131,7 +149,8 @@ def db_add_user(args):
     print('adding users "%s"...' % (name,))
     curs = appinstance.db.cursor()
     curs.execute('INSERT INTO users VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
-    
+
+
 if __name__ == '__main__':
     import optparse
 

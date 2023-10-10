@@ -120,6 +120,7 @@ class TinyRequest:
         self.status = '200 OK'
         self.content_type = HTML
         self.headers = []
+        self.rawheaders = []
 
     def set_status(self, val):
         self.status = val
@@ -128,6 +129,11 @@ class TinyRequest:
         self.content_type = val
 
     def add_header(self, key, val):
+        self.headers.append( (key, val) )
+
+    def add_rawheader(self, hdr):
+        key, _, val = hdr.partition(':')
+        val = val.strip()
         self.headers.append( (key, val) )
 
 class HTTPError(Exception):

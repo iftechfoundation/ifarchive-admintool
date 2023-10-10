@@ -1,6 +1,7 @@
 import sys
 import time
 import os
+from http import cookies
 
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -23,8 +24,25 @@ class AdminApp(TinyApp):
             autoescape = select_autoescape(),
             keep_trailing_newline = True,
         )
+
+def random_bytes(count):
+    byt = os.urandom(count)
+    return bytes.hex(byt)
+        
+def xsrf_cookie(han):
+    def wrapper(self, req):
+        val = random_bytes(16)
+        cookie = cookies.SimpleCookie()
+        cookie['_xsrf'] = val
+        ###cookie['_xsrf']['secure'] = True
+        cookie['_xsrf']['httponly'] = True
+        hdr = str(cookie)
+        req.add_rawheader(hdr)
+        return han(self, req)
+    return wrapper
         
 class han_Home(ReqHandler):
+    @xsrf_cookie
     def do_get(self, req):
         template = self.app.jenv.get_template('front.html')
         yield template.render()

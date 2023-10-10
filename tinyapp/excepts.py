@@ -22,6 +22,6 @@ class HTTPRedirectPost(HTTPError):
 
     def handle(self, req):
         req.set_status(self.status)
-        req.set_header('Location', self.url)
+        req.add_header('Location', self.url)
         return self.do_error(req)
         

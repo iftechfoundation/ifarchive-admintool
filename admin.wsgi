@@ -21,7 +21,7 @@ MAX_SESSION_AGE = 10*60*60*24  # 10 days
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
-        TinyApp.__init__(self, hanclasses, wrapall=[ tinyapp.auth.xsrf_cookie ])
+        TinyApp.__init__(self, hanclasses, wrapall=[ tinyapp.auth.xsrf_cookie, tinyapp.auth.xsrf_check_post ])
 
         self.approot = '/wsgitest' ###config
         

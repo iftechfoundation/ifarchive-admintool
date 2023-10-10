@@ -12,7 +12,7 @@ class TinyApp:
         for pat, cla in hanclasses:
             han = cla(self, pat)
             if wrapall:
-                for wrapper in wrapall:
+                for wrapper in reversed(wrapall):
                     han = WrappedHandler(han, wrapper)
             self.handlers.append(han)
 

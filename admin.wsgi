@@ -48,9 +48,9 @@ class han_Home(ReqHandler):
         curs = self.app.db.cursor()
 
         if '@' in formname:
-            res = curs.execute("SELECT name, pw, pwsalt, roles FROM users WHERE email = ?", (formname,))
+            res = curs.execute('SELECT name, pw, pwsalt, roles FROM users WHERE email = ?', (formname,))
         else:
-            res = curs.execute("SELECT name, pw, pwsalt, roles FROM users WHERE name = ?", (formname,))
+            res = curs.execute('SELECT name, pw, pwsalt, roles FROM users WHERE name = ?', (formname,))
         tup = res.fetchone()
         if not tup:
             template = self.app.jenv.get_template('login.html')
@@ -98,14 +98,14 @@ class han_DebugUsers(ReqHandler):
         req.set_content_type(PLAINTEXT)
         curs = self.app.db.cursor()
         yield 'Users:\n'
-        res = curs.execute("SELECT * FROM users")
+        res = curs.execute('SELECT * FROM users')
         while True:
             tup = res.fetchone()
             if not tup:
                 break
             yield '- %s\n' % (str(tup),)
         yield 'Sessions:\n'
-        res = curs.execute("SELECT * FROM sessions")
+        res = curs.execute('SELECT * FROM sessions')
         while True:
             tup = res.fetchone()
             if not tup:

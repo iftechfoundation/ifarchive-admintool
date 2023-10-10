@@ -2,11 +2,9 @@ import traceback
 from http import cookies
 import urllib.parse
 
+from tinyapp.constants import PLAINTEXT, HTML
 from tinyapp.excepts import HTTPError
 from tinyapp.handler import ReqHandler, WrappedHandler
-
-PLAINTEXT = 'text/plain'
-HTML = 'text/html; charset=utf-8'
 
 class TinyApp:
     def __init__(self, hanclasses, wrapall=None):
@@ -32,8 +30,13 @@ class TinyApp:
             boutput = output.encode()
         except HTTPError as ex:
             status = ex.status
-            output = status + '\n\n' + ex.msg
-            content_type = PLAINTEXT
+            if not req:
+                output = status + '\n\n' + ex.msg
+                content_type = PLAINTEXT
+            else:
+                ls = ex.do_error(req)
+                output = ''.join(ls)  # Gotta do this before looking at req
+                content_type = req.content_type
             boutput = output.encode()
         except Exception as ex:
             status = '500 Internal Error'

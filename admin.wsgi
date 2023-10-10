@@ -7,7 +7,7 @@ import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from tinyapp.app import TinyApp
-from tinyapp.app import PLAINTEXT
+from tinyapp.constants import PLAINTEXT
 from tinyapp.handler import ReqHandler, before
 import tinyapp.auth
 
@@ -65,7 +65,7 @@ class han_Home(ReqHandler):
         ### set name cookie for future logins? (filled in in login.html)
 
         ### create session
-        raise HTTPRedirect('/') ###
+        raise HTTPRedirectPost('/') ###
         
 class han_DebugDump(ReqHandler):
     def do_get(self, req):

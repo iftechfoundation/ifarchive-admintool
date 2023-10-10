@@ -61,7 +61,6 @@ def find_user(req, han):
 class han_Home(ReqHandler):
     @before(find_user)
     def do_get(self, req):
-
         if not req._user:
             template = self.app.jenv.get_template('login.html')
             yield template.render(
@@ -113,7 +112,17 @@ class han_Home(ReqHandler):
         curs.execute('INSERT INTO sessions VALUES (?, ?, ?, ?, ?)', (name, sessionid, ipaddr, now, now))
         
         raise HTTPRedirectPost(self.app.approot)
-        
+
+class han_LogOut(ReqHandler):
+    @before(find_user)
+    def do_get(self, req):
+        if req._user:
+            curs = self.app.db.cursor()
+            curs.execute('DELETE FROM sessions WHERE sessionid = ?', (req._user.sessionid,))
+            req.set_cookie('sessionid', 'x', httponly=True, maxage=0)
+        raise HTTPRedirectPost(self.app.approot)
+            
+
 class han_DebugDump(ReqHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
@@ -146,6 +155,7 @@ class han_DebugUsers(ReqHandler):
 
 handlers = [
     ('', han_Home),
+    ('/logout', han_LogOut),
     ('/debugusers', han_DebugUsers),
     ('/debugdump', han_DebugDump),
 ]

@@ -1,6 +1,7 @@
 import sys
 import time
 import os
+import hashlib
 
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -33,6 +34,39 @@ class han_Home(ReqHandler):
         yield template.render(
             req=req)
 
+    def do_post(self, req):
+        formname = req.get_input_field('name')
+        formpw = req.get_input_field('password')
+        
+        curs = self.app.db.cursor()
+
+        if '@' in formname:
+            res = curs.execute("SELECT name, pw, pwsalt, roles FROM users WHERE email = ?", (formname,))
+        else:
+            res = curs.execute("SELECT name, pw, pwsalt, roles FROM users WHERE name = ?", (formname,))
+        tup = res.fetchone()
+        if not tup:
+            template = self.app.jenv.get_template('login.html')
+            yield template.render(
+                formerror='The name and password do not match.',
+	            req=req)
+            return
+        name, pw, pwsalt, roles = tup
+
+        formsalted = pwsalt + b':' + formpw.encode()
+        formcrypted = hashlib.sha1(formsalted).hexdigest()
+        if formcrypted != pw:
+            template = self.app.jenv.get_template('login.html')
+            yield template.render(
+                formerror='The name and password do not match.###pw',
+	            req=req)
+            return
+
+        ### set name cookie for future logins? (filled in in login.html)
+
+        ### create session
+        raise HTTPRedirect('/') ###
+        
 class han_DebugDump(ReqHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
@@ -41,6 +75,8 @@ class han_DebugDump(ReqHandler):
         yield 'environ:\n'
         for key, val in req.env.items():
             yield '  %s: %s\n' % (key, val,)
+        val = req.env['wsgi.input'].read()
+        yield 'input: %s' % (val,)
 
 class han_DebugUsers(ReqHandler):
     def do_get(self, req):

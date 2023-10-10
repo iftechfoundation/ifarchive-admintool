@@ -1,5 +1,6 @@
 import traceback
 from http import cookies
+import urllib.parse
 
 from tinyapp.excepts import HTTPError
 from tinyapp.handler import ReqHandler, WrappedHandler
@@ -114,11 +115,26 @@ class TinyRequest:
                 pass
         self.newcookies = cookies.SimpleCookie()
 
-        ### environ.get('QUERY_STRING'), urllib.parse.parse_qs()
+        self.input = {}
+        if 'wsgi.input' in env:
+            try:
+                val = env['wsgi.input'].read()
+                self.input = urllib.parse.parse_qs(val.decode())
+            except:
+                pass
+        # could check env['QUERY_STRING'] as well
+
+        self._xsrf = None  # in case someone uses xsrf_cookie
 
         self.status = '200 OK'
         self.content_type = HTML
         self.headers = []
+
+    def get_input_field(self, key):
+        ls = self.input.get(key)
+        if ls:
+            return ls[0]
+        raise KeyError(key)
 
     def set_status(self, val):
         self.status = val

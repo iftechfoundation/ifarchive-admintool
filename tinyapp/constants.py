@@ -1,4 +1,4 @@
 
-PLAINTEXT = 'text/plain'
+PLAINTEXT = 'text/plain; charset=utf-8'
 HTML = 'text/html; charset=utf-8'
 

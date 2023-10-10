@@ -12,12 +12,15 @@ from tinyapp.handler import ReqHandler, before
 import tinyapp.auth
 from tinyapp.excepts import HTTPError, HTTPRedirectPost
 
+### config
 DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'
 TEMPLATE_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/lib'
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
         TinyApp.__init__(self, hanclasses, wrapall=[ tinyapp.auth.xsrf_cookie ])
+
+        self.approot = '/wsgitest' ###config
         
         self.db = sqlite3.connect(DB_PATH)
         self.db.isolation_level = None   # autocommit
@@ -27,7 +30,7 @@ class AdminApp(TinyApp):
             autoescape = select_autoescape(),
             keep_trailing_newline = True,
         )
-        self.jenv.globals['approot'] = '/wsgitest' ###config
+        self.jenv.globals['approot'] = self.approot
 
 class han_Home(ReqHandler):
     def do_get(self, req):
@@ -99,7 +102,25 @@ handlers = [
 application = AdminApp(handlers).application
 
 if __name__ == '__main__':
-    uri = ''
-    if len(sys.argv) > 1:
-        uri = sys.argv[1]
-    application.__self__.test_dump(uri)
+    import optparse
+
+    popt = optparse.OptionParser(usage='admin.wsgi startdb | adduser | test')
+    (opts, args) = popt.parse_args()
+
+    if not args:
+        print('command-line use:')
+        print('  admin.wsgi startdb: create database tables')
+        print('  admin.wsgi adduser name email pw roles: add a user')
+        print('  admin.wsgi test [ URI ]: print page to stdout')
+        sys.exit(-1)
+
+    cmd = args.pop(0)
+    
+    if cmd == 'test':
+        uri = ''
+        if args:
+            uri = args[0]
+        application.__self__.test_dump(uri)
+    else:
+        print('command not recognized: %s' % (cmd,))
+        print('Usage: %s' % (popt.usage,))

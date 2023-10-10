@@ -5,8 +5,8 @@ import os
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from tinyapp import TinyApp
-from tinyapp import PLAINTEXT
+from tinyapp.app import TinyApp
+from tinyapp.app import PLAINTEXT
 from tinyapp.handler import ReqHandler, before
 import tinyapp.auth
 

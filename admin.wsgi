@@ -1,12 +1,15 @@
 import sys
 import time
 import os
+
 import sqlite3
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from tinyapp import TinyApp, ReqHandler
 from tinyapp import PLAINTEXT
 
 DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'
+TEMPLATE_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/lib'
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -15,9 +18,16 @@ class AdminApp(TinyApp):
         self.db = sqlite3.connect(DB_PATH)
         self.db.isolation_level = None   # autocommit
 
+        self.jenv = Environment(
+            loader = FileSystemLoader(TEMPLATE_PATH),
+            autoescape = select_autoescape(),
+            keep_trailing_newline = True,
+        )
+        
 class han_Home(ReqHandler):
     def do_get(self, req):
-        yield '<html>Hello world...\n</html>'
+        template = self.app.jenv.get_template('front.html')
+        yield template.render()
 
 class han_DebugDump(ReqHandler):
     def do_get(self, req):

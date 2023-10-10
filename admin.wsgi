@@ -36,17 +36,18 @@ class AdminApp(TinyApp):
         self.jenv.globals['approot'] = self.approot
 
 class User:
-    def __init__(self, name, roles):
+    def __init__(self, name, sessionid, roles):
         self.name = name
+        self.sessionid = sessionid
         self.roles = set(roles.split(','))
         
 def find_user(req, han):
     req._user = None
     
     if 'sessionid' in req.cookies:
-        cookie = req.cookies['sessionid'].value
+        sessionid = req.cookies['sessionid'].value
         curs = req.app.db.cursor()
-        res = curs.execute('SELECT name FROM sessions WHERE cookie = ?', (cookie,))
+        res = curs.execute('SELECT name FROM sessions WHERE sessionid = ?', (sessionid,))
         tup = res.fetchone()
         if tup:
             name = tup[0]
@@ -54,7 +55,7 @@ def find_user(req, han):
             tup = res.fetchone()
             if tup:
                 roles = tup[0]
-                req._user = User(name, roles)
+                req._user = User(name, sessionid, roles)
     return han(req)
         
 class han_Home(ReqHandler):
@@ -102,14 +103,14 @@ class han_Home(ReqHandler):
 
         ### set name cookie for future logins? (filled into login.html form)
 
-        cookie = random_bytes(20)
-        req.set_cookie('sessionid', cookie, maxage=MAX_SESSION_AGE, httponly=True)
+        sessionid = random_bytes(20)
+        req.set_cookie('sessionid', sessionid, maxage=MAX_SESSION_AGE, httponly=True)
         ### also secure=True?
         now = time_now()
         ipaddr = req.env.get('REMOTE_ADDR', '?')
         
         curs = self.app.db.cursor()
-        curs.execute('INSERT INTO sessions VALUES (?, ?, ?, ?, ?)', (name, cookie, ipaddr, now, now))
+        curs.execute('INSERT INTO sessions VALUES (?, ?, ?, ?, ?)', (name, sessionid, ipaddr, now, now))
         
         raise HTTPRedirectPost(self.app.approot)
         
@@ -166,7 +167,7 @@ def db_create():
         print('"sessions" table exists')
     else:
         print('creating "sessions" table...')
-        curs.execute('CREATE TABLE sessions(name, cookie unique, ipaddr, starttime, refreshtime)')
+        curs.execute('CREATE TABLE sessions(name, sessionid unique, ipaddr, starttime, refreshtime)')
 
 
 def db_add_user(args):

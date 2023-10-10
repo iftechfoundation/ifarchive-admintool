@@ -5,9 +5,9 @@ import os
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from tinyapp import TinyApp, ReqHandler
+from tinyapp import TinyApp
 from tinyapp import PLAINTEXT
-from tinyapp import before
+from tinyapp.handler import ReqHandler, before
 import tinyapp.auth
 
 DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'

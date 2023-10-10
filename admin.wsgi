@@ -63,7 +63,7 @@ class han_Home(ReqHandler):
         if formcrypted != pw:
             template = self.app.jenv.get_template('login.html')
             yield template.render(
-                formerror='The name and password do not match.###pw',
+                formerror='The name and password do not match.',
 	            req=req)
             return
 

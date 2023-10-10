@@ -35,11 +35,42 @@ class AdminApp(TinyApp):
         )
         self.jenv.globals['approot'] = self.approot
 
+class User:
+    def __init__(self, name, roles):
+        self.name = name
+        self.roles = set(roles.split(','))
+        
+def find_user(req, han):
+    req._user = None
+    
+    if 'sessionid' in req.cookies:
+        cookie = req.cookies['sessionid'].value
+        curs = req.app.db.cursor()
+        res = curs.execute('SELECT name FROM sessions WHERE cookie = ?', (cookie,))
+        tup = res.fetchone()
+        if tup:
+            name = tup[0]
+            res = curs.execute('SELECT roles FROM users WHERE name = ?', (name,))
+            tup = res.fetchone()
+            if tup:
+                roles = tup[0]
+                req._user = User(name, roles)
+    return han(req)
+        
 class han_Home(ReqHandler):
+    @before(find_user)
     def do_get(self, req):
-        template = self.app.jenv.get_template('login.html')
+
+        if not req._user:
+            template = self.app.jenv.get_template('login.html')
+            yield template.render(
+                req=req)
+            return
+
+        template = self.app.jenv.get_template('front.html')
         yield template.render(
             req=req)
+        
 
     def do_post(self, req):
         formname = req.get_input_field('name')

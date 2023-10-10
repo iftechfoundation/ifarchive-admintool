@@ -7,10 +7,13 @@ PLAINTEXT = 'text/plain'
 HTML = 'text/html; charset=utf-8'
 
 class TinyApp:
-    def __init__(self, hanclasses):
+    def __init__(self, hanclasses, wrapall=None):
         self.handlers = []
         for pat, cla in hanclasses:
             han = cla(self, pat)
+            if wrapall:
+                for wrapper in wrapall:
+                    han = WrappedHandler(han, wrapper)
             self.handlers.append(han)
 
     def application(self, environ, start_response):
@@ -36,7 +39,8 @@ class TinyApp:
             output = status + '\n\n' + ''.join(ls)
             content_type = PLAINTEXT
             boutput = output.encode()
-            print(output)   # To Apache error log
+            if not environ.get('TinyAppSkipPrintErrors'):
+                print(output)   # To Apache error log
 
         response_headers = [
             ('Content-Type', content_type),
@@ -78,6 +82,7 @@ class TinyApp:
             'REQUEST_METHOD': 'GET',
             'PATH_INFO': uri,
             'REQUEST_URI': uri,
+            'TinyAppSkipPrintErrors': 'True',
         }
         
         def start_response(status, headers):
@@ -111,7 +116,22 @@ class ReqHandler:
             pass
         yield ''
 
+class WrappedHandler:
+    def __init__(self, han, wrapper):
+        self.app = han.app
+        self.pat = han.pat
 
+        self.do_head = han.do_head
+        self.do_get = lambda req: wrapper(req, han.do_get)
+        self.do_post = lambda req: wrapper(req, han.do_post)
+
+def before(wrapper):
+    def func(han):
+        def subfunc(self, req):
+            return wrapper(req, lambda req2: han(self, req2))
+        return subfunc
+    return func
+        
 class TinyRequest:
     def __init__(self, app, env):
         self.env = env

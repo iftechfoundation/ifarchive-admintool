@@ -119,7 +119,7 @@ class han_LogOut(ReqHandler):
         if req._user:
             curs = self.app.db.cursor()
             curs.execute('DELETE FROM sessions WHERE sessionid = ?', (req._user.sessionid,))
-            req.set_cookie('sessionid', 'x', httponly=True, maxage=0)
+            # Could clear the sessionid cookie here but I can't seem to make that work
         raise HTTPRedirectPost(self.app.approot)
             
 

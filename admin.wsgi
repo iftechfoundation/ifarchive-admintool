@@ -9,8 +9,9 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from tinyapp.app import TinyApp
 from tinyapp.constants import PLAINTEXT
 from tinyapp.handler import ReqHandler, before
-import tinyapp.auth
 from tinyapp.excepts import HTTPError, HTTPRedirectPost
+from tinyapp.util import random_bytes
+import tinyapp.auth
 
 ### config
 DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'
@@ -111,14 +112,26 @@ def db_create():
         print('"users" table exists')
     else:
         print('creating "users" table...')
-        res = curs.execute('CREATE TABLE users(name unique, email unique, pw, pwsalt, roles)')
+        curs.execute('CREATE TABLE users(name unique, email unique, pw, pwsalt, roles)')
     if 'sessions' in tables:
         print('"sessions" table exists')
     else:
         print('creating "sessions" table...')
-        res = curs.execute('CREATE TABLE sessions(name, cookie unique, start)')
+        curs.execute('CREATE TABLE sessions(name, cookie unique, start)')
 
 
+def db_add_user(args):
+    if len(args) != 4:
+        print('usage: adduser name email pw role1,role2,role3')
+        return
+    name, email, pw, roles = args
+    pwsalt = random_bytes(8).encode()
+    salted = pwsalt + b':' + pw.encode()
+    crypted = hashlib.sha1(salted).hexdigest()
+    print('adding users "%s"...' % (name,))
+    curs = appinstance.db.cursor()
+    curs.execute('INSERT INTO users VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
+    
 if __name__ == '__main__':
     import optparse
 

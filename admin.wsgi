@@ -13,9 +13,11 @@ from tinyapp.excepts import HTTPError, HTTPRedirectPost
 from tinyapp.util import random_bytes, time_now
 import tinyapp.auth
 
+from adminlib.session import find_user
+
 ### config
 DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'
-TEMPLATE_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/lib'
+TEMPLATE_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/templates'
 
 MAX_SESSION_AGE = 10*60*60*24  # 10 days
 
@@ -46,29 +48,6 @@ class AdminApp(TinyApp):
         yield tem.render(**map)
 
 
-class User:
-    def __init__(self, name, sessionid, roles):
-        self.name = name
-        self.sessionid = sessionid
-        self.roles = set(roles.split(','))
-        
-def find_user(req, han):
-    req._user = None
-    
-    if 'sessionid' in req.cookies:
-        sessionid = req.cookies['sessionid'].value
-        curs = req.app.db.cursor()
-        res = curs.execute('SELECT name FROM sessions WHERE sessionid = ?', (sessionid,))
-        tup = res.fetchone()
-        if tup:
-            name = tup[0]
-            res = curs.execute('SELECT roles FROM users WHERE name = ?', (name,))
-            tup = res.fetchone()
-            if tup:
-                roles = tup[0]
-                req._user = User(name, sessionid, roles)
-    return han(req)
-        
 class han_Home(ReqHandler):
     @before(find_user)
     def do_get(self, req):

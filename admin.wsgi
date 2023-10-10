@@ -25,11 +25,13 @@ class AdminApp(TinyApp):
             autoescape = select_autoescape(),
             keep_trailing_newline = True,
         )
+        self.jenv.globals['approot'] = '/wsgitest' ###config
 
 class han_Home(ReqHandler):
     def do_get(self, req):
-        template = self.app.jenv.get_template('front.html')
-        yield template.render()
+        template = self.app.jenv.get_template('login.html')
+        yield template.render(
+            req=req)
 
 class han_DebugDump(ReqHandler):
     def do_get(self, req):

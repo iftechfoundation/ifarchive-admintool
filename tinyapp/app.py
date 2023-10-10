@@ -29,13 +29,14 @@ class TinyApp:
             content_type = req.content_type
             boutput = output.encode()
         except HTTPError as ex:
-            status = ex.status
             if not req:
+                status = ex.status
                 output = status + '\n\n' + ex.msg
                 content_type = PLAINTEXT
             else:
-                ls = ex.do_error(req)
+                ls = ex.handle(req)
                 output = ''.join(ls)  # Gotta do this before looking at req
+                status = req.status
                 content_type = req.content_type
             boutput = output.encode()
         except Exception as ex:

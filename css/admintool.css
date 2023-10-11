@@ -47,6 +47,7 @@ body {
     background: #641;
     font-size: 85%;
     padding: 4px 8px;
+    margin-bottom: 20px;
 }
 
 #navbar a {
@@ -56,6 +57,11 @@ body {
 
 #navbar a:hover {
     text-decoration: underline;
+}
+
+#body h1 {
+    font-weight: normal;
+    font: 120% Georgia, "Times New Roman", serif;
 }
 
 .FormInput {

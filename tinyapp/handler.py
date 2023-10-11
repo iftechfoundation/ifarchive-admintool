@@ -35,3 +35,12 @@ def before(wrapper):
             return wrapper(req, lambda req2: han(self, req2))
         return subfunc
     return func
+
+def beforeall(wrapper):
+    def func(cla):
+        def subfunc(app, pat):
+            inst = cla(app, pat)
+            return WrappedHandler(inst, wrapper)
+        return subfunc
+    return func
+

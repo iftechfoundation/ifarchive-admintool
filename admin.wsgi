@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from tinyapp.app import TinyApp
 from tinyapp.constants import PLAINTEXT
-from tinyapp.handler import ReqHandler, before
+from tinyapp.handler import ReqHandler, before, beforeall
 from tinyapp.excepts import HTTPError, HTTPRedirectPost
 from tinyapp.util import random_bytes, time_now
 import tinyapp.auth

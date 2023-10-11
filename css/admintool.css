@@ -46,6 +46,7 @@ body {
 .FormInput {
     font-size: 100%;
     margin: 4px;
+    min-width: 50%;
 }
 
 .FormButton {

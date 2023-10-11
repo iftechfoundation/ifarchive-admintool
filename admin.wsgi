@@ -2,6 +2,7 @@ import sys
 import time
 import os
 import hashlib
+import configparser
 
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -16,10 +17,15 @@ import tinyapp.auth
 from adminlib.session import find_user
 
 ### config
-DB_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/admin.db'
-TEMPLATE_PATH = '/Users/zarf/src/ifarch/ifarchive-admintool/templates'
+configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
+config = configparser.ConfigParser()
+config.read(configpath)
 
-MAX_SESSION_AGE = 10*60*60*24  # 10 days
+DB_PATH = config['DEFAULT']['DBFile']
+
+TEMPLATE_PATH = config['AdminTool']['TemplateDir']
+MAX_SESSION_AGE = config['AdminTool'].getint('MaxSessionAge')
+APP_ROOT = config['AdminTool']['AppRoot']
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -29,7 +35,7 @@ class AdminApp(TinyApp):
             find_user,
         ])
 
-        self.approot = '/wsgitest' ###config
+        self.approot = APP_ROOT
         
         self.db = sqlite3.connect(DB_PATH)
         self.db.isolation_level = None   # autocommit

@@ -25,11 +25,11 @@ def run(appinstance):
             uri = args[0]
         appinstance.test_dump(uri)
     elif cmd == 'createdb':
-        db_create(appinstance.db)
+        db_create(appinstance.getdb())
     elif cmd == 'adduser':
-        db_add_user(appinstance.db, args)
+        db_add_user(appinstance.getdb(), args)
     elif cmd == 'userroles':
-        db_user_roles(appinstance.db, args)
+        db_user_roles(appinstance.getdb(), args)
     else:
         print('command not recognized: %s' % (cmd,))
         print('Usage: %s' % (popt.usage,))

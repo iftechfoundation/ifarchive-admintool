@@ -3,9 +3,26 @@ import time
 import os
 import hashlib
 import configparser
+import threading
 
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+### config
+configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
+#configpath = '/var/ifarchive/lib/ifarch.config'
+config = configparser.ConfigParser()
+config.read(configpath)
+
+DB_PATH = config['DEFAULT']['DBFile']
+
+### PyLibPath
+TEMPLATE_PATH = config['AdminTool']['TemplateDir']
+MAX_SESSION_AGE = config['AdminTool'].getint('MaxSessionAge')
+APP_ROOT = config['AdminTool']['AppRoot']
+APP_CSS_URI = config['AdminTool']['AppCSSURI']
+
+### use PyLibPath
 
 from tinyapp.app import TinyApp
 from tinyapp.constants import PLAINTEXT
@@ -17,17 +34,6 @@ import tinyapp.auth
 from adminlib.session import find_user, User
 from adminlib.session import require_user, require_role
 
-### config
-configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
-config = configparser.ConfigParser()
-config.read(configpath)
-
-DB_PATH = config['DEFAULT']['DBFile']
-
-TEMPLATE_PATH = config['AdminTool']['TemplateDir']
-MAX_SESSION_AGE = config['AdminTool'].getint('MaxSessionAge')
-APP_ROOT = config['AdminTool']['AppRoot']
-APP_CSS_URI = config['AdminTool']['AppCSSURI']
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -38,9 +44,8 @@ class AdminApp(TinyApp):
         ])
 
         self.approot = APP_ROOT
-        
-        self.db = sqlite3.connect(DB_PATH)
-        self.db.isolation_level = None   # autocommit
+
+        self.dbcache = threading.local()
 
         self.jenv = Environment(
             loader = FileSystemLoader(TEMPLATE_PATH),
@@ -49,6 +54,14 @@ class AdminApp(TinyApp):
         )
         self.jenv.globals['approot'] = self.approot
         self.jenv.globals['appcssuri'] = APP_CSS_URI
+
+    def getdb(self):
+        db = getattr(self.dbcache, 'db', None)
+        if db is None:
+            db = sqlite3.connect(DB_PATH)
+            db.isolation_level = None   # autocommit
+            self.dbcache.db = db
+        return db
 
     def render(self, template, req, **params):
         tem = self.jenv.get_template(template)
@@ -73,7 +86,7 @@ class han_Home(ReqHandler):
             return self.app.render('login.html', req,
                                    formerror='You must supply name and password.')
         
-        curs = self.app.db.cursor()
+        curs = self.app.getdb().cursor()
 
         if '@' in formname:
             res = curs.execute('SELECT name, pw, pwsalt, roles FROM users WHERE email = ?', (formname,))
@@ -99,7 +112,7 @@ class han_Home(ReqHandler):
         now = time_now()
         ipaddr = req.env.get('REMOTE_ADDR', '?')
         
-        curs = self.app.db.cursor()
+        curs = self.app.getdb().cursor()
         curs.execute('INSERT INTO sessions VALUES (?, ?, ?, ?, ?)', (name, sessionid, ipaddr, now, now))
         
         raise HTTPRedirectPost(self.app.approot)
@@ -107,7 +120,7 @@ class han_Home(ReqHandler):
 class han_LogOut(ReqHandler):
     def do_get(self, req):
         if req._user:
-            curs = self.app.db.cursor()
+            curs = self.app.getdb().cursor()
             curs.execute('DELETE FROM sessions WHERE sessionid = ?', (req._user.sessionid,))
             # Could clear the sessionid cookie here but I can't seem to make that work
         raise HTTPRedirectPost(self.app.approot)
@@ -129,7 +142,7 @@ class han_ChangePW(ReqHandler):
             return self.app.render('changepw.html', req,
                                    formerror='You must supply a new password.')
 
-        curs = self.app.db.cursor()
+        curs = self.app.getdb().cursor()
         res = curs.execute('SELECT pw, pwsalt FROM users WHERE name = ?', (req._user.name,))
         tup = res.fetchone()
         if not tup:
@@ -156,7 +169,7 @@ class han_ChangePW(ReqHandler):
 @beforeall(require_role('admin'))
 class han_AllUsers(ReqHandler):
     def do_get(self, req):
-        curs = self.app.db.cursor()
+        curs = self.app.getdb().cursor()
         res = curs.execute('SELECT name, email, roles FROM users')
         userlist = [ User(name, email, roles, '') for name, email, roles in res.fetchall() ]
         res = curs.execute('SELECT name, ipaddr, starttime FROM sessions')

@@ -21,7 +21,7 @@
       <div id="navbar">
         <a href="{{ approot }}">Top</a>
       </div>
-<h1>{% block title %}Home{% endblock %}</h1>
+{% block usetitle %}<h1>{% block title %}Home{% endblock %}</h1>{% endblock %}
 {% block content %}{% endblock %}
     </div>
   </div>

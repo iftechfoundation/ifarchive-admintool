@@ -127,6 +127,27 @@ class han_ChangePW(ReqHandler):
             return self.app.render('changepw.html', req,
                                    formerror='You must supply a new password.')
 
+        curs = self.app.db.cursor()
+        res = curs.execute('SELECT pw, pwsalt FROM users WHERE name = ?', (req._user.name,))
+        tup = res.fetchone()
+        if not tup:
+            return self.app.render('changepw.html', req,
+                                   formerror='Cannot locate user record.')
+        pw, pwsalt = tup
+        formsalted = pwsalt + b':' + oldpw.encode()
+        formcrypted = hashlib.sha1(formsalted).hexdigest()
+        if formcrypted != pw:
+            return self.app.render('changepw.html', req,
+                                   formerror='Old password does not match.')
+        if newpw != duppw:
+            return self.app.render('changepw.html', req,
+                                   formerror='New password does not match.')
+
+        pwsalt = random_bytes(8).encode()
+        salted = pwsalt + b':' + newpw.encode()
+        crypted = hashlib.sha1(salted).hexdigest()
+        curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, req._user.name))
+        
         return self.app.render('changepwdone.html', req)
             
 

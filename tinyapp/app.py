@@ -1,3 +1,4 @@
+import sys
 import traceback
 from http import cookies
 import urllib.parse
@@ -41,7 +42,8 @@ class TinyApp:
             boutput = output.encode()
         except Exception as ex:
             status = '500 Internal Error'
-            ls = traceback.format_exception(ex)
+            exinfo = sys.exc_info()  ### In Py3.10, we could skip this and just do traceback.format_exception(ex)
+            ls = traceback.format_exception(*exinfo)
             output = status + '\n\n' + ''.join(ls)
             content_type = PLAINTEXT
             boutput = output.encode()

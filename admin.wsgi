@@ -45,26 +45,15 @@ class AdminApp(TinyApp):
 
         self.approot = APP_ROOT
 
-        # The sqlite3 module is thread-safe, but the db connection objects
-        # you get from it cannot be shared between threads. (Depends on
-        # the version of SQLite installed, but we take no chances.) So
-        # we create a thread-local-storage object and created one db per
-        # thread, as needed.
+        # Thread-local storage for various things which are not thread-safe.
         self.threadcache = threading.local()
-
-        # Create a Jinja template rendering environment.
-        ### Should this also be per-thread?
-        self.jenv = Environment(
-            loader = FileSystemLoader(TEMPLATE_PATH),
-            autoescape = select_autoescape(),
-            keep_trailing_newline = True,
-        )
-        self.jenv.globals['approot'] = self.approot
-        self.jenv.globals['appcssuri'] = APP_CSS_URI
 
     def getdb(self):
         """Get or create a sqlite3 db connection object. These are
         cached per-thread.
+        (The sqlite3 module is thread-safe, but the db connection objects
+        you get from it might not be shareable between threads. Depends on
+        the version of SQLite installed, but we take no chances.)
         """
         db = getattr(self.threadcache, 'db', None)
         if db is None:
@@ -73,11 +62,27 @@ class AdminApp(TinyApp):
             self.threadcache.db = db
         return db
 
+    def getjenv(self):
+        """Get or create a jinja template environment. These are
+        cached per-thread.
+        """
+        jenv = getattr(self.threadcache, 'jenv', None)
+        if jenv is None:
+            jenv = Environment(
+                loader = FileSystemLoader(TEMPLATE_PATH),
+                autoescape = select_autoescape(),
+                keep_trailing_newline = True,
+            )
+            jenv.globals['approot'] = self.approot
+            jenv.globals['appcssuri'] = APP_CSS_URI
+            self.threadcache.jenv = jenv
+        return jenv
+
     def render(self, template, req, **params):
         """Render a template for the current request. This adds in some
         per-request template parameters.
         """
-        tem = self.jenv.get_template(template)
+        tem = self.getjenv().get_template(template)
         map = { 'req':req, 'user':req._user }
         if params:
             map.update(params)

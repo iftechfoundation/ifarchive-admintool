@@ -27,6 +27,7 @@ DB_PATH = config['DEFAULT']['DBFile']
 TEMPLATE_PATH = config['AdminTool']['TemplateDir']
 MAX_SESSION_AGE = config['AdminTool'].getint('MaxSessionAge')
 APP_ROOT = config['AdminTool']['AppRoot']
+APP_CSS_URI = config['AdminTool']['AppCSSURI']
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -47,6 +48,7 @@ class AdminApp(TinyApp):
             keep_trailing_newline = True,
         )
         self.jenv.globals['approot'] = self.approot
+        self.jenv.globals['appcssuri'] = APP_CSS_URI
 
     def render(self, template, req, **params):
         tem = self.jenv.get_template(template)

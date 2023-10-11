@@ -1,0 +1,15 @@
+{% extends "page.html" %}
+
+{% block content %}
+
+<ul>
+  <li>Username: {{ user.name }}
+  <li>Email: {{ user.email }}
+  <li>Roles: {{ user.roles | join(', ') }}
+</ul>
+
+<p>
+<a href="{{ approot }}/changepw">Change password</a>
+</p>
+
+{% endblock %}

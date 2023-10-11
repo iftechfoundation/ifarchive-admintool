@@ -1,0 +1,30 @@
+{% extends "page.html" %}
+
+{% block content %}
+
+<p>Please log in.</p>
+
+<form method="post" action="{{ approot }}">
+
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+
+<div>
+<input class="FormInput" autocapitalize="off"
+  id="login_field" name="name" type="text" placeholder="Name or email"
+  autofocus="autofocus">
+</div>
+<div>
+<input class="FormInput" autocomplete="disabled"
+  id="password_field" name="password" type="password" placeholder="Password">
+</div>
+<div>
+<input class="FormButton" name="commit" type="submit" value="Sign in">
+</div>
+
+{% if formerror %}
+<p>{{ formerror }}</p>
+{% endif %}
+
+</form>
+
+{% endblock %}

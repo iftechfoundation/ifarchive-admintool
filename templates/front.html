@@ -1,0 +1,9 @@
+{% extends "page.html" %}
+
+{% block content %}
+
+<p>This is the content. You are {{ req._user.name }}.</p>
+
+<p><a href="{{ approot }}/logout">Log out</a></p>
+
+{% endblock %}

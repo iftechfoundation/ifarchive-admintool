@@ -5,13 +5,14 @@ from tinyapp.util import random_bytes
 
 
 def run(appinstance):
-    popt = optparse.OptionParser(usage='admin.wsgi createdb | adduser | test')
+    popt = optparse.OptionParser(usage='admin.wsgi createdb | adduser | userroles | test')
     (opts, args) = popt.parse_args()
 
     if not args:
         print('command-line use:')
         print('  admin.wsgi createdb: create database tables')
         print('  admin.wsgi adduser name email pw roles: add a user')
+        print('  admin.wsgi userroles name roles: change a user\'s roles')
         print('  admin.wsgi test [ URI ]: print page to stdout')
         ### cleanup
         return
@@ -27,6 +28,8 @@ def run(appinstance):
         db_create(appinstance.db)
     elif cmd == 'adduser':
         db_add_user(appinstance.db, args)
+    elif cmd == 'userroles':
+        db_user_roles(appinstance.db, args)
     else:
         print('command not recognized: %s' % (cmd,))
         print('Usage: %s' % (popt.usage,))
@@ -69,3 +72,18 @@ def db_add_user(db, args):
     print('adding user "%s"...' % (name,))
     curs = db.cursor()
     curs.execute('INSERT INTO users VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
+
+
+def db_user_roles(db, args):
+    if len(args) != 2:
+        print('usage: userroles name role1,role2,role3')
+        return
+    args = [ val.strip() for val in args ]
+    name, roles = args
+    curs = db.cursor()
+    res = curs.execute('SELECT roles FROM users WHERE name = ?', (name,))
+    if not res.fetchall():
+        print('no such user:', name)
+        return
+    print('setting roles for user "%s"...' % (name,))
+    curs.execute('UPDATE users SET roles = ? WHERE name = ?', (roles, name))

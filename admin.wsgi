@@ -15,7 +15,7 @@ from tinyapp.util import random_bytes, time_now
 import tinyapp.auth
 
 from adminlib.session import find_user, User
-from adminlib.session import require_user
+from adminlib.session import require_user, require_role
 
 ### config
 configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
@@ -115,7 +115,7 @@ class han_UserProfile(ReqHandler):
     def do_get(self, req):
         return self.app.render('user.html', req)
 
-@beforeall(require_user)
+@beforeall(require_role('admin'))
 class han_AllUsers(ReqHandler):
     def do_get(self, req):
         curs = self.app.db.cursor()

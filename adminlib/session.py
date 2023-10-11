@@ -29,3 +29,17 @@ def require_user(req, han):
     if not req._user:
         raise HTTPError('401 Unauthorized', 'Not logged in')
     return han(req)
+
+def require_role(*roles):
+    def require(req, han):
+        if not req._user:
+            raise HTTPError('401 Unauthorized', 'Not logged in')
+        got = False
+        for role in roles:
+            if role in req._user.roles:
+                got = True
+                break
+        if not got:
+            raise HTTPError('401 Unauthorized', 'Not authorized for this action')
+        return han(req)
+    return require

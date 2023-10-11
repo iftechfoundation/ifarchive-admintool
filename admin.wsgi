@@ -59,6 +59,10 @@ class han_Home(ReqHandler):
     def do_post(self, req):
         formname = req.get_input_field('name')
         formpw = req.get_input_field('password')
+
+        if not (formname and formpw):
+            return self.app.render('login.html', req,
+                                   formerror='You must supply name and password.')
         
         curs = self.app.db.cursor()
 

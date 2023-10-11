@@ -139,7 +139,7 @@ class TinyRequest:
         ls = self.input.get(key)
         if ls:
             return ls[0]
-        raise KeyError(key)
+        return None
 
     def set_status(self, val):
         self.status = val

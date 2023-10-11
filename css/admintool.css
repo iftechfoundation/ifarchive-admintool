@@ -43,6 +43,21 @@ body {
     margin-right: 40px;
 }
 
+#navbar {
+    background: #641;
+    font-size: 85%;
+    padding: 4px 8px;
+}
+
+#navbar a {
+    color: white;
+    text-decoration: none;
+}
+
+#navbar a:hover {
+    text-decoration: underline;
+}
+
 .FormInput {
     font-size: 100%;
     margin: 4px;

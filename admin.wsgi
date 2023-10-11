@@ -45,8 +45,15 @@ class AdminApp(TinyApp):
 
         self.approot = APP_ROOT
 
-        self.dbcache = threading.local()
+        # The sqlite3 module is thread-safe, but the db connection objects
+        # you get from it cannot be shared between threads. (Depends on
+        # the version of SQLite installed, but we take no chances.) So
+        # we create a thread-local-storage object and created one db per
+        # thread, as needed.
+        self.threadcache = threading.local()
 
+        # Create a Jinja template rendering environment.
+        ### Should this also be per-thread?
         self.jenv = Environment(
             loader = FileSystemLoader(TEMPLATE_PATH),
             autoescape = select_autoescape(),
@@ -56,14 +63,20 @@ class AdminApp(TinyApp):
         self.jenv.globals['appcssuri'] = APP_CSS_URI
 
     def getdb(self):
-        db = getattr(self.dbcache, 'db', None)
+        """Get or create a sqlite3 db connection object. These are
+        cached per-thread.
+        """
+        db = getattr(self.threadcache, 'db', None)
         if db is None:
             db = sqlite3.connect(DB_PATH)
             db.isolation_level = None   # autocommit
-            self.dbcache.db = db
+            self.threadcache.db = db
         return db
 
     def render(self, template, req, **params):
+        """Render a template for the current request. This adds in some
+        per-request template parameters.
+        """
         tem = self.jenv.get_template(template)
         map = { 'req':req, 'user':req._user }
         if params:

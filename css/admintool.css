@@ -1,5 +1,85 @@
 
 body {
-    background-color: #faf5e9;
+    background-color: #FAF5E9;
+    font-family: "Verdana", sans-serif;
+    margin: 0px;
 }
 
+#header {
+    margin: 0px;
+    width: 100%;
+    min-height: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #DAB886;
+    margin-bottom: 20px;
+}
+
+#headercol {
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+#header h1 {
+    margin: 0px;
+    font-weight: normal;
+    font: 180% Georgia, "Times New Roman", serif;
+}
+
+#header #userline {
+    float: right;
+    text-align: right;
+    font-size: 90%;
+}
+
+#body {
+    position: relative;
+    margin: 0px 0px;
+    width: 100%;
+}
+
+#bodycol {
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.FormInput {
+    font-size: 100%;
+    margin: 4px;
+}
+
+.FormButton {
+    font-size: 100%;
+    margin: 4px;
+}
+
+
+a {
+    color: #B50000;
+}
+
+#header a {
+    color: #850000;
+}
+
+a:hover {
+    color: #D11515;
+}
+
+
+@media screen and (max-width: 480px) {
+    #header h1 {
+	font-size: 120%;
+    }
+    
+    #headercol {
+	margin-left: 20px;
+	margin-right: 20px;
+    }
+
+    #bodycol {
+	margin-left: 20px;
+	margin-right: 20px;
+    }
+    
+}

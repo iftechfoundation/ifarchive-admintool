@@ -115,6 +115,11 @@ class han_UserProfile(ReqHandler):
     def do_get(self, req):
         return self.app.render('user.html', req)
 
+@beforeall(require_user)
+class han_ChangePW(ReqHandler):
+    def do_get(self, req):
+        return self.app.render('changepw.html', req)
+
 @beforeall(require_role('admin'))
 class han_AllUsers(ReqHandler):
     def do_get(self, req):
@@ -143,6 +148,7 @@ handlers = [
     ('/logout', han_LogOut),
     ('/user', han_UserProfile),
     ('/allusers', han_AllUsers),
+    ('/changepw', han_ChangePW),
     ('/debugdump', han_DebugDump),
 ]
 

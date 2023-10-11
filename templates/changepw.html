@@ -1,0 +1,31 @@
+{% extends "page.html" %}
+
+{% block content %}
+
+<form method="post" action="{{ approot }}">
+
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+
+<div>
+<input class="FormInput" autocomplete="disabled"
+  id="oldpassword_field" name="oldpassword" type="password" placeholder="Old password">
+</div>
+<div>
+<input class="FormInput" autocomplete="disabled"
+  id="newpassword_field" name="newpassword" type="password" placeholder="New password">
+</div>
+<div>
+<input class="FormInput" autocomplete="disabled"
+  id="duppassword_field" name="duppassword" type="password" placeholder="New password again">
+</div>
+<div>
+<input class="FormButton" name="commit" type="submit" value="Change password">
+</div>
+
+{% if formerror %}
+<p>{{ formerror }}</p>
+{% endif %}
+
+</form>
+
+{% endblock %}

@@ -14,7 +14,7 @@ from tinyapp.excepts import HTTPError, HTTPRedirectPost
 from tinyapp.util import random_bytes, time_now
 import tinyapp.auth
 
-from adminlib.session import find_user
+from adminlib.session import find_user, User
 
 ### config
 configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
@@ -113,6 +113,16 @@ class han_UserProfile(ReqHandler):
     def do_get(self, req):
         return self.app.render('user.html', req)
 
+class han_AllUsers(ReqHandler):
+    def do_get(self, req):
+        curs = self.app.db.cursor()
+        res = curs.execute('SELECT name, email, roles FROM users')
+        userlist = [ User(name, email, roles, '') for name, email, roles in res.fetchall() ]
+        res = curs.execute('SELECT name, ipaddr, starttime FROM sessions')
+        sessionlist = res.fetchall()
+        return self.app.render('allusers.html', req,
+                               users=userlist, sessions=sessionlist)
+
 class han_DebugDump(ReqHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
@@ -125,30 +135,11 @@ class han_DebugDump(ReqHandler):
             val = req.env['wsgi.input'].read()
             yield 'input: %s' % (val,)
 
-class han_DebugUsers(ReqHandler):
-    def do_get(self, req):
-        req.set_content_type(PLAINTEXT)
-        curs = self.app.db.cursor()
-        yield 'Users:\n'
-        res = curs.execute('SELECT * FROM users')
-        while True:
-            tup = res.fetchone()
-            if not tup:
-                break
-            yield '- %s\n' % (str(tup),)
-        yield 'Sessions:\n'
-        res = curs.execute('SELECT * FROM sessions')
-        while True:
-            tup = res.fetchone()
-            if not tup:
-                break
-            yield '- %s\n' % (str(tup),)
-
 handlers = [
     ('', han_Home),
     ('/logout', han_LogOut),
     ('/user', han_UserProfile),
-    ('/debugusers', han_DebugUsers),
+    ('/allusers', han_AllUsers),
     ('/debugdump', han_DebugDump),
 ]
 

@@ -52,10 +52,20 @@ def db_add_user(db, args):
     if len(args) != 4:
         print('usage: adduser name email pw role1,role2,role3')
         return
+    args = [ val.strip() for val in args ]
     name, email, pw, roles = args
+    if not name or not email or not pw:
+        print('name, email, pw must be nonempty')
+        return
+    if '@' in name:
+        print('name cannot contain an "@" character')
+        return
+    if '@' not in email:
+        print('email must contain an "@" character')
+        return
     pwsalt = random_bytes(8).encode()
     salted = pwsalt + b':' + pw.encode()
     crypted = hashlib.sha1(salted).hexdigest()
-    print('adding users "%s"...' % (name,))
+    print('adding user "%s"...' % (name,))
     curs = db.cursor()
     curs.execute('INSERT INTO users VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))

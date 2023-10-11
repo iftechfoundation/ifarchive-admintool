@@ -1,4 +1,6 @@
 
+from tinyapp.excepts import HTTPError
+
 class User:
     def __init__(self, name, email, roles, sessionid):
         self.name = name
@@ -23,3 +25,7 @@ def find_user(req, han):
                 req._user = User(name, email, roles, sessionid)
     return han(req)
         
+def require_user(req, han):
+    if not req._user:
+        raise HTTPError('401 Unauthorized', 'Not logged in')
+    return han(req)

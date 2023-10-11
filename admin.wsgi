@@ -15,6 +15,7 @@ from tinyapp.util import random_bytes, time_now
 import tinyapp.auth
 
 from adminlib.session import find_user, User
+from adminlib.session import require_user
 
 ### config
 configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
@@ -108,11 +109,13 @@ class han_LogOut(ReqHandler):
             curs.execute('DELETE FROM sessions WHERE sessionid = ?', (req._user.sessionid,))
             # Could clear the sessionid cookie here but I can't seem to make that work
         raise HTTPRedirectPost(self.app.approot)
-            
+
+@beforeall(require_user)
 class han_UserProfile(ReqHandler):
     def do_get(self, req):
         return self.app.render('user.html', req)
 
+@beforeall(require_user)
 class han_AllUsers(ReqHandler):
     def do_get(self, req):
         curs = self.app.db.cursor()

@@ -42,7 +42,7 @@ class AdminApp(TinyApp):
 
     def render(self, template, req, **params):
         tem = self.jenv.get_template(template)
-        map = { 'req':req }
+        map = { 'req':req, 'user':req._user }
         if params:
             map.update(params)
         yield tem.render(**map)

@@ -6,6 +6,14 @@
   <link rel="stylesheet" href="/css/admintool.css" type="text/css">
 </head>
 <body>
+  <div id="header">
+    {% if user %}
+    <div id="userline">Logged in as {{ user.name }}<br><a href="{{ approot }}/logout">Log Out</a></div>
+    {% endif %}
+    <h1>IF Archive Admin</h1>
+  </div>
+  <div id="body">
 {% block content %}{% endblock %}
+  </div>
 </body>
 </html>

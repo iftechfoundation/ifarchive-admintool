@@ -25,7 +25,8 @@ class AdminApp(TinyApp):
     def __init__(self, hanclasses):
         TinyApp.__init__(self, hanclasses, wrapall=[
             tinyapp.auth.xsrf_cookie,
-            tinyapp.auth.xsrf_check_post
+            tinyapp.auth.xsrf_check_post,
+            find_user,
         ])
 
         self.approot = '/wsgitest' ###config
@@ -49,7 +50,6 @@ class AdminApp(TinyApp):
 
 
 class han_Home(ReqHandler):
-    @before(find_user)
     def do_get(self, req):
         if not req._user:
             return self.app.render('login.html', req)
@@ -96,7 +96,6 @@ class han_Home(ReqHandler):
         raise HTTPRedirectPost(self.app.approot)
 
 class han_LogOut(ReqHandler):
-    @before(find_user)
     def do_get(self, req):
         if req._user:
             curs = self.app.db.cursor()
@@ -104,6 +103,9 @@ class han_LogOut(ReqHandler):
             # Could clear the sessionid cookie here but I can't seem to make that work
         raise HTTPRedirectPost(self.app.approot)
             
+class han_UserProfile(ReqHandler):
+    def do_get(self, req):
+        return self.app.render('user.html', req)
 
 class han_DebugDump(ReqHandler):
     def do_get(self, req):
@@ -139,6 +141,7 @@ class han_DebugUsers(ReqHandler):
 handlers = [
     ('', han_Home),
     ('/logout', han_LogOut),
+    ('/user', han_UserProfile),
     ('/debugusers', han_DebugUsers),
     ('/debugdump', han_DebugDump),
 ]

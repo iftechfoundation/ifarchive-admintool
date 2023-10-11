@@ -119,6 +119,16 @@ class han_UserProfile(ReqHandler):
 class han_ChangePW(ReqHandler):
     def do_get(self, req):
         return self.app.render('changepw.html', req)
+    def do_post(self, req):
+        oldpw = req.get_input_field('oldpassword')
+        newpw = req.get_input_field('newpassword')
+        duppw = req.get_input_field('duppassword')
+        if not newpw:
+            return self.app.render('changepw.html', req,
+                                   formerror='You must supply a new password.')
+
+        return self.app.render('changepwdone.html', req)
+            
 
 @beforeall(require_role('admin'))
 class han_AllUsers(ReqHandler):

@@ -8,10 +8,11 @@
 <p>No files in <code>/incoming</code>.<p>
 {% endif %}
 
-<ul>
+<dl>
   {% for file in files %}
-  <li>{{ file.fdate }} : <code>{{ file.name }}</code> ({{ file.size }} bytes)
+  <dt>{{ file.fdate }} : <code>{{ file.name }}</code> ({{ file.size }} bytes)
+  <dd>Details - Move - Delete
   {% endfor %}
-</ul>
+</dl>
 
 {% endblock %}

@@ -111,6 +111,8 @@ class TinyApp:
         return dofunc(req)
 
     def test_dump(self, uri):
+        """Generate the page for the given URI and print it to stdout.
+        """
         env = {
             'REQUEST_METHOD': 'GET',
             'PATH_INFO': uri,
@@ -130,6 +132,10 @@ class TinyApp:
 
 
 class TinyRequest:
+    """A request object. This contains everything known about a given
+    request. We also accumulate response stuff here as the request
+    is handled.
+    """
     def __init__(self, app, env):
         self.env = env
         self.app = app

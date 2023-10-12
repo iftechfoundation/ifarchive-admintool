@@ -1,5 +1,6 @@
 import optparse
 import hashlib
+import logging
 
 from tinyapp.util import random_bytes
 
@@ -36,6 +37,7 @@ def run(appinstance):
 
 
 def db_create(db):
+    logging.info('CLI: createdb')
     curs = db.cursor()
     res = curs.execute('SELECT name FROM sqlite_master')
     tables = [ tup[0] for tup in res.fetchall() ]
@@ -70,6 +72,7 @@ def db_add_user(db, args):
     salted = pwsalt + b':' + pw.encode()
     crypted = hashlib.sha1(salted).hexdigest()
     print('adding user "%s"...' % (name,))
+    logging.info('CLI: adduser %s <%s>, roles=%s', name, email, roles)
     curs = db.cursor()
     curs.execute('INSERT INTO users VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
 
@@ -86,4 +89,5 @@ def db_user_roles(db, args):
         print('no such user:', name)
         return
     print('setting roles for user "%s"...' % (name,))
+    logging.info('CLI: userroles %s, roles=%s', name, roles)
     curs.execute('UPDATE users SET roles = ? WHERE name = ?', (roles, name))

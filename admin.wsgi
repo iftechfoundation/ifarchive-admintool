@@ -4,6 +4,7 @@ import os
 import hashlib
 import configparser
 import threading
+import logging, logging.handlers
 
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -25,6 +26,15 @@ if 'PyLibPath' in config['AdminTool']:
     val = config['AdminTool']['PyLibPath']
     if val not in sys.path:
         sys.path.append(val)
+
+# Set up the logging configuration
+loghandler = logging.handlers.WatchedFileHandler(config['AdminTool']['LogFile'])
+logging.basicConfig(
+    format = '[%(levelname).1s %(asctime)s] %(message)s',
+    datefmt = '%b-%d %H:%M:%S',
+    level = logging.INFO,
+    handlers = [ loghandler ],
+    )
 
 from tinyapp.app import TinyApp
 from tinyapp.constants import PLAINTEXT

@@ -110,6 +110,18 @@ class TinyApp:
 
         return dofunc(req)
 
+    def info(self, req, msg, *args):
+        val = req.loginfo()
+        logging.info('%s: '+msg, val, *args)
+
+    def warning(self, req, msg, *args):
+        val = req.loginfo()
+        logging.warning('%s: '+msg, val, *args)
+
+    def error(self, req, msg, *args):
+        val = req.loginfo()
+        logging.error('%s: '+msg, val, *args)
+
     def test_dump(self, uri):
         """Generate the page for the given URI and print it to stdout.
         """
@@ -168,6 +180,9 @@ class TinyRequest:
         self.content_type = HTML
         self.headers = []
 
+    def loginfo(self):
+        return 'req'
+    
     def get_input_field(self, key):
         ls = self.input.get(key)
         if ls:

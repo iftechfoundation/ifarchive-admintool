@@ -113,6 +113,14 @@ class AdminRequest(TinyRequest):
         # Initialize our app-specific fields.
         self._user = None
 
+    def loginfo(self):
+        if not self._user:
+            return 'user=(none)'
+        else:
+            return 'user=%s' % (self._user.name,)
+
+
+# URL handlers...
 
 class han_Home(ReqHandler):
     def do_get(self, req):

@@ -113,7 +113,7 @@ class AdminRequest(TinyRequest):
         # Initialize our app-specific fields.
         self._user = None
 
-    def loginfo(self):
+    def lognote(self):
         if not self._user:
             return 'user=(none)'
         else:

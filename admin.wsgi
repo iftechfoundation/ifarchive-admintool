@@ -8,7 +8,6 @@ import threading
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-### config
 configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
 #configpath = '/var/ifarchive/lib/ifarch.config'
 config = configparser.ConfigParser()
@@ -16,13 +15,16 @@ config.read(configpath)
 
 DB_PATH = config['DEFAULT']['DBFile']
 
-### PyLibPath
 TEMPLATE_PATH = config['AdminTool']['TemplateDir']
 MAX_SESSION_AGE = config['AdminTool'].getint('MaxSessionAge')
 APP_ROOT = config['AdminTool']['AppRoot']
 APP_CSS_URI = config['AdminTool']['AppCSSURI']
 
-### use PyLibPath
+# Set up PyLibPath before we start importing tinyapp modules
+if 'PyLibPath' in config['AdminTool']:
+    val = config['AdminTool']['PyLibPath']
+    if val not in sys.path:
+        sys.path.append(val)
 
 from tinyapp.app import TinyApp
 from tinyapp.constants import PLAINTEXT

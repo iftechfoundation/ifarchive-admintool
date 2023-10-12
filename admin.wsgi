@@ -34,7 +34,7 @@ logging.basicConfig(
     datefmt = '%b-%d %H:%M:%S',
     level = logging.INFO,
     handlers = [ loghandler ],
-    )
+)
 
 from tinyapp.app import TinyApp
 from tinyapp.constants import PLAINTEXT

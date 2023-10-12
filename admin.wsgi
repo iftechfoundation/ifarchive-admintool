@@ -155,8 +155,6 @@ class han_Home(ReqHandler):
             return self.app.render('login.html', req,
                                    formerror='The name and password do not match.')
 
-        req.loginfo('Logged in: user=%s', name)
-        
         ### set name cookie for future logins? (filled into login.html form)
 
         sessionid = random_bytes(20)
@@ -168,6 +166,7 @@ class han_Home(ReqHandler):
         curs = self.app.getdb().cursor()
         curs.execute('INSERT INTO sessions VALUES (?, ?, ?, ?, ?)', (name, sessionid, ipaddr, now, now))
         
+        req.loginfo('Logged in: user=%s, roles=%s', name, roles)
         raise HTTPRedirectPost(self.app.approot)
 
 class han_LogOut(ReqHandler):
@@ -216,6 +215,7 @@ class han_ChangePW(ReqHandler):
         crypted = hashlib.sha1(salted).hexdigest()
         curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, req._user.name))
         
+        req.loginfo('Changed password')
         return self.app.render('changepwdone.html', req)
             
 

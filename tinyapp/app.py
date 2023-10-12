@@ -1,5 +1,6 @@
 import sys
 import traceback
+import logging
 from http import cookies
 import urllib.parse
 
@@ -49,6 +50,11 @@ class TinyApp:
             boutput = output.encode()
             if not environ.get('TinyAppSkipPrintErrors'):
                 print(output)   # To Apache error log
+                if req:
+                    val = '%s %s' % (req.request_method, req.request_uri,)
+                else:
+                    val = '(no request)'
+                logging.exception('Caught exception: %s', val)  # To admin log
 
         response_headers = [
             ('Content-Type', content_type),

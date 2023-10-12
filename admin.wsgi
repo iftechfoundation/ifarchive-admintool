@@ -155,6 +155,8 @@ class han_Home(ReqHandler):
             return self.app.render('login.html', req,
                                    formerror='The name and password do not match.')
 
+        req.loginfo('Logged in: user=%s', name)
+        
         ### set name cookie for future logins? (filled into login.html form)
 
         sessionid = random_bytes(20)

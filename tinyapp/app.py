@@ -110,15 +110,15 @@ class TinyApp:
 
         return dofunc(req)
 
-    def info(self, req, msg, *args):
+    def loginfo(self, req, msg, *args):
         val = req.lognote()
         logging.info('%s: '+msg, val, *args)
 
-    def warning(self, req, msg, *args):
+    def logwarning(self, req, msg, *args):
         val = req.lognote()
         logging.warning('%s: '+msg, val, *args)
 
-    def error(self, req, msg, *args):
+    def logerror(self, req, msg, *args):
         val = req.lognote()
         logging.error('%s: '+msg, val, *args)
 
@@ -186,6 +186,15 @@ class TinyRequest:
         """
         return 'req'
     
+    def loginfo(self, msg, *args):
+        self.app.loginfo(self, msg, *args)
+
+    def logwarning(self, msg, *args):
+        self.app.logwarning(self, msg, *args)
+
+    def logerror(self, msg, *args):
+        self.app.logerror(self, msg, *args)
+
     def get_input_field(self, key):
         ls = self.input.get(key)
         if ls:

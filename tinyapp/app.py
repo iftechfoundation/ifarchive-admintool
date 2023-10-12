@@ -19,12 +19,21 @@ class TinyApp:
             self.handlers.append(han)
 
     def application(self, environ, start_response):
+        """The WSGI application handler. This conforms to the WSGI
+        protocol:
+        - The arguments are the environment map and a start_response()
+          handler. start_response() must be called, passing HTTP status
+          and headers, to kick off the response.
+        - Returns an iterable of bytes objects, perhaps by yielding them.
+          (In fact this always yields exactly one bytes object, but the
+          protocol permits any number.)
+        """
 
         content_type = PLAINTEXT
         req = None
         
         try:
-            req = TinyRequest(self, environ)
+            req = self.create_request(environ)
             ls = self.process(req)
             output = ''.join(ls)  # Gotta do this before looking at req
             status = req.status
@@ -70,7 +79,17 @@ class TinyApp:
         start_response(status, response_headers)
         yield boutput
 
+    def create_request(self, environ):
+        """Create a request object.
+        This can be overridden by the app to return a subclass of
+        TinyRequest.
+        """
+        return TinyRequest(self, environ)
+
     def process(self, req):
+        """Process the request.
+        Returns an iterable of byteses (perhaps by yielding them).
+        """
         for han in self.handlers:
             match = han.pat.match(req.path_info)
             if match:

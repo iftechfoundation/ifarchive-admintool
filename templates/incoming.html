@@ -1,0 +1,17 @@
+{% extends "page.html" %}
+
+{% block title %}Incoming{% endblock %}
+
+{% block content %}
+
+{% if not files %}
+<p>No files in <code>/incoming</code>.<p>
+{% endif %}
+
+<ul>
+  {% for file in files %}
+  <li>{{ file.fdate }} : <code>{{ file.name }}</code> ({{ file.size }} bytes)
+  {% endfor %}
+</ul>
+
+{% endblock %}

@@ -6,6 +6,12 @@
 
 <p>Welcome to the admin page.</p>
 
-<p>{{ incount }} file(s) in <code>/incoming</code>.</p>
+<p>
+  {% if not incount %}
+    <code>/incoming</code> is empty.
+  {% else %}
+    {{ incount }} file(s) in <code>/incoming</code>.
+  {% endif %}
+</p>
 
 {% endblock %}

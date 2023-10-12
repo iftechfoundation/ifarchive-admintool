@@ -15,6 +15,8 @@ config = configparser.ConfigParser()
 config.read(configpath)
 
 DB_PATH = config['DEFAULT']['DBFile']
+INCOMING_DIR = config['DEFAULT']['IncomingDir']
+ARCHIVE_DIR = config['DEFAULT']['ArchiveDir']
 
 TEMPLATE_PATH = config['AdminTool']['TemplateDir']
 MAX_SESSION_AGE = config['AdminTool'].getint('MaxSessionAge')
@@ -56,6 +58,7 @@ class AdminApp(TinyApp):
         ])
 
         self.approot = APP_ROOT
+        self.incoming_dir = INCOMING_DIR
 
         # Thread-local storage for various things which are not thread-safe.
         self.threadcache = threading.local()
@@ -127,7 +130,9 @@ class han_Home(ReqHandler):
         if not req._user:
             return self.app.render('login.html', req)
 
-        return self.app.render('front.html', req)
+        incount = len([ ent for ent in os.scandir(self.app.incoming_dir) if ent.is_file() ])
+
+        return self.app.render('front.html', req, incount=incount)
 
     def do_post(self, req):
         formname = req.get_input_field('name')

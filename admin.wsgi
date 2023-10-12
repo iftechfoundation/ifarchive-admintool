@@ -235,6 +235,26 @@ class han_AllUsers(ReqHandler):
         return self.app.render('allusers.html', req,
                                users=userlist, sessions=sessionlist)
 
+@beforeall(require_role('incoming', 'admin'))
+class han_Incoming(ReqHandler):
+    def do_get(self, req):
+        filelist = []
+        for ent in os.scandir(self.app.incoming_dir):
+            if ent.is_file():
+                stat = ent.stat()
+                file = {
+                    'name': ent.name,
+                    'date': stat.st_mtime,
+                    ### user local time
+                    'fdate': time.strftime('%b-%d %H:%M', time.gmtime(stat.st_mtime)),
+                    ### with commas
+                    'size': stat.st_size,
+                }
+                filelist.append(file)
+        filelist.sort(key=lambda file:file['date'])
+        return self.app.render('incoming.html', req,
+                               files=filelist)
+    
 class han_DebugDump(ReqHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
@@ -253,6 +273,7 @@ handlers = [
     ('/user', han_UserProfile),
     ('/allusers', han_AllUsers),
     ('/changepw', han_ChangePW),
+    ('/incoming', han_Incoming),
     ('/debugdump', han_DebugDump),
 ]
 

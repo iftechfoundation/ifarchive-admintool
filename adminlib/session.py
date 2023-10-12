@@ -38,6 +38,6 @@ def require_role(*roles):
                 got = True
                 break
         if not got:
-            raise HTTPError('401 Unauthorized', 'Not authorized for this action')
+            raise HTTPError('401 Unauthorized', 'Not authorized for this page')
         return han(req)
     return require

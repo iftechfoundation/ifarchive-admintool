@@ -45,16 +45,16 @@ class TinyApp:
             status = '500 Internal Error'
             exinfo = sys.exc_info()  ### In Py3.10, we could skip this and just do traceback.format_exception(ex)
             ls = traceback.format_exception(*exinfo)
-            output = status + '\n\n' + ''.join(ls)
+            if req:
+                exfrom = '%s %s' % (req.request_method, req.request_uri,)
+            else:
+                exfrom = '(no request)'
+            output = '%s (%s)\n\n%s' % (status, exfrom, ''.join(ls))
             content_type = PLAINTEXT
             boutput = output.encode()
             if not environ.get('TinyAppSkipPrintErrors'):
                 print(output)   # To Apache error log
-                if req:
-                    val = '%s %s' % (req.request_method, req.request_uri,)
-                else:
-                    val = '(no request)'
-                logging.exception('Caught exception: %s', val)  # To admin log
+                logging.exception('Caught exception: %s', exfrom)  # To admin log
 
         response_headers = [
             ('Content-Type', content_type),

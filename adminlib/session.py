@@ -9,8 +9,6 @@ class User:
         self.roles = set(roles.split(','))
         
 def find_user(req, han):
-    req._user = None
-    
     if 'sessionid' in req.cookies:
         sessionid = req.cookies['sessionid'].value
         curs = req.app.getdb().cursor()

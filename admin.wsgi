@@ -36,7 +36,7 @@ logging.basicConfig(
     handlers = [ loghandler ],
 )
 
-from tinyapp.app import TinyApp
+from tinyapp.app import TinyApp, TinyRequest
 from tinyapp.constants import PLAINTEXT
 from tinyapp.handler import ReqHandler, before, beforeall
 from tinyapp.excepts import HTTPError, HTTPRedirectPost
@@ -90,6 +90,12 @@ class AdminApp(TinyApp):
             self.threadcache.jenv = jenv
         return jenv
 
+    def create_request(self, environ):
+        """Create a request object.
+        Returns our subclass of TinyRequest.
+        """
+        return AdminRequest(self, environ)
+
     def render(self, template, req, **params):
         """Render a template for the current request. This adds in some
         per-request template parameters.
@@ -99,6 +105,13 @@ class AdminApp(TinyApp):
         if params:
             map.update(params)
         yield tem.render(**map)
+
+class AdminRequest(TinyRequest):
+    def __init__(self, app, env):
+        TinyRequest.__init__(self, app, env)
+
+        # Initialize our app-specific fields.
+        self._user = None
 
 
 class han_Home(ReqHandler):

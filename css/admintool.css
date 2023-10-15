@@ -53,10 +53,16 @@ body {
 #navbar a {
     color: white;
     text-decoration: none;
+    padding: 4px 8px;
 }
 
 #navbar a:hover {
     text-decoration: underline;
+}
+
+#navbar .Selected {
+    background-color: #C91;
+    border-radius: 4px;
 }
 
 #body h1 {
@@ -90,6 +96,16 @@ a:hover {
 
 code {
     font: 100% "Courier Prime", "Courier", sans-serif;
+    background: #ECE0B0;
+    padding: 1px 2px;
+}
+
+.FileList dt {
+    margin-top: 6px;
+}
+
+.FileList .Details {
+    font-size: 85%;
 }
 
 @media screen and (max-width: 480px) {

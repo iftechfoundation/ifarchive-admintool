@@ -9,7 +9,8 @@ User Info
 <ul>
   <li>Username: {{ user.name }}
   <li>Email: {{ user.email }}
-  <li>Roles: {{ user.roles | join(', ') }}
+  <li>Roles: {{ user.roles | sort | join(', ') }}
+  <li>Time zone: {% if user.tzname %} {{ user.tzname }} {% else %} (not set, using UTC) {% endif %}
 </ul>
 
 <p>

@@ -8,14 +8,12 @@ User Info
 
 <ul>
   <li>Username: {{ user.name }}
+  <li>Password
+    &nbsp; <a href="{{ approot }}/changepw">(change)</a>
   <li>Email: {{ user.email }}
   <li>Roles: {{ user.roles | sort | join(', ') }}
   <li>Time zone: {% if user.tzname %} {{ user.tzname }} {% else %} (not set, using UTC) {% endif %}
     &nbsp; <a href="{{ approot }}/changetz">(change)</a>
 </ul>
-
-<p>
-<a href="{{ approot }}/changepw">Change password</a>
-</p>
 
 {% endblock %}

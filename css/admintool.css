@@ -61,9 +61,9 @@ body {
 }
 
 #navbar .Selected {
-    background-color: #861;
+    background-color: #A71;
     border-radius: 4px;
-    box-shadow: inset 0px 0px 8px white;
+    box-shadow: inset 0px 0px 4px #DD0;
 }
 
 #body h1 {

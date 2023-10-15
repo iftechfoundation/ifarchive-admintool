@@ -45,7 +45,7 @@ def db_create(db):
         print('"users" table exists')
     else:
         print('creating "users" table...')
-        curs.execute('CREATE TABLE users(name unique, email unique, pw, pwsalt, roles)')
+        curs.execute('CREATE TABLE users(name unique, email unique, pw, pwsalt, roles, tzname)')
     if 'sessions' in tables:
         print('"sessions" table exists')
     else:
@@ -74,7 +74,7 @@ def db_add_user(db, args):
     print('adding user "%s"...' % (name,))
     logging.info('CLI: adduser %s <%s>, roles=%s', name, email, roles)
     curs = db.cursor()
-    curs.execute('INSERT INTO users VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
+    curs.execute('INSERT INTO users (name, email, pw, pwsalt, roles) VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
 
 
 def db_user_roles(db, args):

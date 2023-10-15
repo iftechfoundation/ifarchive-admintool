@@ -1,12 +1,24 @@
+import pytz
+
+# pytz is obsolete, but the Archive machine is still on Py3.7 so we're
+# stuck with it.
 
 from tinyapp.excepts import HTTPError
 
 class User:
-    def __init__(self, name, email, roles, sessionid):
+    def __init__(self, name, email, roles=None, tzname=None, sessionid=None):
         self.name = name
         self.email = email
         self.sessionid = sessionid
         self.roles = set(roles.split(','))
+        
+        self.tzname = tzname
+        self.tz = None
+        if tzname:
+            try:
+                self.tz = pytz.timezone(tzname)
+            except:
+                pass
         
 def find_user(req, han):
     if 'sessionid' in req.cookies:
@@ -16,11 +28,11 @@ def find_user(req, han):
         tup = res.fetchone()
         if tup:
             name = tup[0]
-            res = curs.execute('SELECT email, roles FROM users WHERE name = ?', (name,))
+            res = curs.execute('SELECT email, roles, tzname FROM users WHERE name = ?', (name,))
             tup = res.fetchone()
             if tup:
-                email, roles = tup
-                req._user = User(name, email, roles, sessionid)
+                email, roles, tzname = tup
+                req._user = User(name, email, roles=roles, tzname=tzname, sessionid=sessionid)
     return han(req)
         
 def require_user(req, han):

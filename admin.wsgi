@@ -246,7 +246,7 @@ class han_AllUsers(AdminHandler):
     def do_get(self, req):
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT name, email, roles FROM users')
-        userlist = [ User(name, email, roles, '') for name, email, roles in res.fetchall() ]
+        userlist = [ User(name, email, roles=roles) for name, email, roles in res.fetchall() ]
         res = curs.execute('SELECT name, ipaddr, starttime FROM sessions')
         sessionlist = res.fetchall()
         return self.render('allusers.html', req,

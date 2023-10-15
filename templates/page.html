@@ -18,9 +18,7 @@
   </div>
   <div id="body">
     <div id="bodycol">
-      <div id="navbar">
-        <a href="{{ approot }}">Top</a>
-      </div>
+{% include 'navbar.html' %}
 {% block usetitle %}<h1>{% block title %}Home{% endblock %}</h1>{% endblock %}
 {% block content %}{% endblock %}
     </div>

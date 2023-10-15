@@ -1,5 +1,9 @@
 
+{% if user %}
+
 <div id="navbar">
   <a {% if navtab=='top' %} class="Selected" {% endif %} href="{{ approot }}">Top</a>
   <a {% if navtab=='incoming' %} class="Selected" {% endif %} href="{{ approot }}/incoming">Incoming</a>
 </div>
+
+{% endif %}

@@ -212,6 +212,7 @@ class han_UserProfile(AdminHandler):
 class han_ChangePW(AdminHandler):
     def do_get(self, req):
         return self.render('changepw.html', req)
+    
     def do_post(self, req):
         oldpw = req.get_input_field('oldpassword')
         newpw = req.get_input_field('newpassword')
@@ -244,6 +245,12 @@ class han_ChangePW(AdminHandler):
         req.loginfo('Changed password')
         return self.render('changepwdone.html', req)
             
+
+@beforeall(require_user)
+class han_ChangeTZ(AdminHandler):
+    def do_get(self, req):
+        return self.render('changetz.html', req)
+    
 
 @beforeall(require_role('admin'))
 class han_AllUsers(AdminHandler):
@@ -295,6 +302,7 @@ handlers = [
     ('/user', han_UserProfile),
     ('/allusers', han_AllUsers),
     ('/changepw', han_ChangePW),
+    ('/changetz', han_ChangeTZ),
     ('/incoming', han_Incoming),
     ('/debugdump', han_DebugDump),
 ]

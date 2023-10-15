@@ -47,7 +47,7 @@ import tinyapp.auth
 
 from adminlib.session import find_user, User
 from adminlib.session import require_user, require_role
-
+from adminlib.util import in_user_time
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -261,11 +261,11 @@ class han_Incoming(AdminHandler):
         for ent in os.scandir(self.app.incoming_dir):
             if ent.is_file():
                 stat = ent.stat()
+                mtime = in_user_time(req._user, stat.st_mtime)
                 file = {
                     'name': ent.name,
                     'date': stat.st_mtime,
-                    ### user local time
-                    'fdate': time.strftime('%b %d, %H:%M', time.gmtime(stat.st_mtime)),
+                    'fdate': mtime.strftime('%b %d, %H:%M %Z'),
                     ### with commas
                     'size': stat.st_size,
                 }

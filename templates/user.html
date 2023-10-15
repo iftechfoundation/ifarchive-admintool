@@ -4,15 +4,31 @@
 User Info
 {% endblock %}
 
+{% block exthead %}
+<style type="text/css">
+  ul li {
+      margin-top: 4px;
+      margin-bottom: 4px;
+  }
+  .ItemName {
+      font-size: 85%;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <ul>
-  <li>Username: {{ user.name }}
-  <li>Password
+  <li><span class="ItemName">Username:</span>
+    {{ user.name }}
+  <li><span class="ItemName">Password</span>
     &nbsp; <a href="{{ approot }}/changepw">(change)</a>
-  <li>Email: {{ user.email }}
-  <li>Roles: {{ user.roles | sort | join(', ') }}
-  <li>Time zone: {% if user.tzname %} {{ user.tzname }} {% else %} (not set, using UTC) {% endif %}
+  <li><span class="ItemName">Email:</span>
+    {{ user.email }}
+  <li><span class="ItemName">Roles:</span>
+    {{ user.roles | sort | join(', ') }}
+  <li><span class="ItemName">Time zone:</span>
+    {% if user.tzname %} {{ user.tzname }} {% else %} (not set, using UTC) {% endif %}
     &nbsp; <a href="{{ approot }}/changetz">(change)</a>
 </ul>
 

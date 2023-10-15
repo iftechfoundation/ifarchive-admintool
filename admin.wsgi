@@ -265,7 +265,7 @@ class han_Incoming(AdminHandler):
                     'name': ent.name,
                     'date': stat.st_mtime,
                     ### user local time
-                    'fdate': time.strftime('%b-%d %H:%M', time.gmtime(stat.st_mtime)),
+                    'fdate': time.strftime('%b %d, %H:%M', time.gmtime(stat.st_mtime)),
                     ### with commas
                     'size': stat.st_size,
                 }

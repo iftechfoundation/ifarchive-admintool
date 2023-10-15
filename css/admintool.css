@@ -53,7 +53,7 @@ body {
 #navbar a {
     color: white;
     text-decoration: none;
-    padding: 4px 8px;
+    padding: 2px 8px;
 }
 
 #navbar a:hover {
@@ -61,8 +61,9 @@ body {
 }
 
 #navbar .Selected {
-    background-color: #C91;
+    background-color: #861;
     border-radius: 4px;
+    box-shadow: inset 0px 0px 8px white;
 }
 
 #body h1 {

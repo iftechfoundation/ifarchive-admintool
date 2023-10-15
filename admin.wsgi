@@ -251,6 +251,13 @@ class han_ChangeTZ(AdminHandler):
     def do_get(self, req):
         return self.render('changetz.html', req)
     
+    def do_post(self, req):
+        tzname = req.get_input_field('tz_field')
+        curs = self.app.getdb().cursor()
+        curs.execute('UPDATE users SET tzname = ? WHERE name = ?', (tzname, req._user.name))
+        req.loginfo('Changed timezone to %s', tzname)
+        raise HTTPRedirectPost(self.app.approot+'/user')
+
 
 @beforeall(require_role('admin'))
 class han_AllUsers(AdminHandler):

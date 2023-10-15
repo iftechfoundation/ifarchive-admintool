@@ -48,6 +48,7 @@ import tinyapp.auth
 from adminlib.session import find_user, User
 from adminlib.session import require_user, require_role
 from adminlib.util import in_user_time
+from adminlib.util import DelimNumber
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -85,6 +86,9 @@ class AdminApp(TinyApp):
         if jenv is None:
             jenv = Environment(
                 loader = FileSystemLoader(TEMPLATE_PATH),
+                extensions = [
+                    DelimNumber,
+                ],
                 autoescape = select_autoescape(),
                 keep_trailing_newline = True,
             )
@@ -266,7 +270,6 @@ class han_Incoming(AdminHandler):
                     'name': ent.name,
                     'date': stat.st_mtime,
                     'fdate': mtime.strftime('%b %d, %H:%M %Z'),
-                    ### with commas
                     'size': stat.st_size,
                 }
                 filelist.append(file)

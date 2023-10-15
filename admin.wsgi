@@ -109,6 +109,7 @@ class AdminApp(TinyApp):
             map.update(params)
         yield tem.render(**map)
 
+
 class AdminRequest(TinyRequest):
     def __init__(self, app, env):
         TinyRequest.__init__(self, app, env)
@@ -122,24 +123,40 @@ class AdminRequest(TinyRequest):
         else:
             return 'user=%s' % (self._user.name,)
 
+class AdminHandler(ReqHandler):
+    renderparams = None
+    
+    def render(self, template, req, **params):
+        """Render a template for the current request. This adds in some
+        per-handler template parameters.
+        """
+        map = self.renderparams
+        if not map:
+            map = params
+        else:
+            map.update(params)
+        return self.app.render(template, req, **map)
 
+    
 # URL handlers...
 
-class han_Home(ReqHandler):
+class han_Home(AdminHandler):
+    renderparams = { 'navtab':'top' }
+    
     def do_get(self, req):
         if not req._user:
-            return self.app.render('login.html', req)
+            return self.render('login.html', req)
 
         incount = len([ ent for ent in os.scandir(self.app.incoming_dir) if ent.is_file() ])
 
-        return self.app.render('front.html', req, incount=incount)
+        return self.render('front.html', req, incount=incount)
 
     def do_post(self, req):
         formname = req.get_input_field('name')
         formpw = req.get_input_field('password')
 
         if not (formname and formpw):
-            return self.app.render('login.html', req,
+            return self.render('login.html', req,
                                    formerror='You must supply name and password.')
         
         curs = self.app.getdb().cursor()
@@ -150,14 +167,14 @@ class han_Home(ReqHandler):
             res = curs.execute('SELECT name, pw, pwsalt, roles FROM users WHERE name = ?', (formname,))
         tup = res.fetchone()
         if not tup:
-            return self.app.render('login.html', req,
+            return self.render('login.html', req,
                                    formerror='The name and password do not match.')
         
         name, pw, pwsalt, roles = tup
         formsalted = pwsalt + b':' + formpw.encode()
         formcrypted = hashlib.sha1(formsalted).hexdigest()
         if formcrypted != pw:
-            return self.app.render('login.html', req,
+            return self.render('login.html', req,
                                    formerror='The name and password do not match.')
 
         ### set name cookie for future logins? (filled into login.html form)
@@ -174,7 +191,7 @@ class han_Home(ReqHandler):
         req.loginfo('Logged in: user=%s, roles=%s', name, roles)
         raise HTTPRedirectPost(self.app.approot)
 
-class han_LogOut(ReqHandler):
+class han_LogOut(AdminHandler):
     def do_get(self, req):
         if req._user:
             curs = self.app.getdb().cursor()
@@ -183,36 +200,36 @@ class han_LogOut(ReqHandler):
         raise HTTPRedirectPost(self.app.approot)
 
 @beforeall(require_user)
-class han_UserProfile(ReqHandler):
+class han_UserProfile(AdminHandler):
     def do_get(self, req):
-        return self.app.render('user.html', req)
+        return self.render('user.html', req)
 
 @beforeall(require_user)
-class han_ChangePW(ReqHandler):
+class han_ChangePW(AdminHandler):
     def do_get(self, req):
-        return self.app.render('changepw.html', req)
+        return self.render('changepw.html', req)
     def do_post(self, req):
         oldpw = req.get_input_field('oldpassword')
         newpw = req.get_input_field('newpassword')
         duppw = req.get_input_field('duppassword')
         if not newpw:
-            return self.app.render('changepw.html', req,
+            return self.render('changepw.html', req,
                                    formerror='You must supply a new password.')
 
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT pw, pwsalt FROM users WHERE name = ?', (req._user.name,))
         tup = res.fetchone()
         if not tup:
-            return self.app.render('changepw.html', req,
+            return self.render('changepw.html', req,
                                    formerror='Cannot locate user record.')
         pw, pwsalt = tup
         formsalted = pwsalt + b':' + oldpw.encode()
         formcrypted = hashlib.sha1(formsalted).hexdigest()
         if formcrypted != pw:
-            return self.app.render('changepw.html', req,
+            return self.render('changepw.html', req,
                                    formerror='Old password does not match.')
         if newpw != duppw:
-            return self.app.render('changepw.html', req,
+            return self.render('changepw.html', req,
                                    formerror='New password does not match.')
 
         pwsalt = random_bytes(8).encode()
@@ -221,22 +238,24 @@ class han_ChangePW(ReqHandler):
         curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, req._user.name))
         
         req.loginfo('Changed password')
-        return self.app.render('changepwdone.html', req)
+        return self.render('changepwdone.html', req)
             
 
 @beforeall(require_role('admin'))
-class han_AllUsers(ReqHandler):
+class han_AllUsers(AdminHandler):
     def do_get(self, req):
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT name, email, roles FROM users')
         userlist = [ User(name, email, roles, '') for name, email, roles in res.fetchall() ]
         res = curs.execute('SELECT name, ipaddr, starttime FROM sessions')
         sessionlist = res.fetchall()
-        return self.app.render('allusers.html', req,
+        return self.render('allusers.html', req,
                                users=userlist, sessions=sessionlist)
 
 @beforeall(require_role('incoming', 'admin'))
-class han_Incoming(ReqHandler):
+class han_Incoming(AdminHandler):
+    renderparams = { 'navtab':'incoming' }
+    
     def do_get(self, req):
         filelist = []
         for ent in os.scandir(self.app.incoming_dir):
@@ -252,10 +271,10 @@ class han_Incoming(ReqHandler):
                 }
                 filelist.append(file)
         filelist.sort(key=lambda file:file['date'])
-        return self.app.render('incoming.html', req,
+        return self.render('incoming.html', req,
                                files=filelist)
     
-class han_DebugDump(ReqHandler):
+class han_DebugDump(AdminHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
         yield 'sys.version: %s\n' % (sys.version,)

@@ -8,9 +8,9 @@
 <p>No files in <code>/incoming</code>.<p>
 {% endif %}
 
-<dl>
+<dl class="FileList">
   {% for file in files %}
-  <dt>{{ file.fdate }} : <code>{{ file.name }}</code> ({{ file.size }} bytes)
+  <dt><span class="Details">{{ file.fdate }} :</span> <code>{{ file.name }}</code> <span class="Details">({{ file.size }} bytes)</span>
   <dd>Details - Move - Delete
   {% endfor %}
 </dl>

@@ -93,6 +93,8 @@ class TinyApp:
         for han in self.handlers:
             match = han.pat.match(req.path_info)
             if match:
+                if match.groups():
+                    req.matchgroups = match.groups()
                 break
         else:
             msg = 'Not found: %s' % (req.request_uri,)
@@ -174,6 +176,7 @@ class TinyRequest:
                 pass
         # could check env['QUERY_STRING'] as well
 
+        self.matchgroups = None
         self._xsrf = None  # in case someone uses xsrf_cookie
 
         self.status = '200 OK'

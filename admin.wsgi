@@ -273,8 +273,8 @@ class han_AllUsers(AdminHandler):
 @beforeall(require_role('incoming', 'admin'))
 class han_Incoming(AdminHandler):
     renderparams = { 'navtab':'incoming' }
-    
-    def do_get(self, req):
+
+    def get_filelist(self, req):
         filelist = []
         for ent in os.scandir(self.app.incoming_dir):
             if ent.is_file():
@@ -288,9 +288,47 @@ class han_Incoming(AdminHandler):
                 }
                 filelist.append(file)
         filelist.sort(key=lambda file:file['date'])
+        return filelist
+    
+    def do_get(self, req):
+        filelist = self.get_filelist(req)
         return self.render('incoming.html', req,
                                files=filelist)
     
+    def do_post(self, req):
+        filelist = self.get_filelist(req)
+        filename = req.get_input_field('filename')
+        subls = [ ent for ent in filelist if ent['name'] == filename ]
+        if not filename or '/' in filename or not subls:
+            return self.render('incoming.html', req,
+                               files=filelist,
+                               formerror='Invalid filename: "%s"' % (filename,))
+        ent = subls[0]
+        if req.get_input_field('cancel'):
+            raise HTTPRedirectPost(self.app.approot+'/incoming')
+        
+        if req.get_input_field('op'):
+            op = req.get_input_field('op')
+        elif req.get_input_field('delete'):
+            op = 'delete'
+        elif req.get_input_field('move'):
+            op = 'move'
+        elif req.get_input_field('rename'):
+            op = 'rename'
+        else:
+            return self.render('incoming.html', req,
+                               files=filelist,
+                               formerror='Invalid operation')
+
+        if not req.get_input_field('confirm'):
+            return self.render('incoming.html', req,
+                               files=filelist,
+                               op=op, opfile=filename)
+
+        return self.render('incoming.html', req,
+                           files=filelist,
+                           formerror='### perform %s on "%s"' % (op, filename,))
+        
 class han_DebugDump(AdminHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)

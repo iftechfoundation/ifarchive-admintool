@@ -41,7 +41,7 @@ logging.basicConfig(
 from tinyapp.app import TinyApp, TinyRequest
 from tinyapp.constants import PLAINTEXT, BINARY
 from tinyapp.handler import ReqHandler, before, beforeall
-from tinyapp.excepts import HTTPError, HTTPRedirectPost
+from tinyapp.excepts import HTTPError, HTTPRedirectPost, HTTPRawResponse
 from tinyapp.util import random_bytes, time_now
 import tinyapp.auth
 
@@ -337,22 +337,35 @@ class han_DLIncoming(AdminHandler):
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
+        pathname = os.path.join(self.app.incoming_dir, filename)
+        try:
+            stat = os.stat(pathname)
+            filesize = stat.st_size
+        except Exception as ex:
+            msg = 'Unable to stat: %s %s' % (pathname, ex,)
+            raise HTTPError('400 Not Readable', msg)
+        
         fl = None
         try:
-            fl = open(os.path.join(self.app.incoming_dir, filename), 'rb')
+            fl = open(pathname, 'rb')
         except Exception as ex:
-            msg = 'Unable to read: %s %s' % (filename, ex,)
+            msg = 'Unable to read: %s %s' % (pathname, ex,)
             raise HTTPError('400 Not Readable', msg)
-        req.set_content_type(BINARY)
-        val = filename.replace('"', '_')
-        req.add_header('Content-Disposition', 'attachment; filename="%s"' % (val,))
-        while True:
-            val = fl.read(8192)
-            if not val:
-                break
-            yield val
-        fl.close()
-
+        
+        response_headers = [
+            ('Content-Type', BINARY),
+            ('Content-Length', str(filesize)),
+            ('Content-Disposition', 'attachment; filename="%s"' % (filename.replace('"', '_'),))
+        ]
+        def resp():
+            while True:
+                val = fl.read(8192)
+                if not val:
+                    break
+                yield val
+            fl.close()
+            return
+        raise HTTPRawResponse('200 OK', response_headers, resp())
 
 class han_DebugDump(AdminHandler):
     def do_get(self, req):

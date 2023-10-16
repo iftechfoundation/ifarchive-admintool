@@ -22,14 +22,14 @@ User Info
   <li><span class="ItemName">Username:</span>
     {{ user.name }}
   <li><span class="ItemName">Password</span>
-    &nbsp; <a href="{{ approot }}/changepw">(change)</a>
+    &nbsp; <a href="{{ approot }}/user/changepw">(change)</a>
   <li><span class="ItemName">Email:</span>
     {{ user.email }}
   <li><span class="ItemName">Roles:</span>
     {{ user.roles | sort | join(', ') }}
   <li><span class="ItemName">Time zone:</span>
     {% if user.tzname %} {{ user.tzname }} {% else %} (not set, using UTC) {% endif %}
-    &nbsp; <a href="{{ approot }}/changetz">(change)</a>
+    &nbsp; <a href="{{ approot }}/user/changetz">(change)</a>
 </ul>
 
 {% endblock %}

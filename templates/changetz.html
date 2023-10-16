@@ -20,7 +20,7 @@ User Info
   Time zone: {% if user.tzname %} {{ user.tzname }} {% else %} (not set, using UTC) {% endif %}
 </p>
 
-<form method="post" action="{{ approot }}/changetz">
+<form method="post" action="{{ approot }}/user/changetz">
 
 <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
 

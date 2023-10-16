@@ -47,7 +47,7 @@ import tinyapp.auth
 
 from adminlib.session import find_user, User
 from adminlib.session import require_user, require_role
-from adminlib.util import in_user_time
+from adminlib.util import bad_filename, in_user_time
 from adminlib.util import DelimNumber
 
 class AdminApp(TinyApp):
@@ -299,7 +299,7 @@ class han_Incoming(AdminHandler):
         filelist = self.get_filelist(req)
         filename = req.get_input_field('filename')
         subls = [ ent for ent in filelist if ent['name'] == filename ]
-        if not filename or '/' in filename or not subls:
+        if bad_filename(filename) or not subls:
             return self.render('incoming.html', req,
                                files=filelist,
                                formerror='Invalid filename: "%s"' % (filename,))

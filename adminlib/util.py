@@ -5,6 +5,21 @@ import datetime
 
 import jinja2.ext
 
+def bad_filename(val):
+    """Check whether a string is the kind of thing that could cause
+    filesystem problems.
+    (We're not concerned about shell special characters here.)
+    """
+    if not val:
+        return True
+    if '/' in val:
+        return True
+    if '\x00' in val:
+        return True
+    if val == '.' or val == '..':
+        return True
+    return False
+
 tz_utc = pytz.timezone('UTC')
 
 def in_user_time(user, timestamp):

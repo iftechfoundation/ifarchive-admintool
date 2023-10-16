@@ -260,15 +260,22 @@ class han_ChangeTZ(AdminHandler):
 
 
 @beforeall(require_role('admin'))
+class han_AdminAdmin(AdminHandler):
+    def do_get(self, req):
+        return self.render('admin.html', req)
+
+
+@beforeall(require_role('admin'))
 class han_AllUsers(AdminHandler):
     def do_get(self, req):
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT name, email, roles FROM users')
         userlist = [ User(name, email, roles=roles) for name, email, roles in res.fetchall() ]
-        res = curs.execute('SELECT name, ipaddr, starttime FROM sessions')
-        sessionlist = res.fetchall()
+        #res = curs.execute('SELECT name, ipaddr, starttime FROM sessions')
+        #sessionlist = res.fetchall()
         return self.render('allusers.html', req,
-                               users=userlist, sessions=sessionlist)
+                               users=userlist)
+
 
 @beforeall(require_role('incoming', 'admin'))
 class han_Incoming(AdminHandler):
@@ -385,7 +392,8 @@ handlers = [
     ('/user', han_UserProfile),
     ('/user/changepw', han_ChangePW),
     ('/user/changetz', han_ChangeTZ),
-    ('/adm/allusers', han_AllUsers),
+    ('/admin', han_AdminAdmin),
+    ('/admin/allusers', han_AllUsers),
     ('/incoming', han_Incoming),
     ('/incoming/download/(.+)', han_DLIncoming),
     ('/debugdump', han_DebugDump),

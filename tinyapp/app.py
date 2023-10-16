@@ -5,7 +5,7 @@ from http import cookies
 import urllib.parse
 
 from tinyapp.constants import PLAINTEXT, HTML
-from tinyapp.excepts import HTTPError
+from tinyapp.excepts import HTTPError, HTTPRawResponse
 from tinyapp.handler import ReqHandler, WrappedHandler
 
 class TinyApp:
@@ -39,6 +39,11 @@ class TinyApp:
             status = req.status
             content_type = req.content_type
             boutput = output.encode()
+        except HTTPRawResponse as ex:
+            start_response(ex.status, ex.headers)
+            for val in ex.outiter:
+                yield val
+            return
         except HTTPError as ex:
             if not req:
                 status = ex.status

@@ -1,5 +1,11 @@
 from tinyapp.constants import PLAINTEXT
 
+class HTTPRawResponse(Exception):
+    def __init__(self, status, headers, outiter):
+        self.status = status
+        self.headers = headers
+        self.outiter = outiter
+
 class HTTPError(Exception):
     def __init__(self, status, msg):
         self.status = status

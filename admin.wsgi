@@ -39,7 +39,7 @@ logging.basicConfig(
 )
 
 from tinyapp.app import TinyApp, TinyRequest
-from tinyapp.constants import PLAINTEXT
+from tinyapp.constants import PLAINTEXT, BINARY
 from tinyapp.handler import ReqHandler, before, beforeall
 from tinyapp.excepts import HTTPError, HTTPRedirectPost
 from tinyapp.util import random_bytes, time_now
@@ -333,9 +333,25 @@ class han_Incoming(AdminHandler):
 @beforeall(require_role('incoming', 'admin'))
 class han_DLIncoming(AdminHandler):
     def do_get(self, req):
-        req.set_content_type(PLAINTEXT)
         filename = req.matchgroups[0]
-        yield '###DL "%s"' % (filename,)
+        if bad_filename(filename):
+            msg = 'Not found: %s' % (filename,)
+            raise HTTPError('404 Not Found', msg)
+        fl = None
+        try:
+            fl = open(os.path.join(self.app.incoming_dir, filename), 'rb')
+        except Exception as ex:
+            msg = 'Unable to read: %s %s' % (filename, ex,)
+            raise HTTPError('400 Not Readable', msg)
+        req.set_content_type(BINARY)
+        val = filename.replace('"', '_')
+        req.add_header('Content-Disposition', 'attachment; filename="%s"' % (val,))
+        while True:
+            val = fl.read(8192)
+            if not val:
+                break
+            yield val
+        fl.close()
 
 
 class han_DebugDump(AdminHandler):

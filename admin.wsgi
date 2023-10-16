@@ -134,10 +134,10 @@ class AdminHandler(ReqHandler):
         """Render a template for the current request. This adds in some
         per-handler template parameters.
         """
-        map = self.renderparams
-        if not map:
+        if not self.renderparams:
             map = params
         else:
+            map = dict(self.renderparams)
             map.update(params)
         return self.app.render(template, req, **map)
 

@@ -11,7 +11,7 @@
 <dl class="FileList">
   {% for file in files %}
 
-    <dt><span class="Details">{{ file.fdate }} :</span> <code>{{ file.name }}</code> <span class="Details">({{ file.size|delimnumber }} bytes)</span>
+    <dt><span class="Details">{{ file.fdate }} :</span> <code><a href="{{ approot }}/incoming/download/{{ file.name|urlencode }}">{{ file.name }}</a></code> <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
     {% if not (op and opfile == file.name) %}
 

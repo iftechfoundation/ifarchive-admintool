@@ -328,7 +328,16 @@ class han_Incoming(AdminHandler):
         return self.render('incoming.html', req,
                            files=filelist,
                            formerror='### perform %s on "%s"' % (op, filename,))
-        
+
+
+@beforeall(require_role('incoming', 'admin'))
+class han_DLIncoming(AdminHandler):
+    def do_get(self, req):
+        req.set_content_type(PLAINTEXT)
+        filename = req.matchgroups[0]
+        yield '###DL "%s"' % (filename,)
+
+
 class han_DebugDump(AdminHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
@@ -349,6 +358,7 @@ handlers = [
     ('/changepw', han_ChangePW),
     ('/changetz', han_ChangeTZ),
     ('/incoming', han_Incoming),
+    ('/incoming/download/(.+)', han_DLIncoming),
     ('/debugdump', han_DebugDump),
 ]
 

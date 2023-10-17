@@ -16,6 +16,7 @@ config.read(configpath)
 
 DB_PATH = config['DEFAULT']['DBFile']
 INCOMING_DIR = config['DEFAULT']['IncomingDir']
+TRASH_DIR = config['DEFAULT']['TrashDir']
 ARCHIVE_DIR = config['DEFAULT']['ArchiveDir']
 
 TEMPLATE_PATH = config['AdminTool']['TemplateDir']
@@ -60,6 +61,7 @@ class AdminApp(TinyApp):
 
         self.approot = APP_ROOT
         self.incoming_dir = INCOMING_DIR
+        self.trash_dir = TRASH_DIR
 
         # Thread-local storage for various things which are not thread-safe.
         self.threadcache = threading.local()
@@ -342,6 +344,32 @@ class han_Incoming(AdminHandler):
 
 
 @beforeall(require_role('incoming', 'admin'))
+class han_Trash(AdminHandler):
+    renderparams = { 'navtab':'incoming' }
+
+    def get_filelist(self, req):
+        filelist = []
+        for ent in os.scandir(self.app.trash_dir):
+            if ent.is_file():
+                stat = ent.stat()
+                mtime = in_user_time(req._user, stat.st_mtime)
+                file = {
+                    'name': ent.name,
+                    'date': stat.st_mtime,
+                    'fdate': mtime.strftime('%b %d, %H:%M %Z'),
+                    'size': stat.st_size,
+                }
+                filelist.append(file)
+        filelist.sort(key=lambda file:file['date'])
+        return filelist
+
+    def do_get(self, req):
+        filelist = self.get_filelist(req)
+        return self.render('trash.html', req,
+                               files=filelist)
+    
+
+@beforeall(require_role('incoming', 'admin'))
 class han_DLIncoming(AdminHandler):
     def do_get(self, req):
         filename = req.matchgroups[0]
@@ -400,6 +428,7 @@ handlers = [
     ('/admin/allusers', han_AllUsers),
     ('/incoming', han_Incoming),
     ('/incoming/download/(.+)', han_DLIncoming),
+    ('/trash', han_Trash),
     ('/debugdump', han_DebugDump),
 ]
 

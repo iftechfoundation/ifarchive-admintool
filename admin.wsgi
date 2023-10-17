@@ -49,7 +49,7 @@ import tinyapp.auth
 from adminlib.session import find_user, User
 from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time
-from adminlib.util import DelimNumber
+from adminlib.util import DelimNumber, find_unused_filename
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -344,10 +344,25 @@ class han_Incoming(AdminHandler):
                                files=filelist, trashcount=trashcount,
                                op=op, opfile=filename)
 
-        newname = req.get_input_field('newname')
-        return self.render('incoming.html', req,
-                           files=filelist, trashcount=trashcount,
-                           formerror='### perform %s on "%s" (%s)' % (op, filename, newname))
+        if op == 'delete':
+            newname = find_unused_filename(filename, self.app.trash_dir)
+            origpath = os.path.join(self.app.incoming_dir, filename)
+            newpath = os.path.join(self.app.trash_dir, newname)
+            os.rename(origpath, newpath)
+            req.loginfo('Deleted "%s" from /incoming', filename)
+            ### note user action
+            # Gotta reload filelist and trashcount, for they have changed
+            filelist = self.get_filelist(req)
+            trashcount = self.get_trashcount(req)
+            return self.render('incoming.html', req,
+                               files=filelist, trashcount=trashcount,
+                               formerror='Deleted /incoming/%s' % (filename,))
+        else:
+            ###
+            newname = req.get_input_field('newname')
+            return self.render('incoming.html', req,
+                               files=filelist, trashcount=trashcount,
+                               formerror='### perform %s on "%s" (%s)' % (op, filename, newname))
 
 
 @beforeall(require_role('incoming', 'admin'))

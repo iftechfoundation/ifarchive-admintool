@@ -8,9 +8,10 @@
 
 <p>
   {% if not incount %}
-    <code>/incoming</code> is empty.
+    <code><a href="{{ approot }}/incoming">/incoming</a></code> is empty.
   {% else %}
-    {{ incount }} file(s) in <code><a href="{{ approot }}/incoming">/incoming</a></code>.
+    {{ incount }} file(s) in
+    <code><a href="{{ approot }}/incoming">/incoming</a></code>.
   {% endif %}
 </p>
 

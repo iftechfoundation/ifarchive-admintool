@@ -302,19 +302,25 @@ class han_Incoming(AdminHandler):
                 filelist.append(file)
         filelist.sort(key=lambda file:file['date'])
         return filelist
+
+    def get_trashcount(self, req):
+        count = len([ ent for ent in os.scandir(self.app.trash_dir) if ent.is_file() ])
+        return count
     
     def do_get(self, req):
         filelist = self.get_filelist(req)
+        trashcount = self.get_trashcount(req)
         return self.render('incoming.html', req,
-                               files=filelist)
+                               files=filelist, trashcount=trashcount)
     
     def do_post(self, req):
         filelist = self.get_filelist(req)
+        trashcount = self.get_trashcount(req)
         filename = req.get_input_field('filename')
         subls = [ ent for ent in filelist if ent['name'] == filename ]
         if bad_filename(filename) or not subls:
             return self.render('incoming.html', req,
-                               files=filelist,
+                               files=filelist, trashcount=trashcount,
                                formerror='Invalid filename: "%s"' % (filename,))
         ent = subls[0]
         if req.get_input_field('cancel'):
@@ -330,16 +336,16 @@ class han_Incoming(AdminHandler):
             op = 'rename'
         else:
             return self.render('incoming.html', req,
-                               files=filelist,
+                               files=filelist, trashcount=trashcount,
                                formerror='Invalid operation')
 
         if not req.get_input_field('confirm'):
             return self.render('incoming.html', req,
-                               files=filelist,
+                               files=filelist, trashcount=trashcount,
                                op=op, opfile=filename)
 
         return self.render('incoming.html', req,
-                           files=filelist,
+                           files=filelist, trashcount=trashcount,
                            formerror='### perform %s on "%s"' % (op, filename,))
 
 

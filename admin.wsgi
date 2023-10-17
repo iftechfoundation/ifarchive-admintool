@@ -1,6 +1,6 @@
 import sys
 import time
-import os
+import os, os.path
 import hashlib
 import configparser
 import threading
@@ -363,9 +363,38 @@ class han_Incoming(AdminHandler):
             return self.render('incoming.html', req,
                                files=filelist, trashcount=trashcount,
                                diddelete=filename, didnewname=newname)
+        
+        if op == 'rename':
+            newname = req.get_input_field('newname')
+            if newname is not None:
+                newname = newname.strip()
+            if not newname:
+                return self.render('incoming.html', req,
+                                   files=filelist, trashcount=trashcount,
+                                   op=op, opfile=filename,
+                                   formerror='You must supply a filename.')
+            if bad_filename(newname):
+                return self.render('incoming.html', req,
+                                   files=filelist, trashcount=trashcount,
+                                   op=op, opfile=filename,
+                                   formerror='Invalid filename: "%s"' % (newname,))
+            origpath = os.path.join(self.app.incoming_dir, filename)
+            newpath = os.path.join(self.app.incoming_dir, newname)
+            if os.path.exists(newpath):
+                return self.render('incoming.html', req,
+                                   files=filelist, trashcount=trashcount,
+                                   op=op, opfile=filename,
+                                   formerror='Filename already in use: "%s"' % (newname,))
+            os.rename(origpath, newpath)
+            req.loginfo('Renamed "%s" to "%s" in /incoming', filename, newname)
+            ### note user action
+            # Gotta reload filelist, for it has changed
+            filelist = self.get_filelist(req)
+            return self.render('incoming.html', req,
+                               files=filelist, trashcount=trashcount,
+                               didrename=filename, didnewname=newname)
         else:
             ###
-            newname = req.get_input_field('newname')
             return self.render('incoming.html', req,
                                files=filelist, trashcount=trashcount,
                                formerror='### perform %s on "%s" (%s)' % (op, filename, newname))

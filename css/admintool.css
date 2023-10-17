@@ -82,6 +82,10 @@ body {
     margin: 4px;
 }
 
+.FormAction {
+    font-style: italic;
+    margin: 4px 8px;
+}
 
 a {
     color: #B50000;
@@ -105,8 +109,19 @@ code {
     margin-top: 6px;
 }
 
+.FileList dd {
+    margin-left: 0px;
+    padding-left: 40px;
+}
+
 .FileList .Details {
     font-size: 85%;
+}
+
+.FileList .Selected {
+    background: #FFA;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 @media screen and (max-width: 480px) {

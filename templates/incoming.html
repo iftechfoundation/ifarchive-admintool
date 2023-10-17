@@ -80,7 +80,8 @@
 {% endif %}
 
 {% if trashcount %}
-<p>(Also, {{ trashcount }} file(s) are in
+<p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
+  file(s) are in
   <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>
 {% endif %}
 

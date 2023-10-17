@@ -261,12 +261,16 @@ class han_ChangeTZ(AdminHandler):
 
 @beforeall(require_role('admin'))
 class han_AdminAdmin(AdminHandler):
+    renderparams = { 'navtab':'admin' }
+
     def do_get(self, req):
         return self.render('admin.html', req)
 
 
 @beforeall(require_role('admin'))
 class han_AllUsers(AdminHandler):
+    renderparams = { 'navtab':'admin' }
+
     def do_get(self, req):
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT name, email, roles FROM users')

@@ -60,6 +60,10 @@ def in_user_time(user, timestamp):
 
 
 class DelimNumber(jinja2.ext.Extension):
+    """Jinja extension: Display a number with place separators.
+    E.g "12,345,678". If the value is not an integer or str(int),
+    return it unchanged.
+    """
     pat_alldigits = re.compile('^[0-9]+$')
 
     def __init__(self, env):

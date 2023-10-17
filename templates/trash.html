@@ -4,7 +4,8 @@
 
 {% block content %}
 
-<p>(Files in the trash will be deleted after 30 days.)</p>
+<p>(Files in the trash will be deleted after 30 days.
+  Or that's the idea. I haven't written that bit yet.)</p>
 
 {% if not files %}
 <p>No files in <code>/trash</code>.<p>
@@ -12,8 +13,12 @@
 
 <dl class="FileList">
   {% for file in files %}
+    {% set isselected = (op and opfile == file.name) %}
 
-    <dt><span class="Details">{{ file.fdate }} :</span> <code><a href="{{ approot }}/trash/download/{{ file.name|urlencode }}">{{ file.name }}</a></code> <span class="Details">({{ file.size|delimnumber }} bytes)</span>
+    <dt>
+    <span class="Details">{{ file.fdate }} :</span>
+    <code><a href="{{ approot }}/trash/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
+    <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
   {% endfor %}
 </dl>

@@ -1,5 +1,6 @@
 import re
 import time
+import os.path
 import pytz
 import datetime
 
@@ -19,6 +20,30 @@ def bad_filename(val):
     if val == '.' or val == '..':
         return True
     return False
+
+pat_numsuffix = re.compile('[.]([0-9])+$')
+
+def find_unused_filename(val, dir):
+    """If the filename val is free in dir, return val. Otherwise
+    return a variation on val which is free.
+    """
+    path = os.path.join(dir, val)
+    if not os.path.exists(path):
+        return val
+    
+    count = 0
+    # Trim off a numbered suffix of val if we see one. (But not if it's
+    # the whole of val, e.g. ".123")
+    match = pat_numsuffix.search(val)
+    if match and match.start() > 0:
+        count = int(match.group(1))
+        val = val[ : match.start() ]
+    while True:
+        count += 1
+        newval = '%s.%d' % (val, count,)
+        path = os.path.join(dir, newval)
+        if not os.path.exists(path):
+            return newval
 
 tz_utc = pytz.timezone('UTC')
 

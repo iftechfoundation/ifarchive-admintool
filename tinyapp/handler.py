@@ -9,10 +9,10 @@ class ReqHandler:
         self.pat = re.compile(pat)
 
     def do_get(self, req):
-        raise NotImplementedError('GET not implemented')
+        raise NotImplementedError('%s: GET not implemented' % (self.__class__.__name__,))
 
     def do_post(self, req):
-        raise NotImplementedError('POST not implemented')
+        raise NotImplementedError('%s: POST not implemented' % (self.__class__.__name__,))
 
     def do_head(self, req):
         for val in self.do_get(req):

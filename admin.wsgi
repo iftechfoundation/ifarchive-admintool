@@ -415,6 +415,12 @@ class han_DLIncoming(AdminHandler):
         filename = req.matchgroups[0]
         RawDownload(self.app.incoming_dir, filename)
 
+@beforeall(require_role('incoming', 'admin'))
+class han_DLTrash(AdminHandler):
+    def do_get(self, req):
+        filename = req.matchgroups[0]
+        RawDownload(self.app.trash_dir, filename)
+
 class han_DebugDump(AdminHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
@@ -438,6 +444,7 @@ handlers = [
     ('/incoming', han_Incoming),
     ('/incoming/download/(.+)', han_DLIncoming),
     ('/trash', han_Trash),
+    ('/trash/download/(.+)', han_DLTrash),
     ('/debugdump', han_DebugDump),
 ]
 

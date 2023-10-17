@@ -16,9 +16,9 @@
     <code><a href="{{ approot }}/incoming/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
     <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
+    <dd>
     {% if not isselected %}
 
-    <dd>
     <form method="post" action="{{ approot }}/incoming">
     <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
     <input type="hidden" name="filename" value="{{ file.name }}"/>
@@ -30,8 +30,6 @@
     {% else %}
 
       {% if op == 'delete' %}
-      
-      <dd>
       
       <div class="FormAction">Really delete <code>{{ opfile }}</code>?</div>
       <form method="post" action="{{ approot }}/incoming">
@@ -61,7 +59,6 @@
 
       {% else %}
       
-      <dd>
       <div class="FormAction">Action not implemented: {{ op }}</div>
       
       {% endif %}

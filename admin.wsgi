@@ -344,9 +344,10 @@ class han_Incoming(AdminHandler):
                                files=filelist, trashcount=trashcount,
                                op=op, opfile=filename)
 
+        newname = req.get_input_field('newname')
         return self.render('incoming.html', req,
                            files=filelist, trashcount=trashcount,
-                           formerror='### perform %s on "%s"' % (op, filename,))
+                           formerror='### perform %s on "%s" (%s)' % (op, filename, newname))
 
 
 @beforeall(require_role('incoming', 'admin'))

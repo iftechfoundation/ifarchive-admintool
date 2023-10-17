@@ -27,6 +27,7 @@
     {% else %}
 
       {% if op == 'delete' %}
+      
       <dd>
       
       <div class="FormAction">Really delete <code>{{ opfile }}</code>?</div>
@@ -38,6 +39,23 @@
       <input class="FormButton" name="confirm" type="submit" value="Delete">
       </form>
       
+      {% elif op == 'rename' %}
+
+      <div class="FormAction">Rename <code>{{ opfile }}</code> to...</div>
+      <form method="post" action="{{ approot }}/incoming">
+      <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+      <input type="hidden" name="filename" value="{{ opfile }}"/>
+      <input type="hidden" name="op" value="{{ op }}"/>
+      <div>
+        <input class="FormInput" autocomplete="disabled"
+          id="newname_field" name="newname" type="input" placeholder="New filename">
+      </div>
+      <div>
+        <input class="FormButton" name="cancel" type="submit" value="Cancel">
+        <input class="FormButton" name="confirm" type="submit" value="Rename">
+      </div>
+      </form>
+
       {% else %}
       
       <dd>

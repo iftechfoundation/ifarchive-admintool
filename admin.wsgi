@@ -422,7 +422,7 @@ class han_Trash(AdminHandler):
                                files=filelist,
                                op=op, opfile=filename)
 
-        if op == 'restorexxx':
+        if op == 'restore':
             newname = find_unused_filename(filename, self.app.incoming_dir)
             origpath = os.path.join(self.app.trash_dir, filename)
             newpath = os.path.join(self.app.incoming_dir, newname)
@@ -431,7 +431,6 @@ class han_Trash(AdminHandler):
             ### note user action
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
-            trashcount = self.get_trashcount(req)
             return self.render('trash.html', req,
                                files=filelist,
                                didrestore=filename, didnewname=newname)

@@ -110,7 +110,13 @@ class AdminApp(TinyApp):
         per-request template parameters.
         """
         tem = self.getjenv().get_template(template)
-        map = { 'req':req, 'user':req._user }
+        # The requri is de-escaped, which is what we want -- it will be
+        # used for <form action="requri">.
+        map = {
+            'req': req,
+            'requri': req.app.approot+req.env['PATH_INFO'],
+            'user': req._user,
+        }
         if params:
             map.update(params)
         yield tem.render(**map)
@@ -442,6 +448,8 @@ class han_DebugDump(AdminHandler):
         req.set_content_type(PLAINTEXT)
         yield 'sys.version: %s\n' % (sys.version,)
         yield 'sys.path: %s\n' % (sys.path,)
+        if req.matchgroups:
+            yield 'matchgroups: %s\n' % (req.matchgroups,)
         yield 'environ:\n'
         for key, val in req.env.items():
             yield '  %s: %s\n' % (key, val,)
@@ -462,6 +470,7 @@ handlers = [
     ('/trash', han_Trash),
     ('/trash/download/(.+)', han_DLTrash),
     ('/debugdump', han_DebugDump),
+    ('/debugdump/(.+)', han_DebugDump),
 ]
 
 appinstance = AdminApp(handlers)

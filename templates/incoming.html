@@ -20,7 +20,7 @@
     <dd {% if isselected %}class="Selected"{% endif %}>
     {% if not isselected %}
 
-    <form method="post" action="{{ approot }}/incoming">
+    <form method="post" action="{{ requri }}">
     <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
     <input type="hidden" name="filename" value="{{ file.name }}"/>
     <input class="FormButton" name="move" type="submit" value="Move">
@@ -33,7 +33,7 @@
       {% if op == 'delete' %}
       
       <div class="FormAction">Really delete <code>{{ opfile }}</code>?</div>
-      <form method="post" action="{{ approot }}/incoming">
+      <form method="post" action="{{ requri }}">
       <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
       <input type="hidden" name="filename" value="{{ opfile }}"/>
       <input type="hidden" name="op" value="{{ op }}"/>
@@ -44,7 +44,7 @@
       {% elif op == 'rename' %}
 
       <div class="FormAction">Rename <code>{{ opfile }}</code> to...</div>
-      <form method="post" action="{{ approot }}/incoming">
+      <form method="post" action="{{ requri }}">
       <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
       <input type="hidden" name="filename" value="{{ opfile }}"/>
       <input type="hidden" name="op" value="{{ op }}"/>

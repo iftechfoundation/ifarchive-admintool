@@ -12,11 +12,12 @@
   {% for file in files %}
     {% set isselected = (op and opfile == file.name) %}
 
-    <dt><span class="Details">{{ file.fdate }} :</span>
+    <dt>
+    <span class="Details">{{ file.fdate }} :</span>
     <code><a href="{{ approot }}/incoming/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
     <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
-    <dd>
+    <dd {% if isselected %}class="Selected"{% endif %}>
     {% if not isselected %}
 
     <form method="post" action="{{ approot }}/incoming">

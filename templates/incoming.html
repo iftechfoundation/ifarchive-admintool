@@ -69,6 +69,12 @@
   {% endfor %}
 </dl>
 
+{% if trashcount %}
+<p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
+  file(s) are in
+  <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>
+{% endif %}
+
 {% if formerror %}
 <p>{{ formerror }}</p>
 {% endif %}
@@ -77,12 +83,6 @@
 <p>
   Deleted <code>{{ diddelete }}</code> from <code>/incoming</code>.
 </p>
-{% endif %}
-
-{% if trashcount %}
-<p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
-  file(s) are in
-  <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>
 {% endif %}
 
 {% endblock %}

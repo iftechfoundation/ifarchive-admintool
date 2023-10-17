@@ -57,4 +57,10 @@
 <p>{{ formerror }}</p>
 {% endif %}
 
+{% if didrestore %}
+<p>
+  Restored <code>{{ didrestore }}</code> to <code>/incoming</code>.
+</p>
+{% endif %}
+
 {% endblock %}

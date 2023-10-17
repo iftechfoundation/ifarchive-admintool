@@ -396,6 +396,53 @@ class han_Trash(AdminHandler):
         return self.render('trash.html', req,
                                files=filelist)
     
+    def do_post(self, req):
+        filelist = self.get_filelist(req)
+        filename = req.get_input_field('filename')
+        subls = [ ent for ent in filelist if ent['name'] == filename ]
+        if bad_filename(filename) or not subls:
+            return self.render('trash.html', req,
+                               files=filelist,
+                               formerror='Invalid filename: "%s"' % (filename,))
+        ent = subls[0]
+        if req.get_input_field('cancel'):
+            raise HTTPRedirectPost(self.app.approot+'/trash')
+        
+        if req.get_input_field('op'):
+            op = req.get_input_field('op')
+        elif req.get_input_field('restore'):
+            op = 'restore'
+        else:
+            return self.render('trash.html', req,
+                               files=filelist,
+                               formerror='Invalid operation')
+
+        if not req.get_input_field('confirm'):
+            return self.render('trash.html', req,
+                               files=filelist,
+                               op=op, opfile=filename)
+
+        if op == 'restorexxx':
+            newname = find_unused_filename(filename, self.app.incoming_dir)
+            origpath = os.path.join(self.app.trash_dir, filename)
+            newpath = os.path.join(self.app.incoming_dir, newname)
+            os.rename(origpath, newpath)
+            req.loginfo('Restored "%s" from /trash to /incoming', filename)
+            ### note user action
+            # Gotta reload filelist, for it has changed
+            filelist = self.get_filelist(req)
+            trashcount = self.get_trashcount(req)
+            return self.render('trash.html', req,
+                               files=filelist,
+                               didrestore=filename, didnewname=newname)
+        else:
+            ###
+            newname = req.get_input_field('newname')
+            return self.render('trash.html', req,
+                               files=filelist,
+                               formerror='### perform %s on "%s" (%s)' % (op, filename, newname))
+
+
 
 def RawDownload(dirname, filename):
     if bad_filename(filename):

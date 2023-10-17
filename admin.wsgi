@@ -356,7 +356,7 @@ class han_Incoming(AdminHandler):
             trashcount = self.get_trashcount(req)
             return self.render('incoming.html', req,
                                files=filelist, trashcount=trashcount,
-                               formerror='Deleted /incoming/%s' % (filename,))
+                               diddelete=filename, didnewname=newname)
         else:
             ###
             newname = req.get_input_field('newname')

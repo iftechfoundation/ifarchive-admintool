@@ -41,16 +41,24 @@ def db_create(db):
     curs = db.cursor()
     res = curs.execute('SELECT name FROM sqlite_master')
     tables = [ tup[0] for tup in res.fetchall() ]
+    
     if 'users' in tables:
         print('"users" table exists')
     else:
         print('creating "users" table...')
         curs.execute('CREATE TABLE users(name unique, email unique, pw, pwsalt, roles, tzname)')
+
     if 'sessions' in tables:
         print('"sessions" table exists')
     else:
         print('creating "sessions" table...')
         curs.execute('CREATE TABLE sessions(name, sessionid unique, ipaddr, starttime, refreshtime)')
+
+    if 'uploads' in tables:
+        print('"uploads" table exists')
+    else:
+        print('creating "uploads" table...')
+        curs.execute('CREATE TABLE uploads(uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about)')
 
 
 def db_add_user(db, args):

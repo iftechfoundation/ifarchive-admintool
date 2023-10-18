@@ -62,6 +62,8 @@ class AdminApp(TinyApp):
         self.approot = APP_ROOT
         self.incoming_dir = INCOMING_DIR
         self.trash_dir = TRASH_DIR
+        self.archive_dir = ARCHIVE_DIR
+        self.unprocessed_dir = os.path.join(ARCHIVE_DIR, 'unprocessed')
 
         # Thread-local storage for various things which are not thread-safe.
         self.threadcache = threading.local()
@@ -364,7 +366,20 @@ class han_Incoming(AdminHandler):
                                files=filelist, trashcount=trashcount,
                                diddelete=filename, didnewname=newname)
         
-        if op == 'rename':
+        elif op == 'move':
+            newname = find_unused_filename(filename, self.app.unprocessed_dir)
+            origpath = os.path.join(self.app.incoming_dir, filename)
+            newpath = os.path.join(self.app.unprocessed_dir, newname)
+            os.rename(origpath, newpath)
+            req.loginfo('Moved "%s" from /incoming to /unprocessed', filename)
+            ### note user action
+            # Gotta reload filelist, for it as changed
+            filelist = self.get_filelist(req)
+            return self.render('incoming.html', req,
+                               files=filelist, trashcount=trashcount,
+                               didmove=filename, didnewname=newname)
+        
+        elif op == 'rename':
             newname = req.get_input_field('newname')
             if newname is not None:
                 newname = newname.strip()

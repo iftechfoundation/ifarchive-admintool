@@ -401,7 +401,7 @@ class han_Incoming(AdminHandler):
 
 @beforeall(require_role('incoming', 'admin'))
 class han_Trash(AdminHandler):
-    renderparams = { 'navtab':'incoming' }
+    renderparams = { 'navtab':'trash' }
 
     def get_filelist(self, req):
         filelist = []

@@ -11,8 +11,12 @@
   <a {% if navtab=='incoming' %} class="Selected" {% endif %} href="{{ approot }}/incoming">Incoming</a>
   {% endif %}
 
+  {% if isadmin or ('incoming' in user.roles) %}
+  <a {% if navtab=='trash' %} class="Selected" {% endif %} href="{{ approot }}/trash">Trash</a>
+  {% endif %}
+
   {% if isadmin %}
-  <a {% if navtab=='admin' %} class="Selected" {% endif %} href="{{ approot }}/admin">AdminAdmin</a>
+  <a {% if navtab=='admin' %} class="Selected" {% endif %} href="{{ approot }}/admin">Admin&#xB2;</a>
   {% endif %}
 
 </div>

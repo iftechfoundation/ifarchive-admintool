@@ -533,6 +533,8 @@ class han_DebugDump(AdminHandler):
         yield 'sys.path: %s\n' % (sys.path,)
         if req.matchgroups:
             yield 'matchgroups: %s\n' % (req.matchgroups,)
+        yield 'getpid=%s\n' % (os.getpid(),)
+        yield 'getuid=%s, geteuid=%s, getgid=%s, getegid=%s\n' % (os.getuid(), os.geteuid(), os.getgid(), os.getegid(),)
         yield 'environ:\n'
         for key, val in req.env.items():
             yield '  %s: %s\n' % (key, val,)

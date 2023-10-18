@@ -358,7 +358,6 @@ class han_Incoming(AdminHandler):
             newpath = os.path.join(self.app.trash_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Deleted "%s" from /incoming', filename)
-            ### note user action
             # Gotta reload filelist and trashcount, for they have changed
             filelist = self.get_filelist(req)
             trashcount = self.get_trashcount(req)
@@ -372,7 +371,6 @@ class han_Incoming(AdminHandler):
             newpath = os.path.join(self.app.unprocessed_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Moved "%s" from /incoming to /unprocessed', filename)
-            ### note user action
             # Gotta reload filelist, for it as changed
             filelist = self.get_filelist(req)
             return self.render('incoming.html', req,
@@ -402,7 +400,6 @@ class han_Incoming(AdminHandler):
                                    formerror='Filename already in use: "%s"' % (newname,))
             os.rename(origpath, newpath)
             req.loginfo('Renamed "%s" to "%s" in /incoming', filename, newname)
-            ### note user action
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
             return self.render('incoming.html', req,
@@ -471,7 +468,6 @@ class han_Trash(AdminHandler):
             newpath = os.path.join(self.app.incoming_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Restored "%s" from /trash to /incoming', filename)
-            ### note user action
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
             return self.render('trash.html', req,

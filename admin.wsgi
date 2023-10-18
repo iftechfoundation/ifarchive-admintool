@@ -474,11 +474,9 @@ class han_Trash(AdminHandler):
                                files=filelist,
                                didrestore=filename, didnewname=newname)
         else:
-            ###
-            newname = req.get_input_field('newname')
             return self.render('trash.html', req,
                                files=filelist,
-                               formerror='### perform %s on "%s" (%s)' % (op, filename, newname))
+                               formerror='Operation not implemented: %s' % (op,))
 
 
 

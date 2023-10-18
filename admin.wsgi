@@ -394,10 +394,9 @@ class han_Incoming(AdminHandler):
                                files=filelist, trashcount=trashcount,
                                didrename=filename, didnewname=newname)
         else:
-            ###
             return self.render('incoming.html', req,
                                files=filelist, trashcount=trashcount,
-                               formerror='### perform %s on "%s" (%s)' % (op, filename, newname))
+                               formerror='Operation not implemented: %s' % (op,))
 
 
 @beforeall(require_role('incoming', 'admin'))

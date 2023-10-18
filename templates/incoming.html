@@ -58,6 +58,17 @@
       </div>
       </form>
 
+      {% elif op == 'move' %}
+      
+      <div class="FormAction">Really move <code>{{ opfile }}</code> to <code>/unprocessed</code>?</div>
+      <form method="post" action="{{ requri }}">
+      <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+      <input type="hidden" name="filename" value="{{ opfile }}"/>
+      <input type="hidden" name="op" value="{{ op }}"/>
+      <input class="FormButton" name="cancel" type="submit" value="Cancel">
+      <input class="FormButton" name="confirm" type="submit" value="Move">
+      </form>
+      
       {% else %}
       
       <div class="FormAction">Action not implemented: {{ op }}</div>
@@ -88,6 +99,12 @@
 {% if didrename %}
 <p>
   Renamed <code>{{ didrename }}</code> to <code>{{ didnewname }}</code>.
+</p>
+{% endif %}
+
+{% if didmove %}
+<p>
+  Moved <code>{{ didmove }}</code> to <code>/unprocessed</code>.
 </p>
 {% endif %}
 

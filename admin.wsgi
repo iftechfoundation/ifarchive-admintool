@@ -534,7 +534,7 @@ class han_DebugDump(AdminHandler):
         if req.matchgroups:
             yield 'matchgroups: %s\n' % (req.matchgroups,)
         yield 'getpid=%s\n' % (os.getpid(),)
-        yield 'getlogin=%s, getuid=%s, geteuid=%s, getgid=%s, getegid=%s\n' % (os.getlogin(), os.getuid(), os.geteuid(), os.getgid(), os.getegid(),)
+        yield 'getuid=%s, geteuid=%s, getgid=%s, getegid=%s\n' % (os.getuid(), os.geteuid(), os.getgid(), os.getegid(),)
         yield 'environ:\n'
         for key, val in req.env.items():
             yield '  %s: %s\n' % (key, val,)

@@ -548,14 +548,14 @@ class base_FileUploadInfo(AdminHandler):
 
 @beforeall(require_role('incoming', 'admin'))
 class han_FUIIncoming(base_FileUploadInfo):
-    renderparams = { 'navtab':'incoming' }
+    renderparams = { 'navtab':'incoming', 'uribase':'incoming' }
 
     def get_dirname(self):
         return self.app.incoming_dir
 
 @beforeall(require_role('incoming', 'admin'))
 class han_FUITrash(base_FileUploadInfo):
-    renderparams = { 'navtab':'trash' }
+    renderparams = { 'navtab':'trash', 'uribase':'trash' }
 
     def get_dirname(self):
         return self.app.trash_dir

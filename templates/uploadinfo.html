@@ -12,7 +12,11 @@ Upload Info
 </p>
 
 {% if not uploads %}
-<p>No upload information recorded for this file.</p>
+  {% if not filesize %}
+  <p>This is a zero-length file, so there is no upload information.</p>
+  {% else %}
+  <p>No upload information recorded for this file.</p>
+  {% endif %}
 {% elif uploads|length > 1 %}
 <p>({{ uploads|length }} upload records with the same file content.)</p>
 {% endif %}

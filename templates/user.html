@@ -4,21 +4,9 @@
 User Info
 {% endblock %}
 
-{% block exthead %}
-<style type="text/css">
-  ul li {
-      margin-top: 4px;
-      margin-bottom: 4px;
-  }
-  .ItemName {
-      font-size: 85%;
-  }
-</style>
-{% endblock %}
-
 {% block content %}
 
-<ul>
+<ul class="UserInfoList">
   <li><span class="ItemName">Username:</span>
     {{ user.name }}
   <li><span class="ItemName">Password</span>

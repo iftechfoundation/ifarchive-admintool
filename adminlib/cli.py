@@ -7,6 +7,8 @@ import logging
 from tinyapp.util import random_bytes
 
 def run(appinstance):
+    """The entry point when admin.wsgi is invoked on the command line.
+    """
     popt = optparse.OptionParser(usage='admin.wsgi cleanup | adduser | userroles | userpw | createdb | test')
     (opts, args) = popt.parse_args()
 
@@ -42,7 +44,7 @@ def run(appinstance):
         print('Usage: %s' % (popt.usage,))
 
 def get_curuser():
-    """This fails sometimes, I dunno why. So we catch exceptions.
+    """getlogin() fails sometimes, I dunno why. So we catch exceptions.
     """
     try:
         return os.getlogin()
@@ -51,6 +53,9 @@ def get_curuser():
         
 
 def db_cleanup(app, db):
+    """Clean up stuff that needs to be cleaned up periodically.
+    Should be run from a cron job.
+    """
     logging.info('CLI user=%s: cleanup', get_curuser())
 
     # Clean out old sessions. Note that in the sessions table
@@ -58,7 +63,8 @@ def db_cleanup(app, db):
     timelimit = time.time() - app.max_session_age
     curs = db.cursor()
     res = curs.execute('DELETE FROM sessions WHERE refreshtime < ?', (timelimit,))
-    
+
+    # Clean out old trash files.
     timelimit = time.time() - app.max_trash_age
     dells = []
     for ent in os.scandir(app.trash_dir):
@@ -73,6 +79,10 @@ def db_cleanup(app, db):
         os.remove(pathname)
 
 def db_create(db):
+    """Create the database tables. This only needs to be done once ever,
+    unless of course we change the table structure or decide to wipe
+    and start over.
+    """
     logging.info('CLI user=%s: createdb', get_curuser())
     curs = db.cursor()
     res = curs.execute('SELECT name FROM sqlite_master')
@@ -98,6 +108,8 @@ def db_create(db):
 
 
 def db_add_user(db, args):
+    """Create a new user.
+    """
     if len(args) != 4:
         print('usage: adduser name email pw role1,role2,role3')
         return
@@ -122,6 +134,9 @@ def db_add_user(db, args):
 
 
 def db_user_roles(db, args):
+    """Modify the roles of a user. The roles should be supplied as a
+    comma-separated list, no spaces.
+    """
     if len(args) != 2:
         print('usage: userroles name role1,role2,role3')
         return
@@ -138,6 +153,8 @@ def db_user_roles(db, args):
 
 
 def db_user_pw(db, args):
+    """Change the password of a user.
+    """
     if len(args) != 2:
         print('usage: userpw name pw')
         return

@@ -1,0 +1,37 @@
+{% extends "page.html" %}
+
+{% block title %}
+Upload Info
+{% endblock %}
+
+{% block content %}
+
+<p>Info for <code>{{ filename }}</code>:</p>
+
+{% for ent in uploads %}
+<ul>
+  <li>Upload time: {{ ent.fdate }}
+  <li>Filename: <code>{{ ent.filename }}</code>
+  {% if ent.filename != ent.origfilename %}
+    <li>Original filename: <code>{{ ent.origfilename }}</code>
+  {% endif %}
+  <li>Size: {{ ent.size|delimnumber }} bytes
+  <li>Uploader:
+    {% if ent.donorname %}{{ ent.donorname }}{% else %}Anonymous{% endif %}
+    {% if ent.donoremail %}&lt;{{ ent.donoremail }}&gt;{% endif %}
+    {% if ent.donorip %}&nbsp; ({{ ent.donorip }}){% endif %}
+  <li>Rights: {{ ent.permission }}
+  {% if ent.suggestdir %}
+    <li>Suggested dir: <code>if-archive/{{ ent.suggestdir }}</code>
+  {% endif %}
+  {% if ent.ifdbid %}
+    <li>IFDB temp ID: {{ ent.ifdbid }}
+  {% endif %}
+  
+  {% if ent.about %}
+  <div class="FileComments">{{ ent.about }}</div>
+  {% endif %}
+</ul>
+{% endfor %}
+
+{% endblock %}

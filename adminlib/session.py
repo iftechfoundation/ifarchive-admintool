@@ -4,6 +4,7 @@ import pytz
 # stuck with it.
 
 from tinyapp.excepts import HTTPError
+from adminlib.util import in_user_time
 
 class User:
     def __init__(self, name, email, roles=None, tzname=None, sessionid=None):
@@ -19,7 +20,28 @@ class User:
                 self.tz = pytz.timezone(tzname)
             except:
                 pass
-        
+
+class Session:
+    def __init__(self, tup, user=None, maxage=None):
+        name, ipaddr, starttime, refreshtime = tup
+        self.name = name
+        self.ipaddr = ipaddr
+        self.starttime = starttime
+        self.refreshtime = refreshtime
+
+        mtime = in_user_time(user, starttime)
+        self.fstarttime = mtime.strftime('%b %d, %H:%M %Z')
+        mtime = in_user_time(user, refreshtime)
+        self.frefreshtime = mtime.strftime('%b %d, %H:%M %Z')
+
+        self.expiretime = None
+        self.fexpiretime = None
+        if maxage:
+            self.expiretime = self.refreshtime + maxage
+            mtime = in_user_time(user, self.expiretime)
+            self.fexpiretime = mtime.strftime('%b %d, %H:%M %Z')
+
+
 def find_user(req, han):
     if 'sessionid' in req.cookies:
         sessionid = req.cookies['sessionid'].value

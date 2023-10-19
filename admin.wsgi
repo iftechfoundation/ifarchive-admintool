@@ -47,7 +47,7 @@ from tinyapp.excepts import HTTPError, HTTPRedirectPost, HTTPRawResponse
 from tinyapp.util import random_bytes, time_now
 import tinyapp.auth
 
-from adminlib.session import find_user, User
+from adminlib.session import find_user, User, Session
 from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5
 from adminlib.util import DelimNumber, find_unused_filename
@@ -290,12 +290,22 @@ class han_AllUsers(AdminHandler):
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT name, email, roles FROM users')
         userlist = [ User(name, email, roles=roles) for name, email, roles in res.fetchall() ]
-        #res = curs.execute('SELECT name, ipaddr, starttime FROM sessions')
-        #sessionlist = res.fetchall()
         return self.render('allusers.html', req,
                                users=userlist)
 
 
+@beforeall(require_role('admin'))
+class han_AllSessions(AdminHandler):
+    renderparams = { 'navtab':'admin' }
+
+    def do_get(self, req):
+        curs = self.app.getdb().cursor()
+        res = curs.execute('SELECT name, ipaddr, starttime, refreshtime FROM sessions')
+        sessionlist = [ Session(tup, user=req._user, maxage=self.app.max_session_age) for tup in res.fetchall() ]
+        return self.render('allsessions.html', req,
+                               sessions=sessionlist)
+
+    
 @beforeall(require_role('incoming', 'admin'))
 class han_Incoming(AdminHandler):
     renderparams = { 'navtab':'incoming' }
@@ -613,6 +623,7 @@ handlers = [
     ('/user/changetz', han_ChangeTZ),
     ('/admin', han_AdminAdmin),
     ('/admin/allusers', han_AllUsers),
+    ('/admin/allsessions', han_AllSessions),
     ('/incoming', han_Incoming),
     ('/incoming/download/(.+)', han_DLIncoming),
     ('/incoming/info/(.+)', han_FUIIncoming),

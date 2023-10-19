@@ -18,6 +18,7 @@ DB_PATH = config['DEFAULT']['DBFile']
 INCOMING_DIR = config['DEFAULT']['IncomingDir']
 TRASH_DIR = config['DEFAULT']['TrashDir']
 ARCHIVE_DIR = config['DEFAULT']['ArchiveDir']
+SECURE_SITE = config['DEFAULT'].getboolean('SecureSite')
 
 TEMPLATE_PATH = config['AdminTool']['TemplateDir']
 MAX_SESSION_AGE = config['AdminTool'].getint('MaxSessionAge')
@@ -67,6 +68,7 @@ class AdminApp(TinyApp):
         self.archive_dir = ARCHIVE_DIR
         self.unprocessed_dir = os.path.join(ARCHIVE_DIR, 'unprocessed')
 
+        self.secure_site = SECURE_SITE
         self.max_session_age = MAX_SESSION_AGE
         self.max_trash_age = MAX_TRASH_AGE
 
@@ -199,7 +201,7 @@ class han_Home(AdminHandler):
         ### set name cookie for future logins? (filled into login.html form)
 
         sessionid = random_bytes(20)
-        req.set_cookie('sessionid', sessionid, maxage=self.app.max_session_age, httponly=True)
+        req.set_cookie('sessionid', sessionid, maxage=self.app.max_session_age, httponly=True, secure=self.app.secure_site)
         ### also secure=True?
         now = time_now()
         ipaddr = req.env.get('REMOTE_ADDR', '?')

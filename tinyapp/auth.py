@@ -6,7 +6,7 @@ def xsrf_cookie(req, han):
         req._xsrf = req.cookies['_xsrf'].value
     else:
         req._xsrf = random_bytes(16)
-        req.set_cookie('_xsrf', req._xsrf, httponly=True)
+        req.set_cookie('_xsrf', req._xsrf, httponly=True, secure=req.app.secure_site)
     return han(req)
 
 ### make another with secure=True

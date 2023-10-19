@@ -6,7 +6,7 @@ from tinyapp.util import random_bytes
 
 
 def run(appinstance):
-    popt = optparse.OptionParser(usage='admin.wsgi createdb | adduser | userroles | test')
+    popt = optparse.OptionParser(usage='admin.wsgi createdb | adduser | userroles | userpw | test')
     (opts, args) = popt.parse_args()
 
     if not args:
@@ -14,6 +14,7 @@ def run(appinstance):
         print('  admin.wsgi createdb: create database tables')
         print('  admin.wsgi adduser name email pw roles: add a user')
         print('  admin.wsgi userroles name roles: change a user\'s roles')
+        print('  admin.wsgi userpw name pw: change a user\'s password')
         print('  admin.wsgi test [ URI ]: print page to stdout')
         ### cleanup
         return
@@ -31,6 +32,8 @@ def run(appinstance):
         db_add_user(appinstance.getdb(), args)
     elif cmd == 'userroles':
         db_user_roles(appinstance.getdb(), args)
+    elif cmd == 'userpw':
+        db_user_pw(appinstance.getdb(), args)
     else:
         print('command not recognized: %s' % (cmd,))
         print('Usage: %s' % (popt.usage,))
@@ -99,3 +102,27 @@ def db_user_roles(db, args):
     print('setting roles for user "%s"...' % (name,))
     logging.info('CLI: userroles %s, roles=%s', name, roles)
     curs.execute('UPDATE users SET roles = ? WHERE name = ?', (roles, name))
+
+
+def db_user_pw(db, args):
+    if len(args) != 2:
+        print('usage: userpw name pw')
+        return
+    args = [ val.strip() for val in args ]
+    name, pw = args
+    if not name or not pw:
+        print('name, pw must be nonempty')
+        return
+    curs = db.cursor()
+    res = curs.execute('SELECT name FROM users WHERE name = ?', (name,))
+    if not res.fetchall():
+        print('no such user:', name)
+        return
+    pwsalt = random_bytes(8).encode()
+    salted = pwsalt + b':' + pw.encode()
+    crypted = hashlib.sha1(salted).hexdigest()
+    print('changing pw for user "%s"...' % (name,))
+    logging.info('CLI: userpw %s', name)
+    # Log out all sessions for the old pw
+    curs.execute('DELETE FROM sessions WHERE name = ?', (name,))
+    curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, name))

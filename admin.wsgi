@@ -527,6 +527,25 @@ class han_DLTrash(AdminHandler):
         filename = req.matchgroups[0]
         RawDownload(self.app.trash_dir, filename)
 
+class base_FileUploadInfo(AdminHandler):
+    def get_dirname(self):
+        raise NotImplementedError('%s: get_dirname not implemented' % (self.__class__.__name__,))
+        
+    def do_get(self, req):
+        filename = req.matchgroups[0]
+        if bad_filename(filename):
+            msg = 'Not found: %s' % (filename,)
+            raise HTTPError('404 Not Found', msg)
+        pathname = os.path.join(self.get_dirname(), filename)
+        req.set_content_type(PLAINTEXT)
+        yield '### FileUploadInfo: ' + pathname
+
+@beforeall(require_role('incoming', 'admin'))
+class han_FUIIncoming(base_FileUploadInfo):
+    def get_dirname(self):
+        return self.app.incoming_dir
+
+    
 class UploadEntry:
     def __init__(self, args, user=None):
         (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) = args
@@ -585,6 +604,7 @@ handlers = [
     ('/admin/allusers', han_AllUsers),
     ('/incoming', han_Incoming),
     ('/incoming/download/(.+)', han_DLIncoming),
+    ('/incoming/info/(.+)', han_FUIIncoming),
     ('/trash', han_Trash),
     ('/trash/download/(.+)', han_DLTrash),
     ('/uploadlog', han_UploadLog),

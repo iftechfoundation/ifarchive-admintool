@@ -16,7 +16,8 @@
     {% set isselected = (op and opfile == file.name) %}
 
     <dt>
-    <span class="Details">{{ file.fdate }} :</span>
+    <span class="Details">{{ file.fdate }}
+    <a href="{{ approot }}/trash/info/{{ file.name|urlencode }}">(info)</a> :</span>
     <code><a href="{{ approot }}/trash/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
     <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 

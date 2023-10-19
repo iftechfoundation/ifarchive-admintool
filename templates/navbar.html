@@ -12,6 +12,10 @@
   {% endif %}
 
   {% if isadmin or ('incoming' in user.roles) %}
+  <a {% if navtab=='uploads' %} class="Selected" {% endif %} href="{{ approot }}/uploadlog">UploadLog</a>
+  {% endif %}
+
+  {% if isadmin or ('incoming' in user.roles) %}
   <a {% if navtab=='trash' %} class="Selected" {% endif %} href="{{ approot }}/trash">Trash</a>
   {% endif %}
 

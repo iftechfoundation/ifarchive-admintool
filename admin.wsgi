@@ -549,6 +549,8 @@ class UploadEntry:
         
 @beforeall(require_role('incoming', 'admin'))
 class han_UploadLog(AdminHandler):
+    renderparams = { 'navtab':'uploads' }
+
     def do_get(self, req):
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT * FROM uploads ORDER BY uploadtime LIMIT 20')

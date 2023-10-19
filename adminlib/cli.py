@@ -6,15 +6,16 @@ import logging
 from tinyapp.util import random_bytes
 
 def run(appinstance):
-    popt = optparse.OptionParser(usage='admin.wsgi createdb | adduser | userroles | userpw | test')
+    popt = optparse.OptionParser(usage='admin.wsgi cleanup | adduser | userroles | userpw | createdb | test')
     (opts, args) = popt.parse_args()
 
     if not args:
         print('command-line use:')
-        print('  admin.wsgi createdb: create database tables')
+        print('  admin.wsgi cleanup: clean out trash, etc')
         print('  admin.wsgi adduser name email pw roles: add a user')
         print('  admin.wsgi userroles name roles: change a user\'s roles')
         print('  admin.wsgi userpw name pw: change a user\'s password')
+        print('  admin.wsgi createdb: create database tables')
         print('  admin.wsgi test [ URI ]: print page to stdout')
         ### cleanup
         return
@@ -26,6 +27,8 @@ def run(appinstance):
         if args:
             uri = args[0]
         appinstance.test_dump(uri)
+    elif cmd == 'cleanup':
+        db_cleanup(appinstance.getdb())
     elif cmd == 'createdb':
         db_create(appinstance.getdb())
     elif cmd == 'adduser':
@@ -46,6 +49,10 @@ def get_curuser():
     except:
         return '???'
         
+
+def db_cleanup(db):
+    logging.info('CLI user=%s: cleanup', get_curuser())
+    ###
 
 def db_create(db):
     logging.info('CLI user=%s: createdb', get_curuser())

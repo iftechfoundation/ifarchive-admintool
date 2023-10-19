@@ -8,6 +8,12 @@ Upload Info
 
 <p>Info for <code>{{ filename }}</code>:</p>
 
+{% if not uploads %}
+<p>No upload information recorded for this file.</p>
+{% elif uploads|length > 1 %}
+<p>({{ uploads|length }} upload records with the same file content.)</p>
+{% endif %}
+
 {% for ent in uploads %}
 <ul>
   <li>Upload time: {{ ent.fdate }}

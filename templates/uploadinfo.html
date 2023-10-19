@@ -29,7 +29,7 @@ Upload Info
 {% endif %}
 
 {% for ent in uploads %}
-<ul>
+<ul class="InfoList">
   <li><span class="ItemName">Upload time:</span> {{ ent.fdate }}
   <li><span class="ItemName">Filename:</span> <code>{{ ent.filename }}</code>
   {% if ent.filename != ent.origfilename %}

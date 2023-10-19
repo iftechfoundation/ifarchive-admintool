@@ -124,6 +124,15 @@ code {
     padding-bottom: 8px;
 }
 
+.FileComments {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 85%;
+    white-space: pre-wrap;
+    border-left: 2px solid #DA4;
+    padding-left: 10px;
+}
+
 @media screen and (max-width: 480px) {
     #header h1 {
 	font-size: 120%;

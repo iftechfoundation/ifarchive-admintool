@@ -500,10 +500,13 @@ class base_Download(AdminHandler):
     def get_dirname(self):
         raise NotImplementedError('%s: get_dirname not implemented' % (self.__class__.__name__,))
         
-    def raw_download(self, dirname, filename):
+    def do_get(self, req):
+        filename = req.matchgroups[0]
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
+        
+        dirname = self.get_dirname()
         pathname = os.path.join(dirname, filename)
         try:
             stat = os.stat(pathname)
@@ -539,17 +542,11 @@ class base_Download(AdminHandler):
 class han_DLIncoming(base_Download):
     def get_dirname(self):
         return self.app.incoming_dir
-    def do_get(self, req):
-        filename = req.matchgroups[0]
-        self.raw_download(self.get_dirname(), filename)
 
 @beforeall(require_role('incoming', 'admin'))
 class han_DLTrash(base_Download):
     def get_dirname(self):
         return self.app.trash_dir
-    def do_get(self, req):
-        filename = req.matchgroups[0]
-        self.raw_download(self.get_dirname(), filename)
 
 
 class base_FileUploadInfo(AdminHandler):

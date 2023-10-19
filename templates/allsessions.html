@@ -1,0 +1,17 @@
+{% extends "page.html" %}
+
+{% block title %}
+Admin Tool Session List
+{% endblock %}
+
+{% block content %}
+
+<ul>
+  {% for session in sessions %}
+  <li>{{ session.name }} ({{ session.ipaddr }}),
+    logged in {{ session.fstarttime }},
+    expires {{ session.fexpiretime }}
+  {% endfor %}
+</ul>
+
+{% endblock %}

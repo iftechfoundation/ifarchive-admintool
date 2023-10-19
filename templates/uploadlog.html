@@ -6,7 +6,28 @@ Upload History
 
 {% block content %}
 
+{% for ent in uploads %}
 <ul>
+  <li>Upload time: {{ ent.fdate }}
+  <li>Filename: <code>{{ ent.filename }}</code>
+  {% if ent.filename != ent.origfilename %}
+    <li>Original filename: <code>{{ ent.origfilename }}</code>
+  {% endif %}
+  <li>Size: {{ ent.size|delimnumber }} bytes
+  {% if ent.donorname %}
+    <li>Uploader name: {{ ent.donorname }}
+  {% endif %}
+  {% if ent.donoremail %}
+    <li>Uploader email: {{ ent.donoremail }}
+  {% endif %}
+  {% if ent.donorip %}
+    <li>Uploader address: {{ ent.donorip }}
+  {% endif %}
+  <li>Rights: {{ ent.permission }}
+  {% if ent.suggestdir %}
+    <li>Suggested dir: <code>if-archive/{{ ent.suggestdir }}</code>
+  {% endif %}
 </ul>
+{% endfor %}
 
 {% endblock %}

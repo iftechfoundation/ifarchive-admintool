@@ -514,6 +514,7 @@ def RawDownload(dirname, filename):
         return
     raise HTTPRawResponse('200 OK', response_headers, resp())
 
+
 @beforeall(require_role('incoming', 'admin'))
 class han_DLIncoming(AdminHandler):
     def do_get(self, req):
@@ -526,6 +527,13 @@ class han_DLTrash(AdminHandler):
         filename = req.matchgroups[0]
         RawDownload(self.app.trash_dir, filename)
 
+
+@beforeall(require_role('incoming', 'admin'))
+class han_UploadLog(AdminHandler):
+    def do_get(self, req):
+        return self.render('uploadlog.html', req)
+    
+        
 class han_DebugDump(AdminHandler):
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
@@ -554,6 +562,7 @@ handlers = [
     ('/incoming/download/(.+)', han_DLIncoming),
     ('/trash', han_Trash),
     ('/trash/download/(.+)', han_DLTrash),
+    ('/uploadlog', han_UploadLog),
     ('/debugdump', han_DebugDump),
     ('/debugdump/(.+)', han_DebugDump),
 ]

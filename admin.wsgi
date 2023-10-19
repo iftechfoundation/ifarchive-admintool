@@ -496,53 +496,54 @@ class han_Trash(AdminHandler):
                                formerror='Operation not implemented: %s' % (op,))
 
 
+class base_Download(AdminHandler):
+    def raw_download(self, dirname, filename):
+        if bad_filename(filename):
+            msg = 'Not found: %s' % (filename,)
+            raise HTTPError('404 Not Found', msg)
+        pathname = os.path.join(dirname, filename)
+        try:
+            stat = os.stat(pathname)
+            filesize = stat.st_size
+        except Exception as ex:
+            msg = 'Unable to stat: %s %s' % (pathname, ex,)
+            raise HTTPError('400 Not Readable', msg)
+        
+        fl = None
+        try:
+            fl = open(pathname, 'rb')
+        except Exception as ex:
+            msg = 'Unable to read: %s %s' % (pathname, ex,)
+            raise HTTPError('400 Not Readable', msg)
+        
+        response_headers = [
+            ('Content-Type', BINARY),
+            ('Content-Length', str(filesize)),
+            ('Content-Disposition', 'attachment; filename="%s"' % (filename.replace('"', '_'),))
+        ]
+        def resp():
+            while True:
+                val = fl.read(8192)
+                if not val:
+                    break
+                yield val
+            fl.close()
+            return
+        raise HTTPRawResponse('200 OK', response_headers, resp())
 
-def RawDownload(dirname, filename):
-    if bad_filename(filename):
-        msg = 'Not found: %s' % (filename,)
-        raise HTTPError('404 Not Found', msg)
-    pathname = os.path.join(dirname, filename)
-    try:
-        stat = os.stat(pathname)
-        filesize = stat.st_size
-    except Exception as ex:
-        msg = 'Unable to stat: %s %s' % (pathname, ex,)
-        raise HTTPError('400 Not Readable', msg)
-    
-    fl = None
-    try:
-        fl = open(pathname, 'rb')
-    except Exception as ex:
-        msg = 'Unable to read: %s %s' % (pathname, ex,)
-        raise HTTPError('400 Not Readable', msg)
-    
-    response_headers = [
-        ('Content-Type', BINARY),
-        ('Content-Length', str(filesize)),
-        ('Content-Disposition', 'attachment; filename="%s"' % (filename.replace('"', '_'),))
-    ]
-    def resp():
-        while True:
-            val = fl.read(8192)
-            if not val:
-                break
-            yield val
-        fl.close()
-        return
-    raise HTTPRawResponse('200 OK', response_headers, resp())
-
-
-@beforeall(require_role('incoming', 'admin'))
-class han_DLIncoming(AdminHandler):
-    def do_get(self, req):
-        filename = req.matchgroups[0]
-        RawDownload(self.app.incoming_dir, filename)
 
 @beforeall(require_role('incoming', 'admin'))
-class han_DLTrash(AdminHandler):
+class han_DLIncoming(base_Download):
     def do_get(self, req):
         filename = req.matchgroups[0]
-        RawDownload(self.app.trash_dir, filename)
+        self.raw_download(self.app.incoming_dir, filename)
+
+@beforeall(require_role('incoming', 'admin'))
+class han_DLTrash(base_Download):
+    def do_get(self, req):
+        filename = req.matchgroups[0]
+        self.raw_download(self.app.trash_dir, filename)
+
 
 class base_FileUploadInfo(AdminHandler):
     def get_dirname(self):

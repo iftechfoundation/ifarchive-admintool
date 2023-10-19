@@ -538,16 +538,21 @@ class base_FileUploadInfo(AdminHandler):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
         pathname = os.path.join(self.get_dirname(), filename)
-        req.set_content_type(PLAINTEXT)
-        yield '### FileUploadInfo: ' + pathname
+
+        uploads = [] ###
+        return self.render('uploadinfo.html', req, filename=filename, uploads=uploads)
 
 @beforeall(require_role('incoming', 'admin'))
 class han_FUIIncoming(base_FileUploadInfo):
+    renderparams = { 'navtab':'incoming' }
+
     def get_dirname(self):
         return self.app.incoming_dir
 
 @beforeall(require_role('incoming', 'admin'))
 class han_FUITrash(base_FileUploadInfo):
+    renderparams = { 'navtab':'trash' }
+
     def get_dirname(self):
         return self.app.trash_dir
 

@@ -24,6 +24,7 @@ def find_user(req, han):
     if 'sessionid' in req.cookies:
         sessionid = req.cookies['sessionid'].value
         curs = req.app.getdb().cursor()
+        ### also restrict by refreshtime?
         res = curs.execute('SELECT name FROM sessions WHERE sessionid = ?', (sessionid,))
         tup = res.fetchone()
         if tup:

@@ -22,6 +22,13 @@ Upload History
   {% if ent.suggestdir %}
     <li>Suggested dir: <code>if-archive/{{ ent.suggestdir }}</code>
   {% endif %}
+  {% if ent.ifdbid %}
+    <li>IFDB temp ID: {{ ent.ifdbid }}
+  {% endif %}
+  
+  {% if ent.about %}
+  <div class="FileComments">{{ ent.about }}</div>
+  {% endif %}
 </ul>
 {% endfor %}
 

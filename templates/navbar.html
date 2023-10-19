@@ -5,14 +5,14 @@
 
 <div id="navbar">
 
-  <a {% if navtab=='top' %} class="Selected" {% endif %} href="{{ approot }}">Top</a>
+  <a {% if navtab=='top' %} class="Selected" {% endif %} href="{{ approot }}">Home</a>
   
   {% if isadmin or ('incoming' in user.roles) %}
-  <a {% if navtab=='incoming' %} class="Selected" {% endif %} href="{{ approot }}/incoming">Incoming</a>
+  <a {% if navtab=='uploads' %} class="Selected" {% endif %} href="{{ approot }}/uploadlog">UploadLog</a>
   {% endif %}
 
   {% if isadmin or ('incoming' in user.roles) %}
-  <a {% if navtab=='uploads' %} class="Selected" {% endif %} href="{{ approot }}/uploadlog">UploadLog</a>
+  <a {% if navtab=='incoming' %} class="Selected" {% endif %} href="{{ approot }}/incoming">Incoming</a>
   {% endif %}
 
   {% if isadmin or ('incoming' in user.roles) %}

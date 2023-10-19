@@ -4,6 +4,14 @@
 Upload Info
 {% endblock %}
 
+{% block exthead %}
+<style type="text/css">
+  .ItemName {
+      font-size: 85%;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <p>Info for <code><a href="{{ approot }}/{{ uribase }}/download/{{ filename|urlencode }}">{{ filename }}</a></code>:</p>
@@ -16,17 +24,17 @@ Upload Info
 
 {% for ent in uploads %}
 <ul>
-  <li>Upload time: {{ ent.fdate }}
-  <li>Filename: <code>{{ ent.filename }}</code>
+  <li><span class="ItemName">Upload time:</span> {{ ent.fdate }}
+  <li><span class="ItemName">Filename:</span> <code>{{ ent.filename }}</code>
   {% if ent.filename != ent.origfilename %}
-    <li>Original filename: <code>{{ ent.origfilename }}</code>
+    <li><span class="ItemName">Original filename:</span> <code>{{ ent.origfilename }}</code>
   {% endif %}
-  <li>Size: {{ ent.size|delimnumber }} bytes
-  <li>Uploader:
+  <li><span class="ItemName">Size:</span> {{ ent.size|delimnumber }} bytes
+  <li><span class="ItemName">Uploader:</span>
     {% if ent.donorname %}{{ ent.donorname }}{% else %}Anonymous{% endif %}
     {% if ent.donoremail %}&lt;{{ ent.donoremail }}&gt;{% endif %}
     {% if ent.donorip %}&nbsp; ({{ ent.donorip }}){% endif %}
-  <li>Rights: {{ ent.permission }}
+  <li><span class="ItemName">Rights:</span> {{ ent.permission }}
   {% if ent.suggestdir %}
     <li>Suggested dir: <code>if-archive/{{ ent.suggestdir }}</code>
   {% endif %}

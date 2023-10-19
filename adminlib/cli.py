@@ -1,9 +1,9 @@
 import optparse
+import os
 import hashlib
 import logging
 
 from tinyapp.util import random_bytes
-
 
 def run(appinstance):
     popt = optparse.OptionParser(usage='admin.wsgi createdb | adduser | userroles | userpw | test')
@@ -38,9 +38,17 @@ def run(appinstance):
         print('command not recognized: %s' % (cmd,))
         print('Usage: %s' % (popt.usage,))
 
+def get_curuser():
+    """This fails sometimes, I dunno why. So we catch exceptions.
+    """
+    try:
+        return os.getlogin()
+    except:
+        return '???'
+        
 
 def db_create(db):
-    logging.info('CLI: createdb')
+    logging.info('CLI user=%s: createdb', get_curuser())
     curs = db.cursor()
     res = curs.execute('SELECT name FROM sqlite_master')
     tables = [ tup[0] for tup in res.fetchall() ]
@@ -83,7 +91,7 @@ def db_add_user(db, args):
     salted = pwsalt + b':' + pw.encode()
     crypted = hashlib.sha1(salted).hexdigest()
     print('adding user "%s"...' % (name,))
-    logging.info('CLI: adduser %s <%s>, roles=%s', name, email, roles)
+    logging.info('CLI user=%s: adduser %s <%s>, roles=%s', get_curuser(), name, email, roles)
     curs = db.cursor()
     curs.execute('INSERT INTO users (name, email, pw, pwsalt, roles) VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
 
@@ -100,7 +108,7 @@ def db_user_roles(db, args):
         print('no such user:', name)
         return
     print('setting roles for user "%s"...' % (name,))
-    logging.info('CLI: userroles %s, roles=%s', name, roles)
+    logging.info('CLI user=%s: userroles %s, roles=%s', get_curuser(), name, roles)
     curs.execute('UPDATE users SET roles = ? WHERE name = ?', (roles, name))
 
 
@@ -122,7 +130,7 @@ def db_user_pw(db, args):
     salted = pwsalt + b':' + pw.encode()
     crypted = hashlib.sha1(salted).hexdigest()
     print('changing pw for user "%s"...' % (name,))
-    logging.info('CLI: userpw %s', name)
+    logging.info('CLI user=%s: userpw %s', get_curuser(), name)
     # Log out all sessions for the old pw
     curs.execute('DELETE FROM sessions WHERE name = ?', (name,))
     curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, name))

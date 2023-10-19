@@ -53,6 +53,8 @@ def get_curuser():
 def db_cleanup(app, db):
     logging.info('CLI user=%s: cleanup', get_curuser())
 
+    # Clean out old sessions. Note that in the sessions table
+    # (refreshtime >= starttime), so we just look at refreshtime.
     timelimit = time.time() - app.max_session_age
     curs = db.cursor()
     res = curs.execute('DELETE FROM sessions WHERE refreshtime < ?', (timelimit,))

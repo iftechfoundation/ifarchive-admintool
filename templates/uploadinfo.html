@@ -14,7 +14,9 @@ Upload Info
 
 {% block content %}
 
-<p>Info for <code><a href="{{ approot }}/{{ uribase }}/download/{{ filename|urlencode }}">{{ filename }}</a></code>:</p>
+<p>Info for
+  <code><a href="{{ approot }}/{{ uribase }}">{{ uribase }}</a>/<a href="{{ approot }}/{{ uribase }}/download/{{ filename|urlencode }}">{{ filename }}</a></code>:
+</p>
 
 {% if not uploads %}
 <p>No upload information recorded for this file.</p>

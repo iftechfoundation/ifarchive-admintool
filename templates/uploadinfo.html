@@ -9,6 +9,10 @@ Upload Info
   .ItemName {
       font-size: 85%;
   }
+  .ItemGloss {
+      font-size: 85%;
+      font-style: italic;
+  }
 </style>
 {% endblock %}
 
@@ -37,6 +41,8 @@ Upload Info
     {% if ent.donoremail %}&lt;{{ ent.donoremail }}&gt;{% endif %}
     {% if ent.donorip %}&nbsp; ({{ ent.donorip }}){% endif %}
   <li><span class="ItemName">Rights:</span> {{ ent.permission }}
+    {% if ent.permission == 'author' %}<span class="ItemGloss">("I am the author of this file and I give permission")</span>{% endif %}
+    {% if ent.permission == 'tried' %}<span class="ItemGloss">("to the best of my knowledge the author is okay with this")</span>{% endif %}
   {% if ent.suggestdir %}
     <li>Suggested dir: <code>if-archive/{{ ent.suggestdir }}</code>
   {% endif %}

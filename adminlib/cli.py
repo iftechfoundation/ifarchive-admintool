@@ -53,10 +53,12 @@ def get_curuser():
 def db_cleanup(app, db):
     logging.info('CLI user=%s: cleanup', get_curuser())
 
-    timelimit = time.time() - app.max_trash_age
-
-    dells = []
+    timelimit = time.time() - app.max_session_age
+    curs = db.cursor()
+    res = curs.execute('DELETE FROM sessions WHERE refreshtime < ?', (timelimit,))
     
+    timelimit = time.time() - app.max_trash_age
+    dells = []
     for ent in os.scandir(app.trash_dir):
         if ent.is_file():
             stat = ent.stat()

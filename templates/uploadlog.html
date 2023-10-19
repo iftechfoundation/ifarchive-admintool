@@ -14,15 +14,10 @@ Upload History
     <li>Original filename: <code>{{ ent.origfilename }}</code>
   {% endif %}
   <li>Size: {{ ent.size|delimnumber }} bytes
-  {% if ent.donorname %}
-    <li>Uploader name: {{ ent.donorname }}
-  {% endif %}
-  {% if ent.donoremail %}
-    <li>Uploader email: {{ ent.donoremail }}
-  {% endif %}
-  {% if ent.donorip %}
-    <li>Uploader address: {{ ent.donorip }}
-  {% endif %}
+  <li>Uploader:
+    {% if ent.donorname %}{{ ent.donorname }}{% else %}Anonymous{% endif %}
+    {% if ent.donoremail %}&lt;{{ ent.donoremail }}&gt;{% endif %}
+    {% if ent.donorip %}&nbsp; ({{ ent.donorip }}){% endif %}
   <li>Rights: {{ ent.permission }}
   {% if ent.suggestdir %}
     <li>Suggested dir: <code>if-archive/{{ ent.suggestdir }}</code>

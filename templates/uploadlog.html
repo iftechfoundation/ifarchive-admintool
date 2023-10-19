@@ -1,37 +1,6 @@
-{% extends "page.html" %}
+{% extends "uploadlist_base.html" %}
 
 {% block title %}
 Upload History
 {% endblock %}
 
-{% block content %}
-
-{% for ent in uploads %}
-<ul class="InfoList">
-  <li><span class="ItemName">Upload time:</span> {{ ent.fdate }}
-  <li><span class="ItemName">Filename:</span> <code>{{ ent.filename }}</code>
-  {% if ent.filename != ent.origfilename %}
-    <li><span class="ItemName">Original filename:</span> <code>{{ ent.origfilename }}</code>
-  {% endif %}
-  <li><span class="ItemName">Size:</span> {{ ent.size|delimnumber }} bytes
-  <li><span class="ItemName">Uploader:</span>
-    {% if ent.donorname %}{{ ent.donorname }}{% else %}Anonymous{% endif %}
-    {% if ent.donoremail %}&lt;{{ ent.donoremail }}&gt;{% endif %}
-    {% if ent.donorip %}&nbsp; ({{ ent.donorip }}){% endif %}
-  <li><span class="ItemName">Rights:</span> {{ ent.permission }}
-    {% if ent.permission == 'author' %}<span class="ItemGloss">("I am the author of this file and I give permission")</span>{% endif %}
-    {% if ent.permission == 'tried' %}<span class="ItemGloss">("to the best of my knowledge the author is okay with this")</span>{% endif %}
-  {% if ent.suggestdir %}
-    <li>Suggested dir: <code>if-archive/{{ ent.suggestdir }}</code>
-  {% endif %}
-  {% if ent.ifdbid %}
-    <li>IFDB temp ID: {{ ent.ifdbid }}
-  {% endif %}
-  
-  {% if ent.about %}
-  <div class="FileComments">{{ ent.about }}</div>
-  {% endif %}
-</ul>
-{% endfor %}
-
-{% endblock %}

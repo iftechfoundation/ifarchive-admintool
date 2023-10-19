@@ -105,6 +105,27 @@ code {
     padding: 1px 2px;
 }
 
+ul {
+    list-style: none;
+    padding-left: 16px;
+    margin-left: 10px;
+    border-left: 3px solid #F0D0A0;
+}
+
+ul.InfoList {
+    margin-bottom: 20px;
+}
+
+ul.InfoList li {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+ul.UserInfoList li {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
 .FileList dt {
     margin-top: 6px;
 }
@@ -129,8 +150,17 @@ code {
     margin-bottom: 10px;
     font-size: 85%;
     white-space: pre-wrap;
-    border-left: 3px solid #EB8;
-    padding-left: 10px;
+    border-left: 3px solid #F0D0A0;
+    padding-left: 16px;
+}
+
+.ItemName {
+    font-size: 85%;
+}
+
+.ItemGloss {
+    font-size: 85%;
+    font-style: italic;
 }
 
 @media screen and (max-width: 480px) {

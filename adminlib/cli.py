@@ -1,5 +1,6 @@
 import optparse
-import os
+import os, os.path
+import time
 import hashlib
 import logging
 
@@ -17,7 +18,6 @@ def run(appinstance):
         print('  admin.wsgi userpw name pw: change a user\'s password')
         print('  admin.wsgi createdb: create database tables')
         print('  admin.wsgi test [ URI ]: print page to stdout')
-        ### cleanup
         return
 
     cmd = args.pop(0)
@@ -28,7 +28,7 @@ def run(appinstance):
             uri = args[0]
         appinstance.test_dump(uri)
     elif cmd == 'cleanup':
-        db_cleanup(appinstance.getdb())
+        db_cleanup(appinstance, appinstance.getdb())
     elif cmd == 'createdb':
         db_create(appinstance.getdb())
     elif cmd == 'adduser':
@@ -50,9 +50,23 @@ def get_curuser():
         return '???'
         
 
-def db_cleanup(db):
+def db_cleanup(app, db):
     logging.info('CLI user=%s: cleanup', get_curuser())
-    ###
+
+    timelimit = time.time() - app.max_trash_age
+
+    dells = []
+    
+    for ent in os.scandir(app.trash_dir):
+        if ent.is_file():
+            stat = ent.stat()
+            if stat.st_mtime < timelimit:
+                dells.append(ent.name)
+
+    for name in dells:
+        print('Deleting "%s" from trash...' % (name,))
+        pathname = os.path.join(app.trash_dir, name)
+        os.remove(pathname)
 
 def db_create(db):
     logging.info('CLI user=%s: createdb', get_curuser())

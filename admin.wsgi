@@ -551,7 +551,8 @@ class UploadEntry:
 class han_UploadLog(AdminHandler):
     def do_get(self, req):
         curs = self.app.getdb().cursor()
-        res = curs.execute('SELECT * FROM uploads ORDER BY uploadtime')
+        res = curs.execute('SELECT * FROM uploads ORDER BY uploadtime LIMIT 20')
+        ### Should allow OFFSET N for paging
         uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
         return self.render('uploadlog.html', req, uploads=uploads)
     

@@ -543,12 +543,19 @@ class base_FileUploadInfo(AdminHandler):
             raise HTTPError('404 Not Found', msg)
         pathname = os.path.join(self.get_dirname(), filename)
 
+        try:
+            stat = os.stat(pathname)
+            filesize = stat.st_size
+        except Exception as ex:
+            msg = 'Unable to stat: %s %s' % (pathname, ex,)
+            raise HTTPError('400 Not Readable', msg)
+        
         hashval = read_md5(pathname)
         
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', (hashval,))
         uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
-        return self.render('uploadinfo.html', req, filename=filename, uploads=uploads)
+        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
 
 @beforeall(require_role('incoming', 'admin'))
 class han_FUIIncoming(base_FileUploadInfo):

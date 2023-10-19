@@ -545,6 +545,11 @@ class han_FUIIncoming(base_FileUploadInfo):
     def get_dirname(self):
         return self.app.incoming_dir
 
+@beforeall(require_role('incoming', 'admin'))
+class han_FUITrash(base_FileUploadInfo):
+    def get_dirname(self):
+        return self.app.trash_dir
+
     
 class UploadEntry:
     def __init__(self, args, user=None):
@@ -607,6 +612,7 @@ handlers = [
     ('/incoming/info/(.+)', han_FUIIncoming),
     ('/trash', han_Trash),
     ('/trash/download/(.+)', han_DLTrash),
+    ('/trash/info/(.+)', han_FUITrash),
     ('/uploadlog', han_UploadLog),
     ('/debugdump', han_DebugDump),
     ('/debugdump/(.+)', han_DebugDump),

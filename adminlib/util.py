@@ -3,6 +3,7 @@ import time
 import os.path
 import pytz
 import datetime
+import hashlib
 
 import jinja2.ext
 
@@ -44,6 +45,19 @@ def find_unused_filename(val, dir):
         path = os.path.join(dir, newval)
         if not os.path.exists(path):
             return newval
+
+def read_md5(pathname):
+    """Get an MD5 checksum from a file.
+    """
+    hasher = hashlib.md5()
+    fl = open(pathname, 'rb')
+    while True:
+        dat = fl.read(8192)
+        if not dat:
+            break
+        hasher.update(dat)
+    return hasher.hexdigest()
+
 
 tz_utc = pytz.timezone('UTC')
 

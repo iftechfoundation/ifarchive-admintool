@@ -48,7 +48,7 @@ import tinyapp.auth
 
 from adminlib.session import find_user, User
 from adminlib.session import require_user, require_role
-from adminlib.util import bad_filename, in_user_time
+from adminlib.util import bad_filename, in_user_time, read_md5
 from adminlib.util import DelimNumber, find_unused_filename
 from adminlib.info import UploadEntry
 
@@ -539,8 +539,10 @@ class base_FileUploadInfo(AdminHandler):
             raise HTTPError('404 Not Found', msg)
         pathname = os.path.join(self.get_dirname(), filename)
 
+        hashval = read_md5(pathname)
+        
         curs = self.app.getdb().cursor()
-        res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', ('2d282102fa671256327d4767ec23bc6b',))
+        res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', (hashval,))
         uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
         return self.render('uploadinfo.html', req, filename=filename, uploads=uploads)
 

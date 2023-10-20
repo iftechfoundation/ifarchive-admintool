@@ -352,10 +352,27 @@ class han_AllSessions(AdminHandler):
 
     
 class base_DirectoryPage(AdminHandler):
+    """Base class for all handlers that display a file list.
+    This will have subclasses for each directory that has special
+    handling. (Incoming, Trash, etc.)
+    
+    This is rather long and messy because it also handles all the
+    buttons that can appear under a file name: Move, Rename, Delete,
+    and so on.
+    """
+    
     def get_dirpath(self):
+        """Return the (full) filesystem path of the directory that this
+        subclass will operate on. Subclasses must customize this.
+        ### TODO: Pass req as an argument. (Some subclasses will cover
+        many directories, based on request parameters.)
+        """
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
 
     def get_file(self, filename, req):
+        """Get one FileEntry from our directory, or None if the file
+        does not exist.
+        """
         if bad_filename(filename):
             return None
         pathname = os.path.join(self.get_dirpath(), filename)
@@ -365,6 +382,8 @@ class base_DirectoryPage(AdminHandler):
         return FileEntry(filename, stat, user=req._user)
         
     def get_filelist(self, req):
+        """Get a list of FileEntries from our directory.
+        """
         filelist = []
         for ent in os.scandir(self.get_dirpath()):
             if ent.is_file():
@@ -375,9 +394,16 @@ class base_DirectoryPage(AdminHandler):
         return filelist
 
     def do_get(self, req):
+        """The GET case is easy: we just show the list of files. And their
+        buttons.
+        """
         return self.render(self.template, req)
     
     def do_post(self, req):
+        """The POST case has to handle showing the "confirm/cancel" buttons
+        after an operation is selected, and *also* the confirmed operation
+        itself.
+        """
         # dirname is the user-readable name (e.g. "incoming" or "unprocessed")
         dirname = self.renderparams['dirname']
         # dirpath is the filesystem path (e.g. "/var/ifarchive/incoming")

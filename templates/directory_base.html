@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% block prefilelist %}{% endblock %}
+
 {% if not files %}
 <p>No files in <code>/{{ dirname }}</code>.<p>
 {% endif %}

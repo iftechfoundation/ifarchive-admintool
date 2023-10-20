@@ -15,6 +15,10 @@
   <a {% if navtab=='incoming' %} class="Selected" {% endif %} href="{{ approot }}/incoming">Incoming</a>
   {% endif %}
 
+  {% if isadmin or ('unprocessed' in user.roles) %}
+  <a {% if navtab=='unprocessed' %} class="Selected" {% endif %} href="{{ approot }}/arch/unprocessed">Unprocessed</a>
+  {% endif %}
+
   {% if isadmin or ('incoming' in user.roles) %}
   <a {% if navtab=='trash' %} class="Selected" {% endif %} href="{{ approot }}/trash">Trash</a>
   {% endif %}

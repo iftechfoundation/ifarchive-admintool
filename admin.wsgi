@@ -367,7 +367,7 @@ class han_Incoming(base_DirectoryPage):
                                formerror='Invalid filename: "%s"' % (filename,))
         ent = subls[0]
         if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+'/incoming')
+            raise HTTPRedirectPost(self.app.approot+'/'+self.renderparams['uribase'])
         
         if req.get_input_field('op'):
             op = req.get_input_field('op')

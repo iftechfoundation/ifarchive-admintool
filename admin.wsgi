@@ -458,17 +458,21 @@ class han_Incoming(base_DirectoryPage):
 
 @beforeall(require_role('incoming', 'admin'))
 class han_Trash(base_DirectoryPage):
-    renderparams = { 'navtab':'trash', 'uribase':'trash' }
+    renderparams = {
+        'navtab': 'trash',
+        'uribase': 'trash', 'dirname': 'trash',
+        'filebuttons': None,
+    }
+    template = 'trash.html'
+
+    def add_renderparams(self, req, map):
+        map['files'] = self.get_filelist(req)
+        return map
 
     def get_dirpath(self):
         return self.app.trash_dir
 
-    def do_get(self, req):
-        filelist = self.get_filelist(req)
-        return self.render('trash.html', req,
-                               files=filelist)
-    
-    def do_post(self, req):
+    def do_postXXX(self, req):
         filelist = self.get_filelist(req)
         filename = req.get_input_field('filename')
         subls = [ ent for ent in filelist if ent['name'] == filename ]

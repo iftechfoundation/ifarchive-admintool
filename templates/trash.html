@@ -1,10 +1,13 @@
-{% extends "page.html" %}
+{% extends "directory_base.html" %}
 
 {% block title %}Trash Folder{% endblock %}
 
-{% block content %}
-
+{% block prefilelist %}
 <p>(Files in the trash will be deleted after 30 days.)</p>
+{% endblock %}
+
+
+{% block XXXXcontent %}
 
 {% if not files %}
 <p>No files in <code>/trash</code>.<p>

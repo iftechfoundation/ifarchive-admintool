@@ -8,6 +8,27 @@ from tinyapp.constants import PLAINTEXT, HTML
 from tinyapp.excepts import HTTPError, HTTPRawResponse
 from tinyapp.handler import ReqHandler, WrappedHandler
 
+"""TinyApp: A very simple HTTP web framework that lives within a WSGI
+application.
+
+To make a TinyApp application, create a TinyApp with a list of handlers:
+
+  appinstance = TinyApp([
+    ('', han_Home),
+    ('/hello', han_Hello),
+  ])
+  application = appinstance.application
+
+The application global is WSGI's entry point.
+
+The handlers (han_Home, han_Hello in the above example) should be
+ReqHandler class objects. An incoming request for
+  http://server/wsgiapp/hello
+...will be directed to the do_get() method of han_Hello. That method
+should yield some strings, which will become the request response. That's
+pretty much the whole story.
+"""
+
 class TinyApp:
     """Base class for the WSGI application handler.
     Initialize this with the list of URL handlers (RequestHandler classes).

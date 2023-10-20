@@ -316,6 +316,22 @@ class base_DirectoryPage(AdminHandler):
     def get_dirname(self):
         raise NotImplementedError('%s: get_dirname not implemented' % (self.__class__.__name__,))
 
+    def get_file(self, filename, req):
+        if bad_filename(filename):
+            return None
+        pathname = os.path.join(self.get_dirname(), filename)
+        if not os.path.exists(pathname):
+            return None
+        stat = os.stat(pathname)
+        mtime = in_user_time(req._user, stat.st_mtime)
+        file = {
+            'name': filename,
+            'date': stat.st_mtime,
+            'fdate': mtime.strftime('%b %d, %H:%M %Z'),
+            'size': stat.st_size,
+        }
+        return file
+        
     def get_filelist(self, req):
         filelist = []
         for ent in os.scandir(self.get_dirname()):
@@ -344,6 +360,7 @@ class han_Incoming(base_DirectoryPage):
 
     def add_renderparams(self, req, map):
         map['trashcount'] = self.get_trashcount(req)
+        map['files'] = self.get_filelist(req)
         return map
 
     def get_dirname(self):
@@ -354,9 +371,7 @@ class han_Incoming(base_DirectoryPage):
         return count
     
     def do_get(self, req):
-        filelist = self.get_filelist(req)
-        return self.render(self.template, req,
-                               files=filelist)
+        return self.render(self.template, req)
     
     def do_post(self, req):
         filelist = self.get_filelist(req)
@@ -364,7 +379,6 @@ class han_Incoming(base_DirectoryPage):
         subls = [ ent for ent in filelist if ent['name'] == filename ]
         if bad_filename(filename) or not subls:
             return self.render(self.template, req,
-                               files=filelist,
                                formerror='Invalid filename: "%s"' % (filename,))
         ent = subls[0]
         if req.get_input_field('cancel'):
@@ -380,12 +394,10 @@ class han_Incoming(base_DirectoryPage):
             op = 'rename'
         else:
             return self.render(self.template, req,
-                               files=filelist,
                                formerror='Invalid operation')
 
         if not req.get_input_field('confirm'):
             return self.render(self.template, req,
-                               files=filelist,
                                op=op, opfile=filename)
 
         if op == 'delete':
@@ -397,7 +409,6 @@ class han_Incoming(base_DirectoryPage):
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
             return self.render(self.template, req,
-                               files=filelist,
                                diddelete=filename, didnewname=newname)
         
         elif op == 'moveu':
@@ -409,7 +420,6 @@ class han_Incoming(base_DirectoryPage):
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
             return self.render(self.template, req,
-                               files=filelist,
                                didmoveu=filename, didnewname=newname)
         
         elif op == 'rename':
@@ -418,19 +428,16 @@ class han_Incoming(base_DirectoryPage):
                 newname = newname.strip()
             if not newname:
                 return self.render(self.template, req,
-                                   files=filelist,
                                    op=op, opfile=filename,
                                    formerror='You must supply a filename.')
             if bad_filename(newname):
                 return self.render(self.template, req,
-                                   files=filelist,
                                    op=op, opfile=filename,
                                    formerror='Invalid filename: "%s"' % (newname,))
             origpath = os.path.join(self.app.incoming_dir, filename)
             newpath = os.path.join(self.app.incoming_dir, newname)
             if os.path.exists(newpath):
                 return self.render(self.template, req,
-                                   files=filelist,
                                    op=op, opfile=filename,
                                    formerror='Filename already in use: "%s"' % (newname,))
             os.rename(origpath, newpath)
@@ -438,11 +445,9 @@ class han_Incoming(base_DirectoryPage):
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
             return self.render(self.template, req,
-                               files=filelist,
                                didrename=filename, didnewname=newname)
         else:
             return self.render(self.template, req,
-                               files=filelist,
                                formerror='Operation not implemented: %s' % (op,))
 
 

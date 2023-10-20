@@ -6,8 +6,8 @@
   <form method="post" action="{{ requri }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ file.name }}"/>
-  {% if 'move' in filebuttons %}
-    <input class="FormButton" name="move" type="submit" value="Move">
+  {% if 'moveu' in filebuttons %}
+    <input class="FormButton" name="moveu" type="submit" value="Move Up">
   {% endif %}
   {% if 'rename' in filebuttons %}
     <input class="FormButton" name="rename" type="submit" value="Rename">
@@ -47,7 +47,7 @@
   </div>
   </form>
 
-  {% elif op == 'move' %}
+  {% elif op == 'moveu' %}
   
   <div class="FormAction">Really move <code>{{ opfile }}</code> to <code>/unprocessed</code>?</div>
   <form method="post" action="{{ requri }}">

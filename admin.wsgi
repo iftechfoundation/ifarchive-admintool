@@ -334,7 +334,7 @@ class han_Incoming(base_DirectoryPage):
     renderparams = {
         'navtab': 'incoming',
         'uribase': 'incoming', 'dirname': 'incoming',
-        'filebuttons': set(['move', 'rename', 'delete']),
+        'filebuttons': set(['moveu', 'rename', 'delete']),
     }
 
     def get_dirname(self):
@@ -367,8 +367,8 @@ class han_Incoming(base_DirectoryPage):
             op = req.get_input_field('op')
         elif req.get_input_field('delete'):
             op = 'delete'
-        elif req.get_input_field('move'):
-            op = 'move'
+        elif req.get_input_field('moveu'):
+            op = 'moveu'
         elif req.get_input_field('rename'):
             op = 'rename'
         else:
@@ -394,17 +394,17 @@ class han_Incoming(base_DirectoryPage):
                                files=filelist, trashcount=trashcount,
                                diddelete=filename, didnewname=newname)
         
-        elif op == 'move':
+        elif op == 'moveu':
             newname = find_unused_filename(filename, self.app.unprocessed_dir)
             origpath = os.path.join(self.app.incoming_dir, filename)
             newpath = os.path.join(self.app.unprocessed_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Moved "%s" from /incoming to /unprocessed', filename)
-            # Gotta reload filelist, for it as changed
+            # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
             return self.render('incoming.html', req,
                                files=filelist, trashcount=trashcount,
-                               didmove=filename, didnewname=newname)
+                               didmoveu=filename, didnewname=newname)
         
         elif op == 'rename':
             newname = req.get_input_field('newname')

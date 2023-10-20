@@ -1,3 +1,13 @@
 {% extends "directory_base.html" %}
 
 {% block title %}Unprocessed{% endblock %}
+
+{% block postfilelist %}
+
+{% if incomingcount %}
+<p>({% if files %}Also, {% else %}{% endif %}{{ incomingcount }}
+  file(s) are in
+  <code><a href="{{ approot }}/incoming">/incoming</a></code>.)</p>
+{% endif %}
+
+{% endblock %}

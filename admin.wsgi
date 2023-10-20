@@ -496,10 +496,15 @@ class han_Unprocessed(base_DirectoryPage):
 
     def add_renderparams(self, req, map):
         map['files'] = self.get_filelist(req)
+        map['incomingcount'] = self.get_incomingcount(req)
         return map
 
     def get_dirpath(self):
         return self.app.unprocessed_dir
+
+    def get_incomingcount(self, req):
+        count = len([ ent for ent in os.scandir(self.app.incoming_dir) if ent.is_file() ])
+        return count
 
 
 class base_Download(AdminHandler):

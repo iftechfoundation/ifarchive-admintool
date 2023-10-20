@@ -341,6 +341,10 @@ class han_Incoming(base_DirectoryPage):
         'filebuttons': set(['moveu', 'rename', 'delete']),
     }
 
+    def add_renderparams(self, req, map):
+        map['trashcount'] = self.get_trashcount(req)
+        return map
+
     def get_dirname(self):
         return self.app.incoming_dir
 
@@ -350,18 +354,16 @@ class han_Incoming(base_DirectoryPage):
     
     def do_get(self, req):
         filelist = self.get_filelist(req)
-        trashcount = self.get_trashcount(req)
         return self.render('incoming.html', req,
-                               files=filelist, trashcount=trashcount)
+                               files=filelist)
     
     def do_post(self, req):
         filelist = self.get_filelist(req)
-        trashcount = self.get_trashcount(req)
         filename = req.get_input_field('filename')
         subls = [ ent for ent in filelist if ent['name'] == filename ]
         if bad_filename(filename) or not subls:
             return self.render('incoming.html', req,
-                               files=filelist, trashcount=trashcount,
+                               files=filelist,
                                formerror='Invalid filename: "%s"' % (filename,))
         ent = subls[0]
         if req.get_input_field('cancel'):
@@ -377,12 +379,12 @@ class han_Incoming(base_DirectoryPage):
             op = 'rename'
         else:
             return self.render('incoming.html', req,
-                               files=filelist, trashcount=trashcount,
+                               files=filelist,
                                formerror='Invalid operation')
 
         if not req.get_input_field('confirm'):
             return self.render('incoming.html', req,
-                               files=filelist, trashcount=trashcount,
+                               files=filelist,
                                op=op, opfile=filename)
 
         if op == 'delete':
@@ -391,11 +393,10 @@ class han_Incoming(base_DirectoryPage):
             newpath = os.path.join(self.app.trash_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Deleted "%s" from /incoming', filename)
-            # Gotta reload filelist and trashcount, for they have changed
+            # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
-            trashcount = self.get_trashcount(req)
             return self.render('incoming.html', req,
-                               files=filelist, trashcount=trashcount,
+                               files=filelist,
                                diddelete=filename, didnewname=newname)
         
         elif op == 'moveu':
@@ -407,7 +408,7 @@ class han_Incoming(base_DirectoryPage):
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
             return self.render('incoming.html', req,
-                               files=filelist, trashcount=trashcount,
+                               files=filelist,
                                didmoveu=filename, didnewname=newname)
         
         elif op == 'rename':
@@ -416,19 +417,19 @@ class han_Incoming(base_DirectoryPage):
                 newname = newname.strip()
             if not newname:
                 return self.render('incoming.html', req,
-                                   files=filelist, trashcount=trashcount,
+                                   files=filelist,
                                    op=op, opfile=filename,
                                    formerror='You must supply a filename.')
             if bad_filename(newname):
                 return self.render('incoming.html', req,
-                                   files=filelist, trashcount=trashcount,
+                                   files=filelist,
                                    op=op, opfile=filename,
                                    formerror='Invalid filename: "%s"' % (newname,))
             origpath = os.path.join(self.app.incoming_dir, filename)
             newpath = os.path.join(self.app.incoming_dir, newname)
             if os.path.exists(newpath):
                 return self.render('incoming.html', req,
-                                   files=filelist, trashcount=trashcount,
+                                   files=filelist,
                                    op=op, opfile=filename,
                                    formerror='Filename already in use: "%s"' % (newname,))
             os.rename(origpath, newpath)
@@ -436,11 +437,11 @@ class han_Incoming(base_DirectoryPage):
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
             return self.render('incoming.html', req,
-                               files=filelist, trashcount=trashcount,
+                               files=filelist,
                                didrename=filename, didnewname=newname)
         else:
             return self.render('incoming.html', req,
-                               files=filelist, trashcount=trashcount,
+                               files=filelist,
                                formerror='Operation not implemented: %s' % (op,))
 
 

@@ -374,13 +374,11 @@ class han_Incoming(base_DirectoryPage):
         return self.render(self.template, req)
     
     def do_post(self, req):
-        filelist = self.get_filelist(req)
         filename = req.get_input_field('filename')
-        subls = [ ent for ent in filelist if ent['name'] == filename ]
-        if bad_filename(filename) or not subls:
+        ent = self.get_file(filename, req)
+        if not ent:
             return self.render(self.template, req,
                                formerror='Invalid filename: "%s"' % (filename,))
-        ent = subls[0]
         if req.get_input_field('cancel'):
             raise HTTPRedirectPost(self.app.approot+'/'+self.renderparams['uribase'])
         
@@ -406,8 +404,6 @@ class han_Incoming(base_DirectoryPage):
             newpath = os.path.join(self.app.trash_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Deleted "%s" from /incoming', filename)
-            # Gotta reload filelist, for it has changed
-            filelist = self.get_filelist(req)
             return self.render(self.template, req,
                                diddelete=filename, didnewname=newname)
         
@@ -417,8 +413,6 @@ class han_Incoming(base_DirectoryPage):
             newpath = os.path.join(self.app.unprocessed_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Moved "%s" from /incoming to /unprocessed', filename)
-            # Gotta reload filelist, for it has changed
-            filelist = self.get_filelist(req)
             return self.render(self.template, req,
                                didmoveu=filename, didnewname=newname)
         
@@ -442,8 +436,6 @@ class han_Incoming(base_DirectoryPage):
                                    formerror='Filename already in use: "%s"' % (newname,))
             os.rename(origpath, newpath)
             req.loginfo('Renamed "%s" to "%s" in /incoming', filename, newname)
-            # Gotta reload filelist, for it has changed
-            filelist = self.get_filelist(req)
             return self.render(self.template, req,
                                didrename=filename, didnewname=newname)
         else:

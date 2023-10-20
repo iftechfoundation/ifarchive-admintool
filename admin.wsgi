@@ -490,7 +490,7 @@ class base_Download(AdminHandler):
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
         
     def do_get(self, req):
-        filename = req.matchgroups[0]
+        filename = req.match.groupdict()['file']
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
@@ -543,7 +543,7 @@ class base_FileUploadInfo(AdminHandler):
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
         
     def do_get(self, req):
-        filename = req.matchgroups[0]
+        filename = req.match.groupdict()['file']
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
@@ -600,8 +600,10 @@ class han_DebugDump(AdminHandler):
         req.set_content_type(PLAINTEXT)
         yield 'sys.version: %s\n' % (sys.version,)
         yield 'sys.path: %s\n' % (sys.path,)
-        if req.matchgroups:
-            yield 'matchgroups: %s\n' % (req.matchgroups,)
+        if req.match:
+            yield 'match: %s\n' % (req.match,)
+            yield 'match.groups: %s\n' % (req.match.groups(),)
+            yield 'match.groupdict: %s\n' % (req.match.groupdict(),)
         yield 'getpid=%s\n' % (os.getpid(),)
         yield 'getuid=%s, geteuid=%s, getgid=%s, getegid=%s\n' % (os.getuid(), os.geteuid(), os.getgid(), os.getegid(),)
         yield 'environ:\n'
@@ -621,14 +623,17 @@ handlers = [
     ('/admin/allusers', han_AllUsers),
     ('/admin/allsessions', han_AllSessions),
     ('/incoming', han_Incoming),
-    ('/incoming/download/(.+)', han_DLIncoming),
-    ('/incoming/info/(.+)', han_FUIIncoming),
+    ('/incoming/download/(?P<file>.+)', han_DLIncoming),
+    ('/incoming/info/(?P<file>.+)', han_FUIIncoming),
     ('/trash', han_Trash),
-    ('/trash/download/(.+)', han_DLTrash),
-    ('/trash/info/(.+)', han_FUITrash),
+    ('/trash/download/(?P<file>.+)', han_DLTrash),
+    ('/trash/info/(?P<file>.+)', han_FUITrash),
+    #('/arch/unprocessed', han_Unprocessed),
+    #('/arch/unprocessed/download/(?P<file>.+)', han_DLUnprocessed),
+    #('/arch/unprocessed/info/(?P<file>.+)', han_FUIUnprocessed),
     ('/uploadlog', han_UploadLog),
     ('/debugdump', han_DebugDump),
-    ('/debugdump/(.+)', han_DebugDump),
+    ('/debugdump/(?P<arg>.+)', han_DebugDump),
 ]
 
 appinstance = AdminApp(handlers)

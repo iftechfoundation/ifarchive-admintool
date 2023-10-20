@@ -2,3 +2,12 @@
 
 {% block title %}Incoming{% endblock %}
 
+{% block postfilelist %}
+
+{% if trashcount %}
+<p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
+  file(s) are in
+  <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>
+{% endif %}
+
+{% endblock %}

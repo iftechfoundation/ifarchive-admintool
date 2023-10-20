@@ -79,11 +79,7 @@
   {% endfor %}
 </dl>
 
-{% if trashcount %}
-<p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
-  file(s) are in
-  <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>
-{% endif %}
+{% block postfilelist %}{% endblock %}
 
 {% if formerror %}
 <p>{{ formerror }}</p>

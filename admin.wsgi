@@ -504,8 +504,8 @@ class han_Trash(base_DirectoryPage):
 
 
 class base_Download(AdminHandler):
-    def get_dirname(self):
-        raise NotImplementedError('%s: get_dirname not implemented' % (self.__class__.__name__,))
+    def get_dirpath(self):
+        raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
         
     def do_get(self, req):
         filename = req.matchgroups[0]
@@ -513,8 +513,8 @@ class base_Download(AdminHandler):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
         
-        dirname = self.get_dirname()
-        pathname = os.path.join(dirname, filename)
+        dirpath = self.get_dirpath()
+        pathname = os.path.join(dirpath, filename)
         try:
             stat = os.stat(pathname)
             filesize = stat.st_size
@@ -547,25 +547,25 @@ class base_Download(AdminHandler):
 
 @beforeall(require_role('incoming', 'admin'))
 class han_DLIncoming(base_Download):
-    def get_dirname(self):
+    def get_dirpath(self):
         return self.app.incoming_dir
 
 @beforeall(require_role('incoming', 'admin'))
 class han_DLTrash(base_Download):
-    def get_dirname(self):
+    def get_dirpath(self):
         return self.app.trash_dir
 
 
 class base_FileUploadInfo(AdminHandler):
-    def get_dirname(self):
-        raise NotImplementedError('%s: get_dirname not implemented' % (self.__class__.__name__,))
+    def get_dirpath(self):
+        raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
         
     def do_get(self, req):
         filename = req.matchgroups[0]
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
-        pathname = os.path.join(self.get_dirname(), filename)
+        pathname = os.path.join(self.get_dirpath(), filename)
 
         try:
             stat = os.stat(pathname)
@@ -590,14 +590,14 @@ class base_FileUploadInfo(AdminHandler):
 class han_FUIIncoming(base_FileUploadInfo):
     renderparams = { 'navtab':'incoming', 'uribase':'incoming' }
 
-    def get_dirname(self):
+    def get_dirpath(self):
         return self.app.incoming_dir
 
 @beforeall(require_role('incoming', 'admin'))
 class han_FUITrash(base_FileUploadInfo):
     renderparams = { 'navtab':'trash', 'uribase':'trash' }
 
-    def get_dirname(self):
+    def get_dirpath(self):
         return self.app.trash_dir
 
     

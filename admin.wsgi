@@ -52,7 +52,7 @@ from adminlib.session import find_user, User, Session
 from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5
 from adminlib.util import DelimNumber, find_unused_filename
-from adminlib.info import UploadEntry
+from adminlib.info import FileEntry, UploadEntry
 
 class AdminApp(TinyApp):
     def __init__(self, hanclasses):
@@ -323,29 +323,16 @@ class base_DirectoryPage(AdminHandler):
         if not os.path.exists(pathname):
             return None
         stat = os.stat(pathname)
-        mtime = in_user_time(req._user, stat.st_mtime)
-        file = {
-            'name': filename,
-            'date': stat.st_mtime,
-            'fdate': mtime.strftime('%b %d, %H:%M %Z'),
-            'size': stat.st_size,
-        }
-        return file
+        return FileEntry(filename, stat, user=req._user)
         
     def get_filelist(self, req):
         filelist = []
         for ent in os.scandir(self.get_dirpath()):
             if ent.is_file():
                 stat = ent.stat()
-                mtime = in_user_time(req._user, stat.st_mtime)
-                file = {
-                    'name': ent.name,
-                    'date': stat.st_mtime,
-                    'fdate': mtime.strftime('%b %d, %H:%M %Z'),
-                    'size': stat.st_size,
-                }
+                file = FileEntry(ent.name, stat, user=req._user)
                 filelist.append(file)
-        filelist.sort(key=lambda file:file['date'])
+        filelist.sort(key=lambda file:file.date)
         return filelist
 
     def do_get(self, req):

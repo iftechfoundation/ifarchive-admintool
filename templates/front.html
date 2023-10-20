@@ -15,4 +15,13 @@
   {% endif %}
 </p>
 
+<p>
+  {% if not unproccount %}
+    <code><a href="{{ approot }}/arch/unprocessed">/unprocessed</a></code> is empty.
+  {% else %}
+    {{ unproccount }} file(s) in
+    <code><a href="{{ approot }}/arch/unprocessed">/unprocessed</a></code>.
+  {% endif %}
+</p>
+
 {% endblock %}

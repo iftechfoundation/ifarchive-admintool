@@ -209,8 +209,9 @@ class han_Home(AdminHandler):
             return self.render('login.html', req)
 
         incount = len([ ent for ent in os.scandir(self.app.incoming_dir) if ent.is_file() ])
+        unproccount = len([ ent for ent in os.scandir(self.app.unprocessed_dir) if ent.is_file() ])
 
-        return self.render('front.html', req, incount=incount)
+        return self.render('front.html', req, incount=incount, unproccount=unproccount)
 
     def do_post(self, req):
         formname = req.get_input_field('name')

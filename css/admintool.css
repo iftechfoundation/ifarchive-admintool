@@ -80,6 +80,14 @@ body {
 .FormButton {
     font-size: 100%;
     margin: 4px;
+    background-color: white;
+    border: 1px solid #AAA;
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+
+.HotButton {
+    background-color: #EFA;
 }
 
 .FormAction {
@@ -143,6 +151,10 @@ ul.UserInfoList li {
     background: #FFA;
     padding-top: 8px;
     padding-bottom: 8px;
+}
+
+.FileList .Selected .HotButton {
+    background-color: #EAFB80;
 }
 
 .FileComments {

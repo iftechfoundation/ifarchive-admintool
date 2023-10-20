@@ -1,10 +1,18 @@
 from adminlib.util import bad_filename, in_user_time
 
 class FileEntry:
+    # Some files have special meaning for the Archive and shouldn't be
+    # moved or renamed.
+    specialnames = set([
+        'Index',
+        '.listing',
+    ])
+    
     def __init__(self, filename, stat, user=None):
         self.name = filename
         self.date = stat.st_mtime
         self.size = stat.st_size
+        self.isspecial = (filename in self.specialnames)
         
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')

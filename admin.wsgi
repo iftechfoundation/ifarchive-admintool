@@ -374,12 +374,14 @@ class han_Incoming(base_DirectoryPage):
         return self.render(self.template, req)
     
     def do_post(self, req):
-        dirpath = self.get_dirpath()
+        dirname = self.renderparams['dirname'] # like "incoming"
+        dirpath = self.get_dirpath()           # like "/var/ifarchive/incoming"
         filename = req.get_input_field('filename')
         ent = self.get_file(filename, req)
         if not ent:
             return self.render(self.template, req,
-                               formerror='Invalid filename: "%s"' % (filename,))
+                               formerror='File not found: "%s"' % (filename,))
+        
         if req.get_input_field('cancel'):
             raise HTTPRedirectPost(self.app.approot+'/'+self.renderparams['uribase'])
         
@@ -406,7 +408,7 @@ class han_Incoming(base_DirectoryPage):
             origpath = os.path.join(dirpath, filename)
             newpath = os.path.join(self.app.trash_dir, newname)
             os.rename(origpath, newpath)
-            req.loginfo('Deleted "%s" from /incoming', filename)
+            req.loginfo('Deleted "%s" from /%s', filename, dirname)
             return self.render(self.template, req,
                                diddelete=filename, didnewname=newname)
         
@@ -417,7 +419,7 @@ class han_Incoming(base_DirectoryPage):
             origpath = os.path.join(dirpath, filename)
             newpath = os.path.join(self.app.unprocessed_dir, newname)
             os.rename(origpath, newpath)
-            req.loginfo('Moved "%s" from /incoming to /unprocessed', filename)
+            req.loginfo('Moved "%s" from /%s to /unprocessed', filename, dirname)
             return self.render(self.template, req,
                                didmoveu=filename, didnewname=newname)
         
@@ -440,7 +442,7 @@ class han_Incoming(base_DirectoryPage):
                                    op=op, opfile=filename,
                                    formerror='Filename already in use: "%s"' % (newname,))
             os.rename(origpath, newpath)
-            req.loginfo('Renamed "%s" to "%s" in /incoming', filename, newname)
+            req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, dirname)
             return self.render(self.template, req,
                                didrename=filename, didnewname=newname)
         else:

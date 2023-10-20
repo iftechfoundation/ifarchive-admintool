@@ -331,7 +331,7 @@ class base_DirectoryPage(AdminHandler):
 
 @beforeall(require_role('incoming', 'admin'))
 class han_Incoming(base_DirectoryPage):
-    renderparams = { 'navtab':'incoming' }
+    renderparams = { 'navtab':'incoming', 'uribase':'incoming', 'dirname':'incoming' }
 
     def get_dirname(self):
         return self.app.incoming_dir
@@ -438,7 +438,7 @@ class han_Incoming(base_DirectoryPage):
 
 @beforeall(require_role('incoming', 'admin'))
 class han_Trash(base_DirectoryPage):
-    renderparams = { 'navtab':'trash' }
+    renderparams = { 'navtab':'trash', 'uribase':'trash' }
 
     def get_dirname(self):
         return self.app.trash_dir

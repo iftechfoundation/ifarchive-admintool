@@ -3,7 +3,7 @@
 {% block content %}
 
 {% if not files %}
-<p>No files in <code>/incoming</code>.<p>
+<p>No files in <code>/{{ dirname }}</code>.<p>
 {% endif %}
 
 <dl class="FileList">
@@ -12,8 +12,8 @@
 
     <dt>
     <span class="Details">{{ file.fdate }}
-    <a href="{{ approot }}/incoming/info/{{ file.name|urlencode }}">(info)</a> :</span>
-    <code><a href="{{ approot }}/incoming/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
+    <a href="{{ approot }}/{{ uribase }}/info/{{ file.name|urlencode }}">(info)</a> :</span>
+    <code><a href="{{ approot }}/{{ uribase }}/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
     <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
     <dd {% if isselected %}class="Selected"{% endif %}>

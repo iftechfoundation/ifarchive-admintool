@@ -1,0 +1,60 @@
+
+<dd {% if isselected %}class="Selected"{% endif %}>
+{% if not isselected %}
+
+<form method="post" action="{{ requri }}">
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+<input type="hidden" name="filename" value="{{ file.name }}"/>
+<input class="FormButton" name="move" type="submit" value="Move">
+<input class="FormButton" name="rename" type="submit" value="Rename">
+<input class="FormButton" name="delete" type="submit" value="Delete">
+</form>
+
+{% else %}
+
+  {% if op == 'delete' %}
+  
+  <div class="FormAction">Really delete <code>{{ opfile }}</code>?</div>
+  <form method="post" action="{{ requri }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="{{ opfile }}"/>
+  <input type="hidden" name="op" value="{{ op }}"/>
+  <input class="FormButton" name="cancel" type="submit" value="Cancel">
+  <input class="FormButton" name="confirm" type="submit" value="Delete">
+  </form>
+  
+  {% elif op == 'rename' %}
+
+  <div class="FormAction">Rename <code>{{ opfile }}</code> to...</div>
+  <form method="post" action="{{ requri }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="{{ opfile }}"/>
+  <input type="hidden" name="op" value="{{ op }}"/>
+  <div>
+    <input class="FormInput" autocomplete="disabled"
+      id="newname_field" name="newname" type="input" value="{{ opfile }}" placeholder="New filename">
+  </div>
+  <div>
+    <input class="FormButton" name="cancel" type="submit" value="Cancel">
+    <input class="FormButton" name="confirm" type="submit" value="Rename">
+  </div>
+  </form>
+
+  {% elif op == 'move' %}
+  
+  <div class="FormAction">Really move <code>{{ opfile }}</code> to <code>/unprocessed</code>?</div>
+  <form method="post" action="{{ requri }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="{{ opfile }}"/>
+  <input type="hidden" name="op" value="{{ op }}"/>
+  <input class="FormButton" name="cancel" type="submit" value="Cancel">
+  <input class="FormButton" name="confirm" type="submit" value="Move">
+  </form>
+  
+  {% else %}
+  
+  <div class="FormAction">Action not implemented: {{ op }}</div>
+  
+  {% endif %}
+
+{% endif %}

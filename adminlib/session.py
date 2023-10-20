@@ -7,6 +7,12 @@ from tinyapp.excepts import HTTPError
 from adminlib.util import in_user_time
 
 class User:
+    """Represents one user of the admintool.
+    We normally have just one of these at a time, representing the user
+    who sent a given request. (This is req._user.)
+
+    We also use these in the templates which display lists of users.
+    """
     def __init__(self, name, email, roles=None, tzname=None, sessionid=None):
         self.name = name
         self.email = email
@@ -22,6 +28,12 @@ class User:
                 pass
 
 class Session:
+    """Represents one login session for the admintool.
+    
+    Sessions are used in the templates which display lists of
+    sessions. Note that we don't cache these between requests; they
+    are created on the fly for each request.
+    """
     def __init__(self, tup, user=None, maxage=None):
         name, ipaddr, starttime, refreshtime = tup
         self.name = name
@@ -43,6 +55,15 @@ class Session:
 
 
 def find_user(req, han):
+    """Request filter which figures out which user sent the request
+    by looking for a session cookie.
+    
+    This sets req._user to a User object if the request was authenticated.
+    If not, it leaves req._user as None.
+
+    (Note that this doesn't complain about unauthenticated requests. Use
+    require_user() for that.)
+    """
     if 'sessionid' in req.cookies:
         sessionid = req.cookies['sessionid'].value
         curs = req.app.getdb().cursor()
@@ -59,11 +80,18 @@ def find_user(req, han):
     return han(req)
         
 def require_user(req, han):
+    """Request filter which ensures the request is authenticated. If it
+    isn't, it throws a 401 error.
+    """
     if not req._user:
         raise HTTPError('401 Unauthorized', 'Not logged in')
     return han(req)
 
 def require_role(*roles):
+    """Request filter which ensures the request is authenticated as
+    a user with a particular role. (Or any one of a list of roles.) If it
+    isn't, it throws a 401 error.
+    """
     def require(req, han):
         if not req._user:
             raise HTTPError('401 Unauthorized', 'Not logged in')

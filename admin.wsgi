@@ -574,6 +574,12 @@ class han_Unprocessed(base_DirectoryPage):
 
 
 class base_Download(AdminHandler):
+    """Base class for all handlers that download a file within a
+    directory.
+    This will have subclasses for each directory that has special
+    handling. (Incoming, Trash, etc.)
+    """
+    
     def get_dirpath(self):
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
         
@@ -632,6 +638,12 @@ class han_DLUnprocessed(base_Download):
 
 
 class base_FileUploadInfo(AdminHandler):
+    """Base class for all handlers that show upload info for a file
+    within a directory.
+    This will have subclasses for each directory that has special
+    handling. (Incoming, Trash, etc.)
+    """
+    
     def get_dirpath(self):
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
         

@@ -308,13 +308,13 @@ class han_AllSessions(AdminHandler):
                                sessions=sessionlist)
 
     
-@beforeall(require_role('incoming', 'admin'))
-class han_Incoming(AdminHandler):
-    renderparams = { 'navtab':'incoming' }
+class base_DirectoryPage(AdminHandler):
+    def get_dirname(self):
+        raise NotImplementedError('%s: get_dirname not implemented' % (self.__class__.__name__,))
 
     def get_filelist(self, req):
         filelist = []
-        for ent in os.scandir(self.app.incoming_dir):
+        for ent in os.scandir(self.get_dirname()):
             if ent.is_file():
                 stat = ent.stat()
                 mtime = in_user_time(req._user, stat.st_mtime)
@@ -327,6 +327,14 @@ class han_Incoming(AdminHandler):
                 filelist.append(file)
         filelist.sort(key=lambda file:file['date'])
         return filelist
+
+
+@beforeall(require_role('incoming', 'admin'))
+class han_Incoming(base_DirectoryPage):
+    renderparams = { 'navtab':'incoming' }
+
+    def get_dirname(self):
+        return self.app.incoming_dir
 
     def get_trashcount(self, req):
         count = len([ ent for ent in os.scandir(self.app.trash_dir) if ent.is_file() ])
@@ -429,24 +437,11 @@ class han_Incoming(AdminHandler):
 
 
 @beforeall(require_role('incoming', 'admin'))
-class han_Trash(AdminHandler):
+class han_Trash(base_DirectoryPage):
     renderparams = { 'navtab':'trash' }
 
-    def get_filelist(self, req):
-        filelist = []
-        for ent in os.scandir(self.app.trash_dir):
-            if ent.is_file():
-                stat = ent.stat()
-                mtime = in_user_time(req._user, stat.st_mtime)
-                file = {
-                    'name': ent.name,
-                    'date': stat.st_mtime,
-                    'fdate': mtime.strftime('%b %d, %H:%M %Z'),
-                    'size': stat.st_size,
-                }
-                filelist.append(file)
-        filelist.sort(key=lambda file:file['date'])
-        return filelist
+    def get_dirname(self):
+        return self.app.trash_dir
 
     def do_get(self, req):
         filelist = self.get_filelist(req)

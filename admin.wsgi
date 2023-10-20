@@ -1,3 +1,14 @@
+"""
+AdminTool: Web app for IF Archive administration.
+
+See tinyapp/app.py for how the underlying web app framework works.
+
+This file (admin.wsgi) is installed as /var/ifarchive/wsgi-bin/admin.wsgi.
+It can also be run to perform some command-line operations:
+
+  python3 /var/ifarchive/wsgi-bin/admin.wsgi
+"""
+
 import sys
 import time
 import os, os.path

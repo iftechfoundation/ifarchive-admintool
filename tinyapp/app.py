@@ -38,29 +38,42 @@ class TinyApp:
         req = None
         
         try:
+            # Set up the request...
             req = self.create_request(environ)
+            # Process it and call a handler...
             ls = self.process(req)
+            # Run through the handler's output. Note that "ls" isn't
+            # necessarily an array; it could be any iterator.
             output = ''.join(ls)  # Gotta do this before looking at req
             status = req.status
             content_type = req.content_type
             boutput = output.encode()
         except HTTPRawResponse as ex:
+            # Special case: the handler wants to produce the complete
+            # response without our self. Send it forth and exit.
             start_response(ex.status, ex.headers)
             for val in ex.outiter:
                 yield val
             return
         except HTTPError as ex:
+            # The handler threw an exception representing a particular
+            # HTTP error.
             if not req:
+                # Really, req should exist if we got this far. But we'll
+                # cover the case where it doesn't.
                 status = ex.status
                 output = status + '\n\n' + ex.msg
                 content_type = PLAINTEXT
             else:
+                # Let the exception set up the request response info.
                 ls = ex.handle(req)
                 output = ''.join(ls)  # Gotta do this before looking at req
                 status = req.status
                 content_type = req.content_type
             boutput = output.encode()
         except Exception as ex:
+            # An unforeseen exception occurred. By ancient tradition we
+            # return an HTTP 500 error and show the traceback.
             status = '500 Internal Error'
             exinfo = sys.exc_info()  ### In Py3.10, we could skip this and just do traceback.format_exception(ex)
             ls = traceback.format_exception(*exinfo)
@@ -75,6 +88,10 @@ class TinyApp:
                 print(output)   # To Apache error log
                 logging.exception('Caught exception: %s', exfrom)  # To admin log
 
+        # Complete the request by the usual path. The complete bytes output
+        # is now in boutput, and any output headers have been stashed in the
+        # request.
+        
         response_headers = [
             ('Content-Type', content_type),
             ('Content-Length', str(len(boutput)))

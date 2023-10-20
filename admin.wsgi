@@ -20,6 +20,8 @@ import logging, logging.handlers
 import sqlite3
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+# The config file contains all the paths and settings used by the app.
+
 configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
 #configpath = '/var/ifarchive/lib/ifarch.config'
 config = configparser.ConfigParser()
@@ -66,13 +68,22 @@ from adminlib.util import DelimNumber, find_unused_filename
 from adminlib.info import FileEntry, UploadEntry
 
 class AdminApp(TinyApp):
+    """AdminApp: The TinyApp class.
+    """
+    
     def __init__(self, hanclasses):
         TinyApp.__init__(self, hanclasses, wrapall=[
             tinyapp.auth.xsrf_cookie,
             tinyapp.auth.xsrf_check_post,
             find_user,
         ])
+        # We apply three request filters to every incoming request:
+        # - create an XSRF cookie;
+        # - check POST requests for the XSRF cookie;
+        # - see what user is authenticated based on the session cookie.
 
+        # Pull some settings out of the config file.
+        
         self.approot = APP_ROOT
         self.incoming_dir = INCOMING_DIR
         self.trash_dir = TRASH_DIR
@@ -143,6 +154,10 @@ class AdminApp(TinyApp):
 
 
 class AdminRequest(TinyRequest):
+    """Our app-specific subclass of TinyRequest. This just has a spot
+    to stash the current User (as determined by the find_user() filter).
+    """
+    
     def __init__(self, app, env):
         TinyRequest.__init__(self, app, env)
 

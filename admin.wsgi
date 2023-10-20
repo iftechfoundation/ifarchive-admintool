@@ -374,6 +374,7 @@ class han_Incoming(base_DirectoryPage):
         return self.render(self.template, req)
     
     def do_post(self, req):
+        dirname = self.get_dirname()
         filename = req.get_input_field('filename')
         ent = self.get_file(filename, req)
         if not ent:
@@ -399,8 +400,10 @@ class han_Incoming(base_DirectoryPage):
                                op=op, opfile=filename)
 
         if op == 'delete':
+            if dirname == self.app.trash_dir:
+                raise Exception('delete op cannot be used in the trash')
             newname = find_unused_filename(filename, self.app.trash_dir)
-            origpath = os.path.join(self.app.incoming_dir, filename)
+            origpath = os.path.join(dirname, filename)
             newpath = os.path.join(self.app.trash_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Deleted "%s" from /incoming', filename)
@@ -408,8 +411,10 @@ class han_Incoming(base_DirectoryPage):
                                diddelete=filename, didnewname=newname)
         
         elif op == 'moveu':
+            if dirname == self.app.unprocessed_dir:
+                raise Exception('moveu op cannot be used in the unprocessed dir')
             newname = find_unused_filename(filename, self.app.unprocessed_dir)
-            origpath = os.path.join(self.app.incoming_dir, filename)
+            origpath = os.path.join(dirname, filename)
             newpath = os.path.join(self.app.unprocessed_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Moved "%s" from /incoming to /unprocessed', filename)
@@ -428,8 +433,8 @@ class han_Incoming(base_DirectoryPage):
                 return self.render(self.template, req,
                                    op=op, opfile=filename,
                                    formerror='Invalid filename: "%s"' % (newname,))
-            origpath = os.path.join(self.app.incoming_dir, filename)
-            newpath = os.path.join(self.app.incoming_dir, newname)
+            origpath = os.path.join(dirname, filename)
+            newpath = os.path.join(dirname, newname)
             if os.path.exists(newpath):
                 return self.render(self.template, req,
                                    op=op, opfile=filename,

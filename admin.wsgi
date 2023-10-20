@@ -252,6 +252,7 @@ class han_Home(AdminHandler):
         req.loginfo('Logged in: user=%s, roles=%s', name, roles)
         raise HTTPRedirectPost(self.app.approot)
 
+
 class han_LogOut(AdminHandler):
     def do_get(self, req):
         if req._user:
@@ -259,6 +260,7 @@ class han_LogOut(AdminHandler):
             curs.execute('DELETE FROM sessions WHERE sessionid = ?', (req._user.sessionid,))
             # Could clear the sessionid cookie here but I can't seem to make that work
         raise HTTPRedirectPost(self.app.approot)
+
 
 @beforeall(require_user)
 class han_UserProfile(AdminHandler):
@@ -657,6 +659,9 @@ class han_UploadLog(AdminHandler):
     
         
 class han_DebugDump(AdminHandler):
+    """Display all request information. I used this a lot during testing
+    but it should be disabled in production.
+    """
     def do_get(self, req):
         req.set_content_type(PLAINTEXT)
         yield 'sys.version: %s\n' % (sys.version,)

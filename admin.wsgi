@@ -146,16 +146,20 @@ class AdminRequest(TinyRequest):
 
 class AdminHandler(ReqHandler):
     renderparams = None
+
+    def add_renderparams(self, req, map):
+        return map
     
     def render(self, template, req, **params):
         """Render a template for the current request. This adds in some
         per-handler template parameters.
         """
         if not self.renderparams:
-            map = params
+            map = {}
         else:
             map = dict(self.renderparams)
-            map.update(params)
+        map = self.add_renderparams(req, map)
+        map.update(params)
         return self.app.render(template, req, **map)
 
     

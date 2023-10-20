@@ -1,0 +1,18 @@
+
+{% if diddelete %}
+<p>
+  Deleted <code>{{ diddelete }}</code> from <code>/{{ dirname }}</code>.
+</p>
+{% endif %}
+
+{% if didrename %}
+<p>
+  Renamed <code>{{ didrename }}</code> to <code>{{ didnewname }}</code>.
+</p>
+{% endif %}
+
+{% if didmove %}
+<p>
+  Moved <code>{{ didmove }}</code> to <code>/unprocessed</code>.
+</p>
+{% endif %}

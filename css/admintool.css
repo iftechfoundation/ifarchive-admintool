@@ -165,17 +165,17 @@ ul.UserInfoList li {
 
 @media screen and (max-width: 480px) {
     #header h1 {
-	font-size: 120%;
+        font-size: 120%;
     }
     
     #headercol {
-	margin-left: 20px;
-	margin-right: 20px;
+        margin-left: 20px;
+        margin-right: 20px;
     }
 
     #bodycol {
-	margin-left: 20px;
-	margin-right: 20px;
+        margin-left: 20px;
+        margin-right: 20px;
     }
     
 }

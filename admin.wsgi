@@ -420,7 +420,9 @@ class base_DirectoryPage(AdminHandler):
         # On any Cancel button, we redirect back to the GET for this page.
         if req.get_input_field('cancel'):
             raise HTTPRedirectPost(self.app.approot+'/'+uribase)
-        
+
+        # The operation may be defined by an "op" hidden field or by the
+        # button just pressed. (Depending on what stage we're at.)
         if req.get_input_field('op'):
             op = req.get_input_field('op')
         elif req.get_input_field('delete'):
@@ -435,10 +437,17 @@ class base_DirectoryPage(AdminHandler):
             return self.render(self.template, req,
                                formerror='Invalid operation')
 
+        # If neither "confirm" nor "cancel" was pressed, we're at the
+        # stage of showing those buttons. (And also the "rename" input
+        # field, etc.) Render the template with those controls showing.
+        # "opfile" will be the highlighted file.
         if not req.get_input_field('confirm'):
             return self.render(self.template, req,
                                op=op, opfile=filename)
 
+        # The "confirm" button was pressed, so it's time to perform the
+        # action.
+        
         if op == 'delete':
             if dirpath == self.app.trash_dir:
                 raise Exception('delete op cannot be used in the trash')

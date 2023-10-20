@@ -374,8 +374,13 @@ class han_Incoming(base_DirectoryPage):
         return self.render(self.template, req)
     
     def do_post(self, req):
-        dirname = self.renderparams['dirname'] # like "incoming"
-        dirpath = self.get_dirpath()           # like "/var/ifarchive/incoming"
+        # dirname is the user-readable name (e.g. "incoming" or "unprocessed")
+        dirname = self.renderparams['dirname']
+        # dirpath is the filesystem path (e.g. "/var/ifarchive/incoming")
+        dirpath = self.get_dirpath()
+        # uribase is the URL element after approot (e.g. "incoming" or "arch/unprocessed")
+        uribase = self.renderparams['uribase']
+        
         filename = req.get_input_field('filename')
         ent = self.get_file(filename, req)
         if not ent:
@@ -383,7 +388,7 @@ class han_Incoming(base_DirectoryPage):
                                formerror='File not found: "%s"' % (filename,))
         
         if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+'/'+self.renderparams['uribase'])
+            raise HTTPRedirectPost(self.app.approot+'/'+uribase)
         
         if req.get_input_field('op'):
             op = req.get_input_field('op')

@@ -554,6 +554,11 @@ class han_DLTrash(base_Download):
     def get_dirpath(self):
         return self.app.trash_dir
 
+@beforeall(require_role('incoming', 'admin'))
+class han_DLUnprocessed(base_Download):
+    def get_dirpath(self):
+        return self.app.unprocessed_dir
+
 
 class base_FileUploadInfo(AdminHandler):
     def get_dirpath(self):
@@ -598,6 +603,13 @@ class han_FUITrash(base_FileUploadInfo):
 
     def get_dirpath(self):
         return self.app.trash_dir
+
+@beforeall(require_role('incoming', 'admin'))
+class han_FUIUnprocessed(base_FileUploadInfo):
+    renderparams = { 'navtab':'unprocessed', 'uribase':'arch/unprocessed' }
+
+    def get_dirpath(self):
+        return self.app.unprocessed_dir
 
     
 @beforeall(require_role('incoming', 'admin'))
@@ -646,8 +658,8 @@ handlers = [
     ('/trash/download/(?P<file>.+)', han_DLTrash),
     ('/trash/info/(?P<file>.+)', han_FUITrash),
     ('/arch/unprocessed', han_Unprocessed),
-    #('/arch/unprocessed/download/(?P<file>.+)', han_DLUnprocessed),
-    #('/arch/unprocessed/info/(?P<file>.+)', han_FUIUnprocessed),
+    ('/arch/unprocessed/download/(?P<file>.+)', han_DLUnprocessed),
+    ('/arch/unprocessed/info/(?P<file>.+)', han_FUIUnprocessed),
     ('/uploadlog', han_UploadLog),
     ('/debugdump', han_DebugDump),
     ('/debugdump/(?P<arg>.+)', han_DebugDump),

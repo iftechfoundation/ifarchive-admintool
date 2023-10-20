@@ -374,6 +374,8 @@ class base_DirectoryPage(AdminHandler):
             op = 'delete'
         elif req.get_input_field('moveu'):
             op = 'moveu'
+        elif req.get_input_field('movei'):
+            op = 'movei'
         elif req.get_input_field('rename'):
             op = 'rename'
         else:
@@ -405,6 +407,17 @@ class base_DirectoryPage(AdminHandler):
             req.loginfo('Moved "%s" from /%s to /unprocessed', filename, dirname)
             return self.render(self.template, req,
                                didmoveu=filename, didnewname=newname)
+        
+        elif op == 'movei':
+            if dirpath == self.app.incoming_dir:
+                raise Exception('movei op cannot be used in the incoming dir')
+            newname = find_unused_filename(filename, self.app.incoming_dir)
+            origpath = os.path.join(dirpath, filename)
+            newpath = os.path.join(self.app.incoming_dir, newname)
+            os.rename(origpath, newpath)
+            req.loginfo('Moved "%s" from /%s to /incoming', filename, dirname)
+            return self.render(self.template, req,
+                               didmovei=filename, didnewname=newname)
         
         elif op == 'rename':
             newname = req.get_input_field('newname')
@@ -453,7 +466,6 @@ class han_Incoming(base_DirectoryPage):
     def get_trashcount(self, req):
         count = len([ ent for ent in os.scandir(self.app.trash_dir) if ent.is_file() ])
         return count
-    
 
 
 @beforeall(require_role('incoming', 'admin'))
@@ -461,7 +473,7 @@ class han_Trash(base_DirectoryPage):
     renderparams = {
         'navtab': 'trash',
         'uribase': 'trash', 'dirname': 'trash',
-        'filebuttons': None,
+        'filebuttons': set(['movei']),
     }
     template = 'trash.html'
 
@@ -471,48 +483,6 @@ class han_Trash(base_DirectoryPage):
 
     def get_dirpath(self):
         return self.app.trash_dir
-
-    def do_postXXX(self, req):
-        filelist = self.get_filelist(req)
-        filename = req.get_input_field('filename')
-        subls = [ ent for ent in filelist if ent['name'] == filename ]
-        if bad_filename(filename) or not subls:
-            return self.render('trash.html', req,
-                               files=filelist,
-                               formerror='Invalid filename: "%s"' % (filename,))
-        ent = subls[0]
-        if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+'/trash')
-        
-        if req.get_input_field('op'):
-            op = req.get_input_field('op')
-        elif req.get_input_field('restore'):
-            op = 'restore'
-        else:
-            return self.render('trash.html', req,
-                               files=filelist,
-                               formerror='Invalid operation')
-
-        if not req.get_input_field('confirm'):
-            return self.render('trash.html', req,
-                               files=filelist,
-                               op=op, opfile=filename)
-
-        if op == 'restore':
-            newname = find_unused_filename(filename, self.app.incoming_dir)
-            origpath = os.path.join(self.app.trash_dir, filename)
-            newpath = os.path.join(self.app.incoming_dir, newname)
-            os.rename(origpath, newpath)
-            req.loginfo('Restored "%s" from /trash to /incoming', filename)
-            # Gotta reload filelist, for it has changed
-            filelist = self.get_filelist(req)
-            return self.render('trash.html', req,
-                               files=filelist,
-                               didrestore=filename, didnewname=newname)
-        else:
-            return self.render('trash.html', req,
-                               files=filelist,
-                               formerror='Operation not implemented: %s' % (op,))
 
 
 class base_Download(AdminHandler):

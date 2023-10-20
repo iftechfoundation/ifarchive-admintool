@@ -416,7 +416,8 @@ class base_DirectoryPage(AdminHandler):
         if not ent:
             return self.render(self.template, req,
                                formerror='File not found: "%s"' % (filename,))
-        
+
+        # On any Cancel button, we redirect back to the GET for this page.
         if req.get_input_field('cancel'):
             raise HTTPRedirectPost(self.app.approot+'/'+uribase)
         

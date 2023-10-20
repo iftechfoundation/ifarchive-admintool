@@ -11,7 +11,7 @@ from tinyapp.handler import ReqHandler, WrappedHandler
 """TinyApp: A very simple HTTP web framework that lives within a WSGI
 application.
 
-To make a TinyApp application, create a TinyApp with a list of handlers:
+To make a TinyApp application, create a TinyApp with a list of *handlers*:
 
   appinstance = TinyApp([
     ('', han_Home),
@@ -27,13 +27,24 @@ ReqHandler class objects. An incoming request for
 ...will be directed to the do_get() method of han_Hello. That method
 should yield some strings, which will become the request response. That's
 pretty much the whole story.
+
+To fancy up the story, we can apply *request filters*. Filters can be
+applied to specific methods (do_get() or do_post()), or to an entire
+handler, or globally to all handlers in the app.
+
+When a request comes in, every applicable filter is called before
+the handler method is called. The filter function should either
+
+- Modify the request by adding some information for later handlers;
+- Modify the request by setting response headers or cookies; or
+- Abort by throwing an exception.
 """
 
 class TinyApp:
     """Base class for the WSGI application handler.
     Initialize this with the list of URL handlers (RequestHandler classes).
     The wrapall argument, if supplied, should be a list of request filters
-    to apply to every handler.
+    to apply to every handler in the app.
     """
     def __init__(self, hanclasses, wrapall=None):
         self.handlers = []

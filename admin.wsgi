@@ -340,6 +340,7 @@ class han_Incoming(base_DirectoryPage):
         'uribase': 'incoming', 'dirname': 'incoming',
         'filebuttons': set(['moveu', 'rename', 'delete']),
     }
+    template = 'incoming.html'
 
     def add_renderparams(self, req, map):
         map['trashcount'] = self.get_trashcount(req)
@@ -354,7 +355,7 @@ class han_Incoming(base_DirectoryPage):
     
     def do_get(self, req):
         filelist = self.get_filelist(req)
-        return self.render('incoming.html', req,
+        return self.render(self.template, req,
                                files=filelist)
     
     def do_post(self, req):
@@ -362,7 +363,7 @@ class han_Incoming(base_DirectoryPage):
         filename = req.get_input_field('filename')
         subls = [ ent for ent in filelist if ent['name'] == filename ]
         if bad_filename(filename) or not subls:
-            return self.render('incoming.html', req,
+            return self.render(self.template, req,
                                files=filelist,
                                formerror='Invalid filename: "%s"' % (filename,))
         ent = subls[0]
@@ -378,12 +379,12 @@ class han_Incoming(base_DirectoryPage):
         elif req.get_input_field('rename'):
             op = 'rename'
         else:
-            return self.render('incoming.html', req,
+            return self.render(self.template, req,
                                files=filelist,
                                formerror='Invalid operation')
 
         if not req.get_input_field('confirm'):
-            return self.render('incoming.html', req,
+            return self.render(self.template, req,
                                files=filelist,
                                op=op, opfile=filename)
 
@@ -395,7 +396,7 @@ class han_Incoming(base_DirectoryPage):
             req.loginfo('Deleted "%s" from /incoming', filename)
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
-            return self.render('incoming.html', req,
+            return self.render(self.template, req,
                                files=filelist,
                                diddelete=filename, didnewname=newname)
         
@@ -407,7 +408,7 @@ class han_Incoming(base_DirectoryPage):
             req.loginfo('Moved "%s" from /incoming to /unprocessed', filename)
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
-            return self.render('incoming.html', req,
+            return self.render(self.template, req,
                                files=filelist,
                                didmoveu=filename, didnewname=newname)
         
@@ -416,19 +417,19 @@ class han_Incoming(base_DirectoryPage):
             if newname is not None:
                 newname = newname.strip()
             if not newname:
-                return self.render('incoming.html', req,
+                return self.render(self.template, req,
                                    files=filelist,
                                    op=op, opfile=filename,
                                    formerror='You must supply a filename.')
             if bad_filename(newname):
-                return self.render('incoming.html', req,
+                return self.render(self.template, req,
                                    files=filelist,
                                    op=op, opfile=filename,
                                    formerror='Invalid filename: "%s"' % (newname,))
             origpath = os.path.join(self.app.incoming_dir, filename)
             newpath = os.path.join(self.app.incoming_dir, newname)
             if os.path.exists(newpath):
-                return self.render('incoming.html', req,
+                return self.render(self.template, req,
                                    files=filelist,
                                    op=op, opfile=filename,
                                    formerror='Filename already in use: "%s"' % (newname,))
@@ -436,11 +437,11 @@ class han_Incoming(base_DirectoryPage):
             req.loginfo('Renamed "%s" to "%s" in /incoming', filename, newname)
             # Gotta reload filelist, for it has changed
             filelist = self.get_filelist(req)
-            return self.render('incoming.html', req,
+            return self.render(self.template, req,
                                files=filelist,
                                didrename=filename, didnewname=newname)
         else:
-            return self.render('incoming.html', req,
+            return self.render(self.template, req,
                                files=filelist,
                                formerror='Operation not implemented: %s' % (op,))
 

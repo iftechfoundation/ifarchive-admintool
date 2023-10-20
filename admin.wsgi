@@ -490,7 +490,7 @@ class han_Unprocessed(base_DirectoryPage):
     renderparams = {
         'navtab': 'unprocessed',
         'uribase': 'arch/unprocessed', 'dirname': 'unprocessed',
-        'filebuttons': set(['delete', 'rename']),
+        'filebuttons': set(['delete', 'movei', 'rename']),
     }
     template = 'unprocessed.html'
 

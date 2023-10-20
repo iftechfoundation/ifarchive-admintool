@@ -348,28 +348,6 @@ class base_DirectoryPage(AdminHandler):
         filelist.sort(key=lambda file:file['date'])
         return filelist
 
-
-@beforeall(require_role('incoming', 'admin'))
-class han_Incoming(base_DirectoryPage):
-    renderparams = {
-        'navtab': 'incoming',
-        'uribase': 'incoming', 'dirname': 'incoming',
-        'filebuttons': set(['moveu', 'rename', 'delete']),
-    }
-    template = 'incoming.html'
-
-    def add_renderparams(self, req, map):
-        map['trashcount'] = self.get_trashcount(req)
-        map['files'] = self.get_filelist(req)
-        return map
-
-    def get_dirpath(self):
-        return self.app.incoming_dir
-
-    def get_trashcount(self, req):
-        count = len([ ent for ent in os.scandir(self.app.trash_dir) if ent.is_file() ])
-        return count
-    
     def do_get(self, req):
         return self.render(self.template, req)
     
@@ -453,6 +431,29 @@ class han_Incoming(base_DirectoryPage):
         else:
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))
+
+
+@beforeall(require_role('incoming', 'admin'))
+class han_Incoming(base_DirectoryPage):
+    renderparams = {
+        'navtab': 'incoming',
+        'uribase': 'incoming', 'dirname': 'incoming',
+        'filebuttons': set(['moveu', 'rename', 'delete']),
+    }
+    template = 'incoming.html'
+
+    def add_renderparams(self, req, map):
+        map['trashcount'] = self.get_trashcount(req)
+        map['files'] = self.get_filelist(req)
+        return map
+
+    def get_dirpath(self):
+        return self.app.incoming_dir
+
+    def get_trashcount(self, req):
+        count = len([ ent for ent in os.scandir(self.app.trash_dir) if ent.is_file() ])
+        return count
+    
 
 
 @beforeall(require_role('incoming', 'admin'))

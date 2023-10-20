@@ -5,9 +5,15 @@
 <form method="post" action="{{ requri }}">
 <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
 <input type="hidden" name="filename" value="{{ file.name }}"/>
+{% if 'move' in filebuttons %}
 <input class="FormButton" name="move" type="submit" value="Move">
+{% endif %}
+{% if 'rename' in filebuttons %}
 <input class="FormButton" name="rename" type="submit" value="Rename">
+{% endif %}
+{% if 'delete' in filebuttons %}
 <input class="FormButton" name="delete" type="submit" value="Delete">
+{% endif %}
 </form>
 
 {% else %}

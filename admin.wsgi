@@ -331,7 +331,11 @@ class base_DirectoryPage(AdminHandler):
 
 @beforeall(require_role('incoming', 'admin'))
 class han_Incoming(base_DirectoryPage):
-    renderparams = { 'navtab':'incoming', 'uribase':'incoming', 'dirname':'incoming' }
+    renderparams = {
+        'navtab': 'incoming',
+        'uribase': 'incoming', 'dirname': 'incoming',
+        'filebuttons': set(['move', 'rename', 'delete']),
+    }
 
     def get_dirname(self):
         return self.app.incoming_dir

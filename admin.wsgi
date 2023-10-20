@@ -418,6 +418,10 @@ class base_DirectoryPage(AdminHandler):
                 return self.render(self.template, req,
                                    op=op, opfile=filename,
                                    formerror='Invalid filename: "%s"' % (newname,))
+            if newname in FileEntry.specialnames:
+                return self.render(self.template, req,
+                                   op=op, opfile=filename,
+                                   formerror='Cannot use reserved filename: "%s"' % (newname,))
             origpath = os.path.join(dirpath, filename)
             newpath = os.path.join(dirpath, newname)
             if os.path.exists(newpath):

@@ -1,0 +1,110 @@
+{% extends "page.html" %}
+
+{% block content %}
+
+{% if not files %}
+<p>No files in <code>/incoming</code>.<p>
+{% endif %}
+
+<dl class="FileList">
+  {% for file in files %}
+    {% set isselected = (op and opfile == file.name) %}
+
+    <dt>
+    <span class="Details">{{ file.fdate }}
+    <a href="{{ approot }}/incoming/info/{{ file.name|urlencode }}">(info)</a> :</span>
+    <code><a href="{{ approot }}/incoming/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
+    <span class="Details">({{ file.size|delimnumber }} bytes)</span>
+
+    <dd {% if isselected %}class="Selected"{% endif %}>
+    {% if not isselected %}
+
+    <form method="post" action="{{ requri }}">
+    <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+    <input type="hidden" name="filename" value="{{ file.name }}"/>
+    <input class="FormButton" name="move" type="submit" value="Move">
+    <input class="FormButton" name="rename" type="submit" value="Rename">
+    <input class="FormButton" name="delete" type="submit" value="Delete">
+    </form>
+
+    {% else %}
+
+      {% if op == 'delete' %}
+      
+      <div class="FormAction">Really delete <code>{{ opfile }}</code>?</div>
+      <form method="post" action="{{ requri }}">
+      <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+      <input type="hidden" name="filename" value="{{ opfile }}"/>
+      <input type="hidden" name="op" value="{{ op }}"/>
+      <input class="FormButton" name="cancel" type="submit" value="Cancel">
+      <input class="FormButton" name="confirm" type="submit" value="Delete">
+      </form>
+      
+      {% elif op == 'rename' %}
+
+      <div class="FormAction">Rename <code>{{ opfile }}</code> to...</div>
+      <form method="post" action="{{ requri }}">
+      <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+      <input type="hidden" name="filename" value="{{ opfile }}"/>
+      <input type="hidden" name="op" value="{{ op }}"/>
+      <div>
+        <input class="FormInput" autocomplete="disabled"
+          id="newname_field" name="newname" type="input" placeholder="New filename">
+      </div>
+      <div>
+        <input class="FormButton" name="cancel" type="submit" value="Cancel">
+        <input class="FormButton" name="confirm" type="submit" value="Rename">
+      </div>
+      </form>
+
+      {% elif op == 'move' %}
+      
+      <div class="FormAction">Really move <code>{{ opfile }}</code> to <code>/unprocessed</code>?</div>
+      <form method="post" action="{{ requri }}">
+      <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+      <input type="hidden" name="filename" value="{{ opfile }}"/>
+      <input type="hidden" name="op" value="{{ op }}"/>
+      <input class="FormButton" name="cancel" type="submit" value="Cancel">
+      <input class="FormButton" name="confirm" type="submit" value="Move">
+      </form>
+      
+      {% else %}
+      
+      <div class="FormAction">Action not implemented: {{ op }}</div>
+      
+      {% endif %}
+    
+    {% endif %}
+
+  {% endfor %}
+</dl>
+
+{% if trashcount %}
+<p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
+  file(s) are in
+  <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>
+{% endif %}
+
+{% if formerror %}
+<p>{{ formerror }}</p>
+{% endif %}
+
+{% if diddelete %}
+<p>
+  Deleted <code>{{ diddelete }}</code> from <code>/incoming</code>.
+</p>
+{% endif %}
+
+{% if didrename %}
+<p>
+  Renamed <code>{{ didrename }}</code> to <code>{{ didnewname }}</code>.
+</p>
+{% endif %}
+
+{% if didmove %}
+<p>
+  Moved <code>{{ didmove }}</code> to <code>/unprocessed</code>.
+</p>
+{% endif %}
+
+{% endblock %}

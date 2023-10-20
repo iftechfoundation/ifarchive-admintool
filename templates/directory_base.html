@@ -15,10 +15,11 @@
     <dt>
     <span class="Details">{{ file.fdate }}
     {% if not file.isspecial %}
-      <a href="{{ approot }}/{{ uribase }}/info/{{ file.name|urlencode }}">(info)</a> :</span>
+      <a href="{{ approot }}/{{ uribase }}/info/{{ file.name|urlencode }}">(info)</a>
     {% else %}
-      &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     {% endif %}
+    :</span>
     <code><a href="{{ approot }}/{{ uribase }}/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
     <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 

@@ -473,7 +473,7 @@ class han_Trash(base_DirectoryPage):
     renderparams = {
         'navtab': 'trash',
         'uribase': 'trash', 'dirname': 'trash',
-        'filebuttons': set(['movei']),
+        'filebuttons': set(['movei', 'moveu', 'rename']),
     }
     template = 'trash.html'
 

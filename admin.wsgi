@@ -313,13 +313,13 @@ class han_AllSessions(AdminHandler):
 
     
 class base_DirectoryPage(AdminHandler):
-    def get_dirname(self):
-        raise NotImplementedError('%s: get_dirname not implemented' % (self.__class__.__name__,))
+    def get_dirpath(self):
+        raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
 
     def get_file(self, filename, req):
         if bad_filename(filename):
             return None
-        pathname = os.path.join(self.get_dirname(), filename)
+        pathname = os.path.join(self.get_dirpath(), filename)
         if not os.path.exists(pathname):
             return None
         stat = os.stat(pathname)
@@ -334,7 +334,7 @@ class base_DirectoryPage(AdminHandler):
         
     def get_filelist(self, req):
         filelist = []
-        for ent in os.scandir(self.get_dirname()):
+        for ent in os.scandir(self.get_dirpath()):
             if ent.is_file():
                 stat = ent.stat()
                 mtime = in_user_time(req._user, stat.st_mtime)
@@ -363,7 +363,7 @@ class han_Incoming(base_DirectoryPage):
         map['files'] = self.get_filelist(req)
         return map
 
-    def get_dirname(self):
+    def get_dirpath(self):
         return self.app.incoming_dir
 
     def get_trashcount(self, req):
@@ -374,7 +374,7 @@ class han_Incoming(base_DirectoryPage):
         return self.render(self.template, req)
     
     def do_post(self, req):
-        dirname = self.get_dirname()
+        dirpath = self.get_dirpath()
         filename = req.get_input_field('filename')
         ent = self.get_file(filename, req)
         if not ent:
@@ -400,10 +400,10 @@ class han_Incoming(base_DirectoryPage):
                                op=op, opfile=filename)
 
         if op == 'delete':
-            if dirname == self.app.trash_dir:
+            if dirpath == self.app.trash_dir:
                 raise Exception('delete op cannot be used in the trash')
             newname = find_unused_filename(filename, self.app.trash_dir)
-            origpath = os.path.join(dirname, filename)
+            origpath = os.path.join(dirpath, filename)
             newpath = os.path.join(self.app.trash_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Deleted "%s" from /incoming', filename)
@@ -411,10 +411,10 @@ class han_Incoming(base_DirectoryPage):
                                diddelete=filename, didnewname=newname)
         
         elif op == 'moveu':
-            if dirname == self.app.unprocessed_dir:
+            if dirpath == self.app.unprocessed_dir:
                 raise Exception('moveu op cannot be used in the unprocessed dir')
             newname = find_unused_filename(filename, self.app.unprocessed_dir)
-            origpath = os.path.join(dirname, filename)
+            origpath = os.path.join(dirpath, filename)
             newpath = os.path.join(self.app.unprocessed_dir, newname)
             os.rename(origpath, newpath)
             req.loginfo('Moved "%s" from /incoming to /unprocessed', filename)
@@ -433,8 +433,8 @@ class han_Incoming(base_DirectoryPage):
                 return self.render(self.template, req,
                                    op=op, opfile=filename,
                                    formerror='Invalid filename: "%s"' % (newname,))
-            origpath = os.path.join(dirname, filename)
-            newpath = os.path.join(dirname, newname)
+            origpath = os.path.join(dirpath, filename)
+            newpath = os.path.join(dirpath, newname)
             if os.path.exists(newpath):
                 return self.render(self.template, req,
                                    op=op, opfile=filename,
@@ -452,7 +452,7 @@ class han_Incoming(base_DirectoryPage):
 class han_Trash(base_DirectoryPage):
     renderparams = { 'navtab':'trash', 'uribase':'trash' }
 
-    def get_dirname(self):
+    def get_dirpath(self):
         return self.app.trash_dir
 
     def do_get(self, req):

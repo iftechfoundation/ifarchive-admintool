@@ -485,6 +485,23 @@ class han_Trash(base_DirectoryPage):
         return self.app.trash_dir
 
 
+@beforeall(require_role('incoming', 'admin'))
+class han_Unprocessed(base_DirectoryPage):
+    renderparams = {
+        'navtab': 'unprocessed',
+        'uribase': 'arch/unprocessed', 'dirname': 'unprocessed',
+        'filebuttons': set(['delete', 'rename']),
+    }
+    template = 'unprocessed.html'
+
+    def add_renderparams(self, req, map):
+        map['files'] = self.get_filelist(req)
+        return map
+
+    def get_dirpath(self):
+        return self.app.unprocessed_dir
+
+
 class base_Download(AdminHandler):
     def get_dirpath(self):
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
@@ -628,7 +645,7 @@ handlers = [
     ('/trash', han_Trash),
     ('/trash/download/(?P<file>.+)', han_DLTrash),
     ('/trash/info/(?P<file>.+)', han_FUITrash),
-    #('/arch/unprocessed', han_Unprocessed),
+    ('/arch/unprocessed', han_Unprocessed),
     #('/arch/unprocessed/download/(?P<file>.+)', han_DLUnprocessed),
     #('/arch/unprocessed/info/(?P<file>.+)', han_FUIUnprocessed),
     ('/uploadlog', han_UploadLog),

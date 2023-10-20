@@ -9,6 +9,11 @@ from tinyapp.excepts import HTTPError, HTTPRawResponse
 from tinyapp.handler import ReqHandler, WrappedHandler
 
 class TinyApp:
+    """Base class for the WSGI application handler.
+    Initialize this with the list of URL handlers (RequestHandler classes).
+    The wrapall argument, if supplied, should be a list of request filters
+    to apply to every handler.
+    """
     def __init__(self, hanclasses, wrapall=None):
         self.handlers = []
         for pat, cla in hanclasses:
@@ -117,14 +122,17 @@ class TinyApp:
         return dofunc(req)
 
     def loginfo(self, req, msg, *args):
+        """Shortcut for logging at INFO level."""
         val = req.lognote()
         logging.info('%s: '+msg, val, *args)
 
     def logwarning(self, req, msg, *args):
+        """Shortcut for logging at WARNING level."""
         val = req.lognote()
         logging.warning('%s: '+msg, val, *args)
 
     def logerror(self, req, msg, *args):
+        """Shortcut for logging at ERROR level."""
         val = req.lognote()
         logging.error('%s: '+msg, val, *args)
 
@@ -157,19 +165,26 @@ class TinyRequest:
     def __init__(self, app, env):
         self.env = env
         self.app = app
-        
+
+        # GET or POST.
         self.request_method = env.get('REQUEST_METHOD', '?')
+        # The path part of the request URL, after the app root.
         self.path_info = env.get('PATH_INFO', '')
+        # The full request part of the URL. This is used only for
+        # error reporting.
         self.request_uri = env.get('REQUEST_URI', self.path_info)
-        
+
+        # Incoming cookies.
         self.cookies = cookies.SimpleCookie()
         if 'HTTP_COOKIE' in env:
             try:
                 self.cookies.load(env['HTTP_COOKIE'])
             except:
                 pass
+        # Outgoing cookies set by request handlers.
         self.newcookies = cookies.SimpleCookie()
 
+        # Form fields in a POST request.
         self.input = {}
         if 'wsgi.input' in env:
             try:
@@ -178,11 +193,14 @@ class TinyRequest:
                     self.input = urllib.parse.parse_qs(val.decode())
             except:
                 pass
-        # could check env['QUERY_STRING'] as well
+        # could check env['QUERY_STRING'] as well?
 
+        # The handler's regex match on PATH_INFO.
         self.match = None
+        
         self._xsrf = None  # in case someone uses xsrf_cookie
 
+        # Set up a default response.
         self.status = '200 OK'
         self.content_type = HTML
         self.headers = []
@@ -194,30 +212,43 @@ class TinyRequest:
         return 'req'
     
     def loginfo(self, msg, *args):
+        """Shortcut for logging at INFO level."""
         self.app.loginfo(self, msg, *args)
 
     def logwarning(self, msg, *args):
+        """Shortcut for logging at WARNING level."""
         self.app.logwarning(self, msg, *args)
 
     def logerror(self, msg, *args):
+        """Shortcut for logging at ERROR level."""
         self.app.logerror(self, msg, *args)
 
     def get_input_field(self, key):
+        """Get one form field in a POST request.
+        """
         ls = self.input.get(key)
         if ls:
             return ls[0]
         return None
 
     def set_status(self, val):
+        """Set the response HTTP status.
+        """
         self.status = val
 
     def set_content_type(self, val):
+        """Set the response HTTP content type.
+        """
         self.content_type = val
 
     def add_header(self, key, val):
+        """Add a response HTTP header.
+        """
         self.headers.append( (key, val) )
 
     def set_cookie(self, key, val, httponly=False, secure=False, maxage=None):
+        """Add a response HTTP cookie.
+        """
         self.newcookies[key] = val
         if httponly:
             self.newcookies[key]['httponly'] = True

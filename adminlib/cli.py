@@ -4,12 +4,13 @@ import time
 import hashlib
 import logging
 
-from tinyapp.util import random_bytes
+from tinyapp.util import random_bytes, time_now
+from adminlib.util import read_md5, read_size
 
 def run(appinstance):
     """The entry point when admin.wsgi is invoked on the command line.
     """
-    popt = optparse.OptionParser(usage='admin.wsgi cleanup | adduser | userroles | userpw | createdb | test')
+    popt = optparse.OptionParser(usage='admin.wsgi cleanup | adduser | userroles | userpw | createdb | addupload | test')
     (opts, args) = popt.parse_args()
 
     if not args:
@@ -19,6 +20,7 @@ def run(appinstance):
         print('  admin.wsgi userroles name roles: change a user\'s roles')
         print('  admin.wsgi userpw name pw: change a user\'s password')
         print('  admin.wsgi createdb: create database tables')
+        print('  admin.wsgi addupload file name email comments: add a file to the upload log')
         print('  admin.wsgi test [ URI ]: print page to stdout')
         return
 
@@ -39,6 +41,8 @@ def run(appinstance):
         db_user_roles(appinstance.getdb(), args)
     elif cmd == 'userpw':
         db_user_pw(appinstance.getdb(), args)
+    elif cmd == 'addupload':
+        db_add_upload(appinstance.getdb(), args)
     else:
         print('command not recognized: %s' % (cmd,))
         print('Usage: %s' % (popt.usage,))
@@ -176,3 +180,25 @@ def db_user_pw(db, args):
     # Log out all sessions for the old pw
     curs.execute('DELETE FROM sessions WHERE name = ?', (name,))
     curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, name))
+
+def db_add_upload(db, args):
+    """Create a new user.
+    """
+    if len(args) != 4:
+        print('usage: addupload file name email comments')
+        return
+    args = [ val.strip() for val in args ]
+    filename, name, email, comments = args
+    if not filename:
+        print('filename must exist')
+        return
+    md5 = read_md5(filename)
+    size = read_size(filename)
+    barefilename = os.path.basename(filename)
+    now = time_now()
+    print('adding upload record for %s...' % (filename,))
+    logging.info('CLI user=%s: addupload %s', get_curuser(), filename)
+    curs = db.cursor()
+    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, barefilename, name, email, 'cli', comments))
+    
+    

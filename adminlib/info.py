@@ -1,3 +1,5 @@
+import re
+
 from adminlib.util import bad_filename, in_user_time
 
 class FileEntry:
@@ -14,6 +16,10 @@ class FileEntry:
         'Index',
         '.listing',
     ])
+
+    # Some files should be zipped because they potentially contain
+    # scripting. (HTML and also SVG.)
+    pat_html = re.compile('[.](htm|html|svg)$', re.IGNORECASE)
     
     def __init__(self, filename, stat, user=None):
         # The user argument says what user to display this file *for*.
@@ -23,6 +29,7 @@ class FileEntry:
         self.date = stat.st_mtime
         self.size = stat.st_size
         self.isspecial = (filename in self.specialnames)
+        self.ishtml = bool(self.pat_html.search(filename))
         
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')

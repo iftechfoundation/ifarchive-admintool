@@ -1,6 +1,6 @@
 import re
 import time
-import os.path
+import os, os.path
 import pytz
 import datetime
 import hashlib
@@ -58,7 +58,12 @@ def read_md5(pathname):
         hasher.update(dat)
     return hasher.hexdigest()
 
-
+def read_size(pathname):
+    """Get the size of a file.
+    """
+    stat = os.stat(pathname)
+    return stat.st_size
+    
 tz_utc = pytz.timezone('UTC')
 
 def in_user_time(user, timestamp):

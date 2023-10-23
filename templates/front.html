@@ -10,7 +10,7 @@
   {% if not incount %}
     <code><a href="{{ approot }}/incoming">/incoming</a></code> is empty.
   {% else %}
-    {{ incount }} file{{ incount|plural }} in
+    {{ incount }} {{ incount|plural('file is', 'files are') }} in
     <code><a href="{{ approot }}/incoming">/incoming</a></code>.
   {% endif %}
 </p>
@@ -19,7 +19,7 @@
   {% if not unproccount %}
     <code><a href="{{ approot }}/arch/unprocessed">/unprocessed</a></code> is empty.
   {% else %}
-    {{ unproccount }} file{{ unproccount|plural }} in
+    {{ unproccount }} {{ unproccount|plural('file is', 'files are') }} in
     <code><a href="{{ approot }}/arch/unprocessed">/unprocessed</a></code>.
   {% endif %}
 </p>

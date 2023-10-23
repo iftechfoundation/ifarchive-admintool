@@ -63,7 +63,12 @@ def read_size(pathname):
     """
     stat = os.stat(pathname)
     return stat.st_size
-    
+
+def zip_compress(origpath, newpath):
+    """Compress a file.
+    """
+    raise Exception('###')
+
 tz_utc = pytz.timezone('UTC')
 
 def in_user_time(user, timestamp):

@@ -64,6 +64,7 @@ import tinyapp.auth
 from adminlib.session import find_user, User, Session
 from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5
+from adminlib.util import zip_compress
 from adminlib.util import DelimNumber, find_unused_filename
 from adminlib.info import FileEntry, UploadEntry
 
@@ -509,6 +510,18 @@ class base_DirectoryPage(AdminHandler):
             req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, dirname)
             return self.render(self.template, req,
                                didrename=filename, didnewname=newname)
+        
+        elif op == 'zip':
+            newname = filename+'.zip'
+            origpath = os.path.join(dirpath, filename)
+            newpath = os.path.join(dirpath, newname)
+            if os.path.exists(newpath):
+                return self.render(self.template, req,
+                                   op=op, opfile=filename,
+                                   formerror='File already exists: "%s"' % (newname,))
+            zip_compress(origpath, newpath)
+            ###
+            
         else:
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))

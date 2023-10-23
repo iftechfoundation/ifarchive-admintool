@@ -63,7 +63,7 @@ import tinyapp.auth
 
 from adminlib.session import find_user, User, Session
 from adminlib.session import require_user, require_role
-from adminlib.util import bad_filename, in_user_time, read_md5
+from adminlib.util import bad_filename, in_user_time, read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import DelimNumber, find_unused_filename
 from adminlib.info import FileEntry, UploadEntry
@@ -520,7 +520,11 @@ class base_DirectoryPage(AdminHandler):
                                    op=op, opfile=filename,
                                    formerror='File already exists: "%s"' % (newname,))
             zip_compress(origpath, newpath)
+            newsize = read_size(newpath)
+            newmd5 = read_md5(newpath)
             ###
+            return self.render(self.template, req,
+                               didzip=filename, didnewname=newname)
             
         else:
             return self.render(self.template, req,

@@ -68,7 +68,7 @@ def read_size(pathname):
 def zip_compress(origpath, newpath):
     """Compress a file.
     """
-    outfl = zipfile.ZipFile(newpath, mode='x', compresslevel=zipfile.ZIP_DEFLATED)
+    outfl = zipfile.ZipFile(newpath, mode='x', compression=zipfile.ZIP_DEFLATED, compresslevel=9)
     outfl.write(origpath, arcname=os.path.basename(origpath))
     outfl.close()
 

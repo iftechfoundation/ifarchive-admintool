@@ -530,6 +530,7 @@ class base_DirectoryPage(AdminHandler):
             for (uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) in list(res.fetchall()):
                 curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (uploadtime, newmd5, newsize, newname, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about))
 
+            req.loginfo('Zipped "%s" to "%s" in /%s', filename, newname, dirname)
             return self.render(self.template, req,
                                didzip=filename, didnewname=newname)
             

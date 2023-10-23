@@ -6,7 +6,7 @@
 
 {% if trashcount %}
 <p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
-  file{{ trashcount|plural }} are in
+  {{ trashcount|plural('file is', 'files are') }} in
   <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>
 {% endif %}
 

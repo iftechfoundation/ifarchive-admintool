@@ -66,7 +66,7 @@ def read_size(pathname):
     return stat.st_size
 
 def zip_compress(origpath, newpath):
-    """Compress a file.
+    """Compress a file. The new pathname must not exist yet.
     """
     outfl = zipfile.ZipFile(newpath, mode='x', compression=zipfile.ZIP_DEFLATED, compresslevel=9)
     outfl.write(origpath, arcname=os.path.basename(origpath))

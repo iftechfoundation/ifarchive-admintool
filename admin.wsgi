@@ -433,6 +433,8 @@ class base_DirectoryPage(AdminHandler):
             op = 'movei'
         elif req.get_input_field('rename'):
             op = 'rename'
+        elif req.get_input_field('zip'):
+            op = 'zip'
         else:
             return self.render(self.template, req,
                                formerror='Invalid operation')

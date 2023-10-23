@@ -75,6 +75,17 @@
   <input class="FormButton" name="cancel" type="submit" value="Cancel">
   </form>
   
+  {% elif op == 'zip' %}
+  
+  <div class="FormAction">Really zip up <code>{{ opfile }}</code>?</div>
+  <form method="post" action="{{ requri }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="{{ opfile }}"/>
+  <input type="hidden" name="op" value="{{ op }}"/>
+  <input class="FormButton HotButton" name="confirm" type="submit" value="Zip">
+  <input class="FormButton" name="cancel" type="submit" value="Cancel">
+  </form>
+  
   {% else %}
   
   <div class="FormAction">Action not implemented: {{ op }}</div>

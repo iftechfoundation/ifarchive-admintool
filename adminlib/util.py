@@ -4,6 +4,7 @@ import os, os.path
 import pytz
 import datetime
 import hashlib
+import zipfile
 
 import jinja2.ext
 
@@ -67,7 +68,9 @@ def read_size(pathname):
 def zip_compress(origpath, newpath):
     """Compress a file.
     """
-    raise Exception('###')
+    outfl = zipfile.ZipFile(newpath, mode='x', compresslevel=zipfile.ZIP_DEFLATED)
+    outfl.write(origpath, arcname=os.path.basename(origpath))
+    outfl.close()
 
 tz_utc = pytz.timezone('UTC')
 

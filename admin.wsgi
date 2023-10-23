@@ -517,7 +517,7 @@ class han_Incoming(base_DirectoryPage):
     renderparams = {
         'navtab': 'incoming',
         'uribase': 'incoming', 'dirname': 'incoming',
-        'filebuttons': set(['moveu', 'rename', 'delete']),
+        'filebuttons': set(['moveu', 'rename', 'delete', 'zip']),
     }
     template = 'incoming.html'
 

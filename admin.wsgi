@@ -65,7 +65,7 @@ from adminlib.session import find_user, User, Session
 from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5, read_size
 from adminlib.util import zip_compress
-from adminlib.util import DelimNumber, find_unused_filename
+from adminlib.util import DelimNumber, Pluralize, find_unused_filename
 from adminlib.info import FileEntry, UploadEntry
 
 class AdminApp(TinyApp):
@@ -122,6 +122,7 @@ class AdminApp(TinyApp):
                 loader = FileSystemLoader(TEMPLATE_PATH),
                 extensions = [
                     DelimNumber,
+                    Pluralize,
                 ],
                 autoescape = select_autoescape(),
                 keep_trailing_newline = True,

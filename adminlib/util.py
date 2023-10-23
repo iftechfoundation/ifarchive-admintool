@@ -112,3 +112,18 @@ class DelimNumber(jinja2.ext.Extension):
             pos += 3
         return ','.join(ls)
         
+class Pluralize(jinja2.ext.Extension):
+    """Jinja extension: Display "" or "s", depending on whether the
+    value is 1.
+    """
+    def __init__(self, env):
+        env.filters['plural'] = self.pluralize
+
+    @staticmethod
+    def pluralize(val):
+        if val == 1 or val == '1':
+            return ''
+        else:
+            return 's'
+            
+        

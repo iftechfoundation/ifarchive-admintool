@@ -6,7 +6,7 @@
 
 {% if incomingcount %}
 <p>({% if files %}Also, {% else %}{% endif %}{{ incomingcount }}
-  file(s) are in
+  file{{ incomingcount|plural }} are in
   <code><a href="{{ approot }}/incoming">/incoming</a></code>.)</p>
 {% endif %}
 

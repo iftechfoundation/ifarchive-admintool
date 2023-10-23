@@ -120,10 +120,10 @@ class Pluralize(jinja2.ext.Extension):
         env.filters['plural'] = self.pluralize
 
     @staticmethod
-    def pluralize(val):
+    def pluralize(val, singular='', plural='s'):
         if val == 1 or val == '1':
-            return ''
+            return singular
         else:
-            return 's'
+            return plural
             
         

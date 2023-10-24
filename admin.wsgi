@@ -97,7 +97,6 @@ class han_Home(AdminHandler):
 
         sessionid = random_bytes(20)
         req.set_cookie('sessionid', sessionid, maxage=self.app.max_session_age, httponly=True, secure=self.app.secure_site)
-        ### also secure=True?
         now = time_now()
         ipaddr = req.env.get('REMOTE_ADDR', '?')
         

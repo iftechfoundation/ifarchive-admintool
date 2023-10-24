@@ -14,6 +14,7 @@ def run(appinstance):
     subopt = popt.add_subparsers(dest='cmd', title='commands')
 
     popt_cleanup = subopt.add_parser('cleanup', help='clean out trash, etc')
+    popt_cleanup.set_defaults(cmdfunc=cmd_cleanup)
     
     popt_adduser = subopt.add_parser('adduser', help='add a user')
     
@@ -57,7 +58,7 @@ def cmd_test(args, app):
     app.test_dump(args.uri)
     
     
-def db_cleanup(app, db):
+def cmd_cleanup(args, app):
     """Clean up stuff that needs to be cleaned up periodically.
     Should be run from a cron job.
     """
@@ -66,7 +67,7 @@ def db_cleanup(app, db):
     # Clean out old sessions. Note that in the sessions table
     # (refreshtime >= starttime), so we just look at refreshtime.
     timelimit = time.time() - app.max_session_age
-    curs = db.cursor()
+    curs = app.getdb().cursor()
     res = curs.execute('DELETE FROM sessions WHERE refreshtime < ?', (timelimit,))
 
     # Clean out old trash files.

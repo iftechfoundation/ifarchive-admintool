@@ -159,14 +159,14 @@ def cmd_edituser(args, app):
         return
     if args.roles:
         print('setting roles for user "%s"...' % (args.name,))
-        logging.info('CLI user=%s: userroles %s, roles=%s', get_curuser(), args.name, args.roles)
+        logging.info('CLI user=%s: edituser %s, roles=%s', get_curuser(), args.name, args.roles)
         curs.execute('UPDATE users SET roles = ? WHERE name = ?', (args.roles, args.name))
     if args.pw:
         pwsalt = random_bytes(8).encode()
         salted = pwsalt + b':' + args.pw.encode()
         crypted = hashlib.sha1(salted).hexdigest()
         print('changing pw for user "%s"...' % (args.name,))
-        logging.info('CLI user=%s: userpw %s', get_curuser(), args.name)
+        logging.info('CLI user=%s: edituser %s, pw=...', get_curuser(), args.name)
         # Log out all sessions for the old pw
         curs.execute('DELETE FROM sessions WHERE name = ?', (args.name,))
         curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, args.name))

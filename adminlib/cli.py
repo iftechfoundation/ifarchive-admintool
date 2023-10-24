@@ -27,40 +27,23 @@ def run(appinstance):
     popt_addupload = subopt.add_parser('addupload', help='add a file to the upload log')
     
     popt_test = subopt.add_parser('test', help='print page to stdout')
-    popt_test.add_argument('uri', nargs='?', metavar='URI')
+    popt_test.set_defaults(cmdfunc=cmd_test)
+    popt_test.add_argument('uri', nargs='?', default='', metavar='URI')
     
     args = popt.parse_args()
     print('###', args)
 
-    if True:
+    if not args.cmd:
         popt.print_help()
         return
-    
-    cmd = args.pop(0)
-    
-    if cmd == 'test':
-        uri = ''
-        if args:
-            uri = args[0]
-        appinstance.test_dump(uri)
-    elif cmd == 'cleanup':
-        db_cleanup(appinstance, appinstance.getdb())
-    elif cmd == 'createdb':
-        db_create(appinstance.getdb())
-    elif cmd == 'adduser':
-        db_add_user(appinstance.getdb(), args)
-    elif cmd == 'userroles':
-        db_user_roles(appinstance.getdb(), args)
-    elif cmd == 'userpw':
-        db_user_pw(appinstance.getdb(), args)
-    elif cmd == 'addupload':
-        db_add_upload(appinstance.getdb(), args)
-    else:
-        print('command not recognized: %s' % (cmd,))
-        print('Usage: %s' % (popt.usage,))
+
+    args.cmdfunc(args, appinstance)
+
 
 def get_curuser():
-    """getlogin() fails sometimes, I dunno why. So we catch exceptions.
+    """getlogin() fails sometimes, I dunno why. (I see it happening
+    when running in the web server, but I don't know that it *can't*
+    happen on the command line.) So we catch exceptions.
     """
     try:
         return os.getlogin()
@@ -68,6 +51,12 @@ def get_curuser():
         return '???'
         
 
+def cmd_test(args, app):
+    """Test generating one page (to stdout).
+    """
+    app.test_dump(args.uri)
+    
+    
 def db_cleanup(app, db):
     """Clean up stuff that needs to be cleaned up periodically.
     Should be run from a cron job.

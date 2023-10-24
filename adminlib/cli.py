@@ -20,15 +20,14 @@ def run(appinstance):
     popt_adduser.set_defaults(cmdfunc=cmd_adduser)
     popt_adduser.add_argument('name')
     popt_adduser.add_argument('email')
-    popt_adduser.add_argument('pw')
-    popt_adduser.add_argument('--roles', '--role', default='')
+    popt_adduser.add_argument('pw', help='password')
+    popt_adduser.add_argument('--roles', '--role', default='', help='(ROLES can be a comma-separated list)')
     
-    popt_userroles = subopt.add_parser('userroles', help='change a user\'s roles')
-    popt_userroles.set_defaults(cmdfunc=cmd_userroles)
-    popt_userroles.add_argument('name')
-    popt_userroles.add_argument('--roles', '--role', default='')
-    
-    popt_userpw = subopt.add_parser('userpw', help='change a user\'s password')
+    popt_edituser = subopt.add_parser('edituser', help='change a user\'s roles or password')
+    popt_edituser.set_defaults(cmdfunc=cmd_edituser)
+    popt_edituser.add_argument('name')
+    popt_edituser.add_argument('--pw', metavar='PASSWORD')
+    popt_edituser.add_argument('--roles', '--role', default='', help='(ROLES can be a comma-separated list)')
     
     popt_createdb = subopt.add_parser('createdb', help='create database tables')
     popt_createdb.set_defaults(cmdfunc=cmd_createdb)
@@ -150,47 +149,28 @@ def cmd_adduser(args, app):
     curs.execute('INSERT INTO users (name, email, pw, pwsalt, roles) VALUES (?, ?, ?, ?, ?)', (args.name, args.email, crypted, pwsalt, args.roles))
 
 
-def cmd_userroles(args, app):
-    """Modify the roles of a user. The roles should be supplied as a
-    comma-separated list, no spaces.
+def cmd_edituser(args, app):
+    """Modify the password or roles of a user.
     """
-    return ###
-    args = [ val.strip() for val in args ]
-    name, roles = args
     curs = app.getdb().cursor()
-    res = curs.execute('SELECT roles FROM users WHERE name = ?', (name,))
+    res = curs.execute('SELECT roles FROM users WHERE name = ?', (args.name,))
     if not res.fetchall():
-        print('no such user:', name)
+        print('no such user:', args.name)
         return
-    print('setting roles for user "%s"...' % (name,))
-    logging.info('CLI user=%s: userroles %s, roles=%s', get_curuser(), name, roles)
-    curs.execute('UPDATE users SET roles = ? WHERE name = ?', (roles, name))
+    if args.roles:
+        print('setting roles for user "%s"...' % (args.name,))
+        logging.info('CLI user=%s: userroles %s, roles=%s', get_curuser(), args.name, args.roles)
+        curs.execute('UPDATE users SET roles = ? WHERE name = ?', (args.roles, args.name))
+    if args.pw:
+        pwsalt = random_bytes(8).encode()
+        salted = pwsalt + b':' + args.pw.encode()
+        crypted = hashlib.sha1(salted).hexdigest()
+        print('changing pw for user "%s"...' % (args.name,))
+        logging.info('CLI user=%s: userpw %s', get_curuser(), args.name)
+        # Log out all sessions for the old pw
+        curs.execute('DELETE FROM sessions WHERE name = ?', (args.name,))
+        curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, args.name))
 
-
-def db_user_pw(db, args):
-    """Change the password of a user.
-    """
-    if len(args) != 2:
-        print('usage: userpw name pw')
-        return
-    args = [ val.strip() for val in args ]
-    name, pw = args
-    if not name or not pw:
-        print('name, pw must be nonempty')
-        return
-    curs = app.getdb().cursor()
-    res = curs.execute('SELECT name FROM users WHERE name = ?', (name,))
-    if not res.fetchall():
-        print('no such user:', name)
-        return
-    pwsalt = random_bytes(8).encode()
-    salted = pwsalt + b':' + pw.encode()
-    crypted = hashlib.sha1(salted).hexdigest()
-    print('changing pw for user "%s"...' % (name,))
-    logging.info('CLI user=%s: userpw %s', get_curuser(), name)
-    # Log out all sessions for the old pw
-    curs.execute('DELETE FROM sessions WHERE name = ?', (name,))
-    curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, name))
 
 def cmd_addupload(args, app):
     """Create a new upload record.

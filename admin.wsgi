@@ -451,6 +451,22 @@ class han_Unprocessed(base_DirectoryPage):
         count = len([ ent for ent in os.scandir(self.app.incoming_dir) if ent.is_file() ])
         return count
 
+@beforeall(require_user)
+class han_ArchiveDir(base_DirectoryPage):
+    renderparams = {
+        'navtab': 'archive',
+        'uribase': 'arch/XXX', 'dirname': 'XXX',
+        'filebuttons': None, ###
+    }
+    template = 'archivedir.html'
+
+    def add_renderparams(self, req, map):
+        map['files'] = self.get_filelist(req)
+        return map
+
+    def get_dirpath(self):
+        return self.app.archive_dir
+
 
 class base_Download(AdminHandler):
     """Base class for all handlers that download a file within a
@@ -634,6 +650,7 @@ handlers = [
     ('/arch/unprocessed', han_Unprocessed),
     ('/arch/unprocessed/download/(?P<file>.+)', han_DLUnprocessed),
     ('/arch/unprocessed/info/(?P<file>.+)', han_FUIUnprocessed),
+    ('/arch/(?P<dir>.+)', han_ArchiveDir),
     ('/uploadlog', han_UploadLog),
     ('/debugdump', han_DebugDump),
     ('/debugdump/(?P<arg>.+)', han_DebugDump),

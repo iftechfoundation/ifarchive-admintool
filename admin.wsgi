@@ -14,11 +14,8 @@ import time
 import os, os.path
 import hashlib
 import configparser
-import threading
 import logging, logging.handlers
 
-import sqlite3
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 # The config file contains all the paths and settings used by the app.
 
@@ -26,18 +23,6 @@ configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
 #configpath = '/var/ifarchive/lib/ifarch.config'
 config = configparser.ConfigParser()
 config.read(configpath)
-
-DB_PATH = config['DEFAULT']['DBFile']
-INCOMING_DIR = config['DEFAULT']['IncomingDir']
-TRASH_DIR = config['DEFAULT']['TrashDir']
-ARCHIVE_DIR = config['DEFAULT']['ArchiveDir']
-SECURE_SITE = config['DEFAULT'].getboolean('SecureSite')
-
-TEMPLATE_PATH = config['AdminTool']['TemplateDir']
-MAX_SESSION_AGE = config['AdminTool'].getint('MaxSessionAge')
-MAX_TRASH_AGE = config['AdminTool'].getint('MaxTrashAge')
-APP_ROOT = config['AdminTool']['AppRoot']
-APP_CSS_URI = config['AdminTool']['AppCSSURI']
 
 # Set up PyLibPath before we start importing tinyapp modules
 if 'PyLibPath' in config['AdminTool']:
@@ -54,151 +39,18 @@ logging.basicConfig(
     handlers = [ loghandler ],
 )
 
-from tinyapp.app import TinyApp, TinyRequest
 from tinyapp.constants import PLAINTEXT, BINARY
-from tinyapp.handler import ReqHandler, before, beforeall
+from tinyapp.handler import before, beforeall
 from tinyapp.excepts import HTTPError, HTTPRedirectPost, HTTPRawResponse
 from tinyapp.util import random_bytes, time_now
-import tinyapp.auth
 
-from adminlib.session import find_user, User, Session
+from adminlib.session import User, Session
 from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5, read_size
 from adminlib.util import zip_compress
-from adminlib.util import DelimNumber, Pluralize, find_unused_filename
+from adminlib.util import find_unused_filename
 from adminlib.info import FileEntry, UploadEntry
-
-class AdminApp(TinyApp):
-    """AdminApp: The TinyApp class.
-    """
-    
-    def __init__(self, hanclasses):
-        TinyApp.__init__(self, hanclasses, wrapall=[
-            tinyapp.auth.xsrf_cookie,
-            tinyapp.auth.xsrf_check_post,
-            find_user,
-        ])
-        # We apply three request filters to every incoming request:
-        # - create an XSRF cookie;
-        # - check POST requests for the XSRF cookie;
-        # - see what user is authenticated based on the session cookie.
-
-        # Pull some settings out of the config file.
-        
-        self.approot = APP_ROOT
-        self.incoming_dir = INCOMING_DIR
-        self.trash_dir = TRASH_DIR
-        self.archive_dir = ARCHIVE_DIR
-        self.unprocessed_dir = os.path.join(ARCHIVE_DIR, 'unprocessed')
-
-        self.secure_site = SECURE_SITE
-        self.max_session_age = MAX_SESSION_AGE
-        self.max_trash_age = MAX_TRASH_AGE
-
-        # Thread-local storage for various things which are not thread-safe.
-        self.threadcache = threading.local()
-
-    def getdb(self):
-        """Get or create a sqlite3 db connection object. These are
-        cached per-thread.
-        (The sqlite3 module is thread-safe, but the db connection objects
-        you get from it might not be shareable between threads. Depends on
-        the version of SQLite installed, but we take no chances.)
-        """
-        db = getattr(self.threadcache, 'db', None)
-        if db is None:
-            db = sqlite3.connect(DB_PATH)
-            db.isolation_level = None   # autocommit
-            self.threadcache.db = db
-        return db
-
-    def getjenv(self):
-        """Get or create a jinja template environment. These are
-        cached per-thread.
-        """
-        jenv = getattr(self.threadcache, 'jenv', None)
-        if jenv is None:
-            jenv = Environment(
-                loader = FileSystemLoader(TEMPLATE_PATH),
-                extensions = [
-                    DelimNumber,
-                    Pluralize,
-                ],
-                autoescape = select_autoescape(),
-                keep_trailing_newline = True,
-            )
-            jenv.globals['approot'] = self.approot
-            jenv.globals['appcssuri'] = APP_CSS_URI
-            self.threadcache.jenv = jenv
-        return jenv
-
-    def create_request(self, environ):
-        """Create a request object.
-        Returns our subclass of TinyRequest.
-        """
-        return AdminRequest(self, environ)
-
-    def render(self, template, req, **params):
-        """Render a template for the current request. This adds in some
-        per-request template parameters.
-        """
-        tem = self.getjenv().get_template(template)
-        # The requri is de-escaped, which is what we want -- it will be
-        # used for <form action="requri">.
-        map = {
-            'req': req,
-            'requri': req.app.approot+req.env['PATH_INFO'],
-            'user': req._user,
-        }
-        if params:
-            map.update(params)
-        yield tem.render(**map)
-
-
-class AdminRequest(TinyRequest):
-    """Our app-specific subclass of TinyRequest. This just has a spot
-    to stash the current User (as determined by the find_user() filter).
-    """
-    
-    def __init__(self, app, env):
-        TinyRequest.__init__(self, app, env)
-
-        # Initialize our app-specific fields.
-        self._user = None
-
-    def lognote(self):
-        """A string which will appear in any log line generated by this
-        request. We show the current User, if any.
-        """
-        if not self._user:
-            return 'user=(none)'
-        else:
-            return 'user=%s' % (self._user.name,)
-
-class AdminHandler(ReqHandler):
-    """Our app-specific subclass of ReqHandler. This knows how to
-    render a Jinja template for the current request. (We do that a
-    lot, so it's worth having a shortcut.)
-    """
-    renderparams = None
-
-    def add_renderparams(self, req, map):
-        """Some handlers will want to add in template parameters
-        on the fly.
-        """
-        return map
-    
-    def render(self, template, req, **params):
-        """Render a template for the current request. This adds in some
-        per-handler template parameters.
-        """
-        if not self.renderparams:
-            map = {}
-        else:
-            map = dict(self.renderparams)
-        map = self.add_renderparams(req, map)
-        map.update(params)
-        return self.app.render(template, req, **map)
+from adminlib.admapp import AdminApp, AdminHandler
 
     
 # URL handlers...
@@ -789,7 +641,7 @@ handlers = [
 ]
 
 # Create the application instance itself.
-appinstance = AdminApp(handlers)
+appinstance = AdminApp(config, handlers)
 
 # Set up the WSGI entry point.
 application = appinstance.application

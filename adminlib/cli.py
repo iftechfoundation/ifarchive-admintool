@@ -26,6 +26,14 @@ def run(appinstance):
     popt_createdb.set_defaults(cmdfunc=cmd_createdb)
     
     popt_addupload = subopt.add_parser('addupload', help='add a file to the upload log')
+    popt_addupload.set_defaults(cmdfunc=cmd_addupload)
+    popt_addupload.add_argument('file')
+    popt_addupload.add_argument('--name')
+    popt_addupload.add_argument('--email')
+    popt_addupload.add_argument('--ifid')
+    popt_addupload.add_argument('--origfile')
+    popt_addupload.add_argument('--dir')
+    popt_addupload.add_argument('-m', '--message')
     
     popt_test = subopt.add_parser('test', help='print page to stdout')
     popt_test.set_defaults(cmdfunc=cmd_test)
@@ -183,24 +191,18 @@ def db_user_pw(db, args):
     curs.execute('DELETE FROM sessions WHERE name = ?', (name,))
     curs.execute('UPDATE users SET pw = ?, pwsalt = ? WHERE name = ?', (crypted, pwsalt, name))
 
-def db_add_upload(db, args):
-    """Create a new user.
+def cmd_addupload(args, app):
+    """Create a new upload record.
     """
-    if len(args) != 4:
-        print('usage: addupload file name email comments')
-        return
-    args = [ val.strip() for val in args ]
-    filename, name, email, comments = args
-    if not filename:
-        print('filename must exist')
-        return
+    filename = args.file
     md5 = read_md5(filename)
     size = read_size(filename)
     barefilename = os.path.basename(filename)
+    origfile = args.origfile or barefilename
     now = time_now()
     print('adding upload record for %s...' % (filename,))
     logging.info('CLI user=%s: addupload %s', get_curuser(), filename)
     curs = app.getdb().cursor()
-    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, barefilename, name, email, 'cli', comments))
+    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, origfile, args.name, args.email, 'cli', args.dir, args.ifid, args.message))
     
     

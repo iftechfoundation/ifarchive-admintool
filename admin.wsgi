@@ -725,14 +725,20 @@ class han_FUIUnprocessed(base_FileUploadInfo):
     
 @beforeall(require_role('incoming', 'admin'))
 class han_UploadLog(AdminHandler):
-    renderparams = { 'navtab':'uploads' }
+    renderparams = { 'navtab':'uploads', 'uribase':'uploadlog' }
+
+    PAGE_LIMIT = 20
 
     def do_get(self, req):
+        val = req.get_query_field('start')
+        if val:
+            start = int(val)
+        else:
+            start = 0
         curs = self.app.getdb().cursor()
-        res = curs.execute('SELECT * FROM uploads ORDER BY uploadtime LIMIT 20')
-        ### Should allow OFFSET N for paging
+        res = curs.execute('SELECT * FROM uploads ORDER BY uploadtime DESC LIMIT ? OFFSET ?', (self.PAGE_LIMIT, start,))
         uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
-        return self.render('uploadlog.html', req, uploads=uploads)
+        return self.render('uploadlog.html', req, uploads=uploads, start=start, limit=self.PAGE_LIMIT, prevstart=max(0, start-self.PAGE_LIMIT), nextstart=start+self.PAGE_LIMIT)
     
         
 class han_DebugDump(AdminHandler):
@@ -752,6 +758,8 @@ class han_DebugDump(AdminHandler):
         yield 'environ:\n'
         for key, val in req.env.items():
             yield '  %s: %s\n' % (key, val,)
+        if req.query:
+            yield 'query: %s\n' % (req.query,)
         if 'wsgi.input' in req.env:
             val = req.env['wsgi.input'].read()
             yield 'input: %s' % (val,)

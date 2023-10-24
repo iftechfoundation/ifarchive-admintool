@@ -4,3 +4,14 @@
 Upload History
 {% endblock %}
 
+{% block postuploadlist %}
+<p>
+{% if start %}
+  <a href="{{ uribase }}?start={{ prevstart }}">&#x2190; Prev {{ limit }}</a>
+  &nbsp;
+{% endif %}
+{% if uploads %}
+  <a href="{{ uribase }}?start={{ nextstart }}">Next {{ limit }} &#x2192;</a>
+{% endif %}
+</p>
+{% endblock %}

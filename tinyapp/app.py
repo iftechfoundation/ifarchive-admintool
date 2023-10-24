@@ -233,7 +233,17 @@ class TinyRequest:
         # Outgoing cookies set by request handlers.
         self.newcookies = cookies.SimpleCookie()
 
-        # Form fields in a POST request.
+        # Query string inputs.
+        self.query = {}
+        try:
+            val = env.get('QUERY_STRING')
+            if val:
+                self.query = urllib.parse.parse_qs(val)
+        except:
+            pass
+        
+        # Form fields in a POST request. (Note that we store these
+        # separately from query inputs.
         self.input = {}
         if 'wsgi.input' in env:
             try:
@@ -242,7 +252,6 @@ class TinyRequest:
                     self.input = urllib.parse.parse_qs(val.decode())
             except:
                 pass
-        # could check env['QUERY_STRING'] as well?
 
         # The handler's regex match on PATH_INFO.
         self.match = None
@@ -271,6 +280,14 @@ class TinyRequest:
     def logerror(self, msg, *args):
         """Shortcut for logging at ERROR level."""
         self.app.logerror(self, msg, *args)
+
+    def get_query_field(self, key):
+        """Get one field in the QUERY_STRING.
+        """
+        ls = self.query.get(key)
+        if ls:
+            return ls[0]
+        return None
 
     def get_input_field(self, key):
         """Get one form field in a POST request.

@@ -17,8 +17,16 @@ def run(appinstance):
     popt_cleanup.set_defaults(cmdfunc=cmd_cleanup)
     
     popt_adduser = subopt.add_parser('adduser', help='add a user')
+    popt_adduser.set_defaults(cmdfunc=cmd_adduser)
+    popt_adduser.add_argument('name')
+    popt_adduser.add_argument('email')
+    popt_adduser.add_argument('pw')
+    popt_adduser.add_argument('--roles', '--role', default='')
     
     popt_userroles = subopt.add_parser('userroles', help='change a user\'s roles')
+    popt_userroles.set_defaults(cmdfunc=cmd_userroles)
+    popt_userroles.add_argument('name')
+    popt_userroles.add_argument('--roles', '--role', default='')
     
     popt_userpw = subopt.add_parser('userpw', help='change a user\'s password')
     
@@ -121,39 +129,32 @@ def cmd_createdb(args, app):
         curs.execute('CREATE TABLE uploads(uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about)')
 
 
-def db_add_user(db, args):
+def cmd_adduser(args, app):
     """Create a new user.
     """
-    if len(args) != 4:
-        print('usage: adduser name email pw role1,role2,role3')
-        return
-    args = [ val.strip() for val in args ]
-    name, email, pw, roles = args
-    if not name or not email or not pw:
+    if not args.name or not args.email or not args.pw:
         print('name, email, pw must be nonempty')
         return
-    if '@' in name:
+    if '@' in args.name:
         print('name cannot contain an "@" character')
         return
-    if '@' not in email:
+    if '@' not in args.email:
         print('email must contain an "@" character')
         return
     pwsalt = random_bytes(8).encode()
-    salted = pwsalt + b':' + pw.encode()
+    salted = pwsalt + b':' + args.pw.encode()
     crypted = hashlib.sha1(salted).hexdigest()
-    print('adding user "%s"...' % (name,))
-    logging.info('CLI user=%s: adduser %s <%s>, roles=%s', get_curuser(), name, email, roles)
+    print('adding user "%s"...' % (args.name,))
+    logging.info('CLI user=%s: adduser %s <%s>, roles=%s', get_curuser(), args.name, args.email, args.roles)
     curs = app.getdb().cursor()
-    curs.execute('INSERT INTO users (name, email, pw, pwsalt, roles) VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
+    curs.execute('INSERT INTO users (name, email, pw, pwsalt, roles) VALUES (?, ?, ?, ?, ?)', (args.name, args.email, crypted, pwsalt, args.roles))
 
 
-def db_user_roles(db, args):
+def cmd_userroles(args, app):
     """Modify the roles of a user. The roles should be supplied as a
     comma-separated list, no spaces.
     """
-    if len(args) != 2:
-        print('usage: userroles name role1,role2,role3')
-        return
+    return ###
     args = [ val.strip() for val in args ]
     name, roles = args
     curs = app.getdb().cursor()

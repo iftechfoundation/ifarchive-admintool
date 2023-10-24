@@ -11,7 +11,6 @@ def run(appinstance):
     """The entry point when admin.wsgi is invoked on the command line.
     """
     popt = argparse.ArgumentParser(prog='admin.wsgi')
-    ### cleanup | adduser | userroles | userpw | createdb | addupload | test
     subopt = popt.add_subparsers(dest='cmd', title='commands')
 
     popt_cleanup = subopt.add_parser('cleanup', help='clean out trash, etc')
@@ -23,6 +22,7 @@ def run(appinstance):
     popt_userpw = subopt.add_parser('userpw', help='change a user\'s password')
     
     popt_createdb = subopt.add_parser('createdb', help='create database tables')
+    popt_createdb.set_defaults(cmdfunc=cmd_createdb)
     
     popt_addupload = subopt.add_parser('addupload', help='add a file to the upload log')
     
@@ -83,13 +83,13 @@ def db_cleanup(app, db):
         pathname = os.path.join(app.trash_dir, name)
         os.remove(pathname)
 
-def db_create(db):
+def cmd_createdb(args, app):
     """Create the database tables. This only needs to be done once ever,
     unless of course we change the table structure or decide to wipe
     and start over.
     """
     logging.info('CLI user=%s: createdb', get_curuser())
-    curs = db.cursor()
+    curs = app.getdb().cursor()
     res = curs.execute('SELECT name FROM sqlite_master')
     tables = [ tup[0] for tup in res.fetchall() ]
     
@@ -134,7 +134,7 @@ def db_add_user(db, args):
     crypted = hashlib.sha1(salted).hexdigest()
     print('adding user "%s"...' % (name,))
     logging.info('CLI user=%s: adduser %s <%s>, roles=%s', get_curuser(), name, email, roles)
-    curs = db.cursor()
+    curs = app.getdb().cursor()
     curs.execute('INSERT INTO users (name, email, pw, pwsalt, roles) VALUES (?, ?, ?, ?, ?)', (name, email, crypted, pwsalt, roles))
 
 
@@ -147,7 +147,7 @@ def db_user_roles(db, args):
         return
     args = [ val.strip() for val in args ]
     name, roles = args
-    curs = db.cursor()
+    curs = app.getdb().cursor()
     res = curs.execute('SELECT roles FROM users WHERE name = ?', (name,))
     if not res.fetchall():
         print('no such user:', name)
@@ -168,7 +168,7 @@ def db_user_pw(db, args):
     if not name or not pw:
         print('name, pw must be nonempty')
         return
-    curs = db.cursor()
+    curs = app.getdb().cursor()
     res = curs.execute('SELECT name FROM users WHERE name = ?', (name,))
     if not res.fetchall():
         print('no such user:', name)
@@ -199,7 +199,7 @@ def db_add_upload(db, args):
     now = time_now()
     print('adding upload record for %s...' % (filename,))
     logging.info('CLI user=%s: addupload %s', get_curuser(), filename)
-    curs = db.cursor()
+    curs = app.getdb().cursor()
     curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, barefilename, name, email, 'cli', comments))
     
     

@@ -1,4 +1,4 @@
-import optparse
+import argparse
 import os, os.path
 import time
 import hashlib
@@ -10,20 +10,32 @@ from adminlib.util import read_md5, read_size
 def run(appinstance):
     """The entry point when admin.wsgi is invoked on the command line.
     """
-    popt = optparse.OptionParser(usage='admin.wsgi cleanup | adduser | userroles | userpw | createdb | addupload | test')
-    (opts, args) = popt.parse_args()
+    popt = argparse.ArgumentParser(prog='admin.wsgi')
+    ### cleanup | adduser | userroles | userpw | createdb | addupload | test
+    subopt = popt.add_subparsers(dest='cmd', title='commands')
 
-    if not args:
-        print('command-line use:')
-        print('  admin.wsgi cleanup: clean out trash, etc')
-        print('  admin.wsgi adduser name email pw roles: add a user')
-        print('  admin.wsgi userroles name roles: change a user\'s roles')
-        print('  admin.wsgi userpw name pw: change a user\'s password')
-        print('  admin.wsgi createdb: create database tables')
-        print('  admin.wsgi addupload file name email comments: add a file to the upload log')
-        print('  admin.wsgi test [ URI ]: print page to stdout')
+    popt_cleanup = subopt.add_parser('cleanup', help='clean out trash, etc')
+    
+    popt_adduser = subopt.add_parser('adduser', help='add a user')
+    
+    popt_userroles = subopt.add_parser('userroles', help='change a user\'s roles')
+    
+    popt_userpw = subopt.add_parser('userpw', help='change a user\'s password')
+    
+    popt_createdb = subopt.add_parser('createdb', help='create database tables')
+    
+    popt_addupload = subopt.add_parser('addupload', help='add a file to the upload log')
+    
+    popt_test = subopt.add_parser('test', help='print page to stdout')
+    popt_test.add_argument('uri', nargs='?', metavar='URI')
+    
+    args = popt.parse_args()
+    print('###', args)
+
+    if True:
+        popt.print_help()
         return
-
+    
     cmd = args.pop(0)
     
     if cmd == 'test':

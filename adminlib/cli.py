@@ -47,7 +47,6 @@ def run(appinstance):
     popt_test.add_argument('uri', nargs='?', default='', metavar='URI')
     
     args = popt.parse_args()
-    print('###', args)
 
     if not args.cmd:
         popt.print_help()

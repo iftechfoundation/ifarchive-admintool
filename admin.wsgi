@@ -584,7 +584,11 @@ class han_ArchiveDir(base_DirectoryPage):
             parentdir, sep, _ = req._dirname.rpartition('/')
             if parentdir and sep:
                 map['parentdir'] = parentdir
-        map['files'] = self.get_filelist(req)
+        ls = self.get_filelist(req, dirs=True)
+        map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) ]
+        dirls = [ ent for ent in ls if isinstance(ent, DirEntry) ]
+        dirls.sort(key=lambda ent:ent.name)
+        map['subdirs'] = dirls
         return map
 
     def get_dirpath(self, req):

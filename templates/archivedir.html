@@ -10,4 +10,11 @@
   <p>(<a href="{{ approot }}/arch">&#x2191; Parent directory</a>)</p>
 {% endif %}
 
+<dl class="FileList">
+  {% for dir in subdirs %}
+    <dt><span class="Details">Subdir:</span>
+    <code><a href="{{ approot }}/{{ uribase }}/{{ dir.name }}">{{ dir.name }}</a></code>
+  {% endfor %}
+</dl>
+
 {% endblock %}

@@ -455,6 +455,7 @@ class base_DirectoryPage(AdminHandler):
             newmd5 = read_md5(newpath)
             curs = self.app.getdb().cursor()
             res = curs.execute('SELECT uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about FROM uploads where md5 = ?', (origmd5,))
+            ### Would be easier to use UploadEntry objects here
             for (uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) in list(res.fetchall()):
                 curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (uploadtime, newmd5, newsize, newname, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about))
 

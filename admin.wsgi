@@ -229,6 +229,8 @@ class base_DirectoryPage(AdminHandler):
         pathname = os.path.join(self.get_dirpath(req), filename)
         if not os.path.exists(pathname):
             return None
+        if not os.path.isfile(pathname):
+            return None
         stat = os.stat(pathname)
         return FileEntry(filename, stat, user=req._user)
         

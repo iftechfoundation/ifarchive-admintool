@@ -2,6 +2,10 @@
 
 {% block title %}Archive/unprocessed{% endblock %}
 
+{% block prefilelist %}
+  <p>(<a href="{{ approot }}/arch">&#x2191; Parent directory</a>)</p>
+{% endblock %}
+
 {% block postfilelist %}
 
 {% if incomingcount %}

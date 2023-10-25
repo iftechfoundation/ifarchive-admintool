@@ -260,19 +260,18 @@ class base_DirectoryPage(AdminHandler):
         if view:
             # In this case there will be a "filename" field in the query
             # string. (Not form field -- this is GET, not POST.)
-            if view == 'info':
-                return self.do_get_info(req)
-            if view == 'dl':
-                return self.do_get_download(req)
             filename = req.get_query_field('filename')
+            if view == 'info':
+                return self.do_get_info(req, filename)
+            if view == 'dl':
+                return self.do_get_download(req, filename)
             raise HTTPError('404 Not Found', 'View "%s" not found: %s' % (view, filename,))
         # Show the list of files and their buttons.
         return self.render(self.template, req)
 
-    def do_get_download(self, req):
+    def do_get_download(self, req, filename):
         """Handler to download a file within a directory.
         """
-        filename = req.get_query_field('filename')
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
@@ -311,10 +310,9 @@ class base_DirectoryPage(AdminHandler):
             return
         raise HTTPRawResponse('200 OK', response_headers, resp())
     
-    def do_get_info(self, req):
+    def do_get_info(self, req, filename):
         """Handler to show upload info for a file within a directory.
         """
-        filename = req.get_query_field('filename')
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)

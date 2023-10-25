@@ -15,7 +15,7 @@
     <dt>
     <span class="Details">{{ file.fdate }}
     {% if not file.isspecial %}
-      <a href="{{ approot }}/{{ uribase }}/info/{{ file.name|urlencode }}">(info)</a>
+      <a href="{{ approot }}/{{ uribase }}?view=info&filename={{ file.name|urlencode }}">(info)</a>
     {% else %}
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     {% endif %}

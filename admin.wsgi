@@ -248,8 +248,39 @@ class base_DirectoryPage(AdminHandler):
         """The GET case is easy: we just show the list of files. And their
         buttons.
         """
+        view = req.get_query_field('view')
+        if view:
+            if view == 'info':
+                return self.do_get_info(req)
+            raise HTTPError('404 Not Found', 'View "%s" not found: %s' % (view, filename,))
         return self.render(self.template, req)
-    
+
+    def do_get_info(self, req):
+        filename = req.get_query_field('filename')
+        if bad_filename(filename):
+            msg = 'Not found: %s' % (filename,)
+            raise HTTPError('404 Not Found', msg)
+        pathname = os.path.join(self.get_dirpath(req), filename)
+
+        try:
+            stat = os.stat(pathname)
+            filesize = stat.st_size
+        except Exception as ex:
+            msg = 'Unable to stat: %s %s' % (pathname, ex,)
+            raise HTTPError('400 Not Readable', msg)
+
+        if not filesize:
+            # No point in checking the upload history for zero-length
+            # uploads.
+            uploads = []
+        else:
+            hashval = read_md5(pathname)
+            curs = self.app.getdb().cursor()
+            res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', (hashval,))
+            uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
+            
+        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
+
     def do_post(self, req):
         """The POST case has to handle showing the "confirm/cancel" buttons
         after an operation is selected, and *also* the confirmed operation

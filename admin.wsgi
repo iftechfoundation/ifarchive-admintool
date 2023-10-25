@@ -279,6 +279,9 @@ class base_DirectoryPage(AdminHandler):
         
         dirpath = self.get_dirpath(req)
         pathname = os.path.join(dirpath, filename)
+        if not os.path.isfile(pathname):
+            msg = 'Not a file: %s' % (pathname,)
+            raise HTTPError('400 Not Readable', msg)
         try:
             stat = os.stat(pathname)
             filesize = stat.st_size
@@ -316,7 +319,9 @@ class base_DirectoryPage(AdminHandler):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
         pathname = os.path.join(self.get_dirpath(req), filename)
-
+        if not os.path.isfile(pathname):
+            msg = 'Not a file: %s' % (pathname,)
+            raise HTTPError('400 Not Readable', msg)
         try:
             stat = os.stat(pathname)
             filesize = stat.st_size

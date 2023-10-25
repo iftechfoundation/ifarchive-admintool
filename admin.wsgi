@@ -457,6 +457,11 @@ def check_archive_dir(req, han):
             raise HTTPRedirectPost(req.app.approot+'/arch')
         else:
             raise HTTPRedirectPost(req.app.approot+'/arch/'+dirname)
+        
+    if not dirname:
+        req._dirname = ''
+        return han(req)
+    
     pathname = os.path.join(req.app.archive_dir, dirname)
     try:
         pathname = os.path.realpath(pathname, strict=True)
@@ -481,18 +486,25 @@ def check_archive_dir(req, han):
 class han_ArchiveDir(base_DirectoryPage):
     renderparams = {
         'navtab': 'archive',
-        'uribase': 'arch/XXX', 'dirname': 'XXX',
         'filebuttons': None, ###
     }
     template = 'archivedir.html'
 
     def add_renderparams(self, req, map):
+        if not req._dirname:
+            map['uribase'] = 'arch'
+            map['dirname'] = ''
+        else:
+            map['uribase'] = 'arch/' + req._dirname
+            map['dirname'] = req._dirname
         map['files'] = self.get_filelist(req)
         return map
 
     def get_dirpath(self, req):
-        return self.app.archive_dir
-
+        if not req._dirname:
+            return self.app.archive_dir
+        else:
+            return os.path.join(self.app.archive_dir, req._dirname)
 
 class base_Download(AdminHandler):
     """Base class for all handlers that download a file within a

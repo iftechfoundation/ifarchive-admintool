@@ -605,6 +605,29 @@ class han_ArchiveDir(base_DirectoryPage):
             return os.path.join(self.app.archive_dir, req._dirname)
 
 
+@beforeall(require_user)
+class han_ArchiveRoot(base_DirectoryPage):
+    renderparams = {
+        'navtab': 'archive',
+        'filebuttons': None, ###
+    }
+    template = 'archivedir.html'
+
+    def add_renderparams(self, req, map):
+        map['uribase'] = 'arch'
+        map['dirname'] = ''
+        map['isroot'] = True
+        ls = self.get_filelist(req, dirs=True)
+        map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) ]
+        dirls = [ ent for ent in ls if isinstance(ent, DirEntry) ]
+        dirls.sort(key=lambda ent:ent.name)
+        map['subdirs'] = dirls
+        return map
+
+    def get_dirpath(self, req):
+        return self.app.archive_dir
+
+
 @beforeall(require_role('incoming', 'admin'))
 class han_UploadLog(AdminHandler):
     renderparams = { 'navtab':'uploads', 'uribase':'uploadlog' }
@@ -658,6 +681,7 @@ handlers = [
     ('/admin/allsessions', han_AllSessions),
     ('/incoming', han_Incoming),
     ('/trash', han_Trash),
+    ('/arch', han_ArchiveRoot),
     ('/arch/unprocessed', han_Unprocessed),
     ('/arch/(?P<dir>.+)', han_ArchiveDir),
     ('/uploadlog', han_UploadLog),

@@ -6,7 +6,7 @@
 
 {% if parentdir %}
   <p>(<a href="{{ approot }}/arch/{{ parentdir }}">&#x2191; Parent directory</a>)</p>
-{% else %}
+{% elif not isroot %}
   <p>(<a href="{{ approot }}/arch">&#x2191; Parent directory</a>)</p>
 {% endif %}
 

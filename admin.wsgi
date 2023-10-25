@@ -245,20 +245,25 @@ class base_DirectoryPage(AdminHandler):
         return filelist
 
     def do_get(self, req):
-        """The GET case is easy: we just show the list of files. And their
-        buttons.
+        """The GET case has to handle download and "show info" links,
+        as well as the basic file list.
         """
         view = req.get_query_field('view')
         if view:
+            # In this case there will be a "filename" field in the query
+            # string. (Not form field -- this is GET, not POST.)
             if view == 'info':
                 return self.do_get_info(req)
             if view == 'dl':
                 return self.do_get_download(req)
             filename = req.get_query_field('filename')
             raise HTTPError('404 Not Found', 'View "%s" not found: %s' % (view, filename,))
+        # Show the list of files and their buttons.
         return self.render(self.template, req)
 
     def do_get_download(self, req):
+        """Handler to download a file within a directory.
+        """
         filename = req.get_query_field('filename')
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
@@ -296,6 +301,8 @@ class base_DirectoryPage(AdminHandler):
         raise HTTPRawResponse('200 OK', response_headers, resp())
     
     def do_get_info(self, req):
+        """Handler to show upload info for a file within a directory.
+        """
         filename = req.get_query_field('filename')
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)

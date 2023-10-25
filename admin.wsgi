@@ -577,128 +577,7 @@ class han_ArchiveDir(base_DirectoryPage):
         else:
             return os.path.join(self.app.archive_dir, req._dirname)
 
-class base_Download(AdminHandler):
-    """Base class for all handlers that download a file within a
-    directory.
-    This will have subclasses for each directory that has special
-    handling. (Incoming, Trash, etc.)
-    """
-    
-    def get_dirpath(self, req):
-        raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
-        
-    def do_get(self, req):
-        filename = req.match.groupdict()['file']
-        if bad_filename(filename):
-            msg = 'Not found: %s' % (filename,)
-            raise HTTPError('404 Not Found', msg)
-        
-        dirpath = self.get_dirpath(req)
-        pathname = os.path.join(dirpath, filename)
-        try:
-            stat = os.stat(pathname)
-            filesize = stat.st_size
-        except Exception as ex:
-            msg = 'Unable to stat: %s %s' % (pathname, ex,)
-            raise HTTPError('400 Not Readable', msg)
-        
-        fl = None
-        try:
-            fl = open(pathname, 'rb')
-        except Exception as ex:
-            msg = 'Unable to read: %s %s' % (pathname, ex,)
-            raise HTTPError('400 Not Readable', msg)
-        
-        response_headers = [
-            ('Content-Type', BINARY),
-            ('Content-Length', str(filesize)),
-            ('Content-Disposition', 'attachment; filename="%s"' % (filename.replace('"', '_'),))
-        ]
-        def resp():
-            while True:
-                val = fl.read(8192)
-                if not val:
-                    break
-                yield val
-            fl.close()
-            return
-        raise HTTPRawResponse('200 OK', response_headers, resp())
 
-
-@beforeall(require_role('incoming', 'admin'))
-class han_DLIncoming(base_Download):
-    def get_dirpath(self, req):
-        return self.app.incoming_dir
-
-@beforeall(require_role('incoming', 'admin'))
-class han_DLTrash(base_Download):
-    def get_dirpath(self, req):
-        return self.app.trash_dir
-
-@beforeall(require_role('incoming', 'admin'))
-class han_DLUnprocessed(base_Download):
-    def get_dirpath(self, req):
-        return self.app.unprocessed_dir
-
-
-class base_FileUploadInfo(AdminHandler):
-    """Base class for all handlers that show upload info for a file
-    within a directory.
-    This will have subclasses for each directory that has special
-    handling. (Incoming, Trash, etc.)
-    """
-    
-    def get_dirpath(self, req):
-        raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
-        
-    def do_get(self, req):
-        filename = req.match.groupdict()['file']
-        if bad_filename(filename):
-            msg = 'Not found: %s' % (filename,)
-            raise HTTPError('404 Not Found', msg)
-        pathname = os.path.join(self.get_dirpath(req), filename)
-
-        try:
-            stat = os.stat(pathname)
-            filesize = stat.st_size
-        except Exception as ex:
-            msg = 'Unable to stat: %s %s' % (pathname, ex,)
-            raise HTTPError('400 Not Readable', msg)
-
-        if not filesize:
-            # No point in checking the upload history for zero-length
-            # uploads.
-            uploads = []
-        else:
-            hashval = read_md5(pathname)
-            curs = self.app.getdb().cursor()
-            res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', (hashval,))
-            uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
-            
-        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
-
-@beforeall(require_role('incoming', 'admin'))
-class han_FUIIncoming(base_FileUploadInfo):
-    renderparams = { 'navtab':'incoming', 'uribase':'incoming' }
-
-    def get_dirpath(self, req):
-        return self.app.incoming_dir
-
-@beforeall(require_role('incoming', 'admin'))
-class han_FUITrash(base_FileUploadInfo):
-    renderparams = { 'navtab':'trash', 'uribase':'trash' }
-
-    def get_dirpath(self, req):
-        return self.app.trash_dir
-
-@beforeall(require_role('incoming', 'admin'))
-class han_FUIUnprocessed(base_FileUploadInfo):
-    renderparams = { 'navtab':'unprocessed', 'uribase':'arch/unprocessed' }
-
-    def get_dirpath(self, req):
-        return self.app.unprocessed_dir
-
-    
 @beforeall(require_role('incoming', 'admin'))
 class han_UploadLog(AdminHandler):
     renderparams = { 'navtab':'uploads', 'uribase':'uploadlog' }
@@ -751,14 +630,8 @@ handlers = [
     ('/admin/allusers', han_AllUsers),
     ('/admin/allsessions', han_AllSessions),
     ('/incoming', han_Incoming),
-    ('/incoming/download/(?P<file>.+)', han_DLIncoming),
-    ('/incoming/info/(?P<file>.+)', han_FUIIncoming),
     ('/trash', han_Trash),
-    ('/trash/download/(?P<file>.+)', han_DLTrash),
-    ('/trash/info/(?P<file>.+)', han_FUITrash),
     ('/arch/unprocessed', han_Unprocessed),
-    ('/arch/unprocessed/download/(?P<file>.+)', han_DLUnprocessed),
-    ('/arch/unprocessed/info/(?P<file>.+)', han_FUIUnprocessed),
     ('/arch/(?P<dir>.+)', han_ArchiveDir),
     ('/uploadlog', han_UploadLog),
     ('/debugdump', han_DebugDump),

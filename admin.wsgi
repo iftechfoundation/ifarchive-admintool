@@ -391,16 +391,7 @@ class base_DirectoryPage(AdminHandler):
         # action.
         
         if op == 'delete':
-            if dirpath == self.app.trash_dir:
-                raise Exception('delete op cannot be used in the trash')
-            newname = find_unused_filename(filename, self.app.trash_dir)
-            origpath = os.path.join(dirpath, filename)
-            newpath = os.path.join(self.app.trash_dir, newname)
-            os.rename(origpath, newpath)
-            req.loginfo('Deleted "%s" from /%s', filename, dirname)
-            return self.render(self.template, req,
-                               diddelete=filename, didnewname=newname)
-        
+            return self.do_post_delete(req, dirpath, filename)
         elif op == 'moveu':
             return self.do_post_moveu(req, dirpath, filename)
         elif op == 'movei':
@@ -413,6 +404,19 @@ class base_DirectoryPage(AdminHandler):
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))
 
+    def do_post_delete(self, req, dirpath, filename):
+        op = 'delete'
+        dirname = self.renderparams['dirname']
+        if dirpath == self.app.trash_dir:
+            raise Exception('delete op cannot be used in the trash')
+        newname = find_unused_filename(filename, self.app.trash_dir)
+        origpath = os.path.join(dirpath, filename)
+        newpath = os.path.join(self.app.trash_dir, newname)
+        os.rename(origpath, newpath)
+        req.loginfo('Deleted "%s" from /%s', filename, dirname)
+        return self.render(self.template, req,
+                           diddelete=filename, didnewname=newname)
+        
     def do_post_moveu(self, req, dirpath, filename):
         op = 'moveu'
         dirname = self.renderparams['dirname']

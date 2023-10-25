@@ -20,7 +20,7 @@
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     {% endif %}
     :</span>
-    <code><a href="{{ approot }}/{{ uribase }}/download/{{ file.name|urlencode }}">{{ file.name }}</a></code>
+    <code><a href="{{ approot }}/{{ uribase }}?view=dl&filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
     <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
     {% if filebuttons and not file.isspecial %}

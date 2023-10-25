@@ -34,6 +34,16 @@ class FileEntry:
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')
 
+class DirEntry:
+    """Represents one subdirectory in a directory.
+    """
+    def __init__(self, dirname, stat, user=None):
+        self.name = dirname
+        self.date = stat.st_mtime
+
+        mtime = in_user_time(user, self.date)
+        self.fdate = mtime.strftime('%b %d, %H:%M %Z')
+
 class UploadEntry:
     """Represents one entry in the upload log.
     The arguments come straight from the "uploads" DB table.

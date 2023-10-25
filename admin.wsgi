@@ -49,7 +49,7 @@ from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
-from adminlib.info import FileEntry, UploadEntry
+from adminlib.info import FileEntry, DirEntry, UploadEntry
 from adminlib.admapp import AdminApp, AdminHandler
 
     
@@ -232,8 +232,10 @@ class base_DirectoryPage(AdminHandler):
         stat = os.stat(pathname)
         return FileEntry(filename, stat, user=req._user)
         
-    def get_filelist(self, req):
+    def get_filelist(self, req, dirs=False):
         """Get a list of FileEntries from our directory.
+        Include DirEntries if requested.
+        ### symlinks?
         """
         filelist = []
         for ent in os.scandir(self.get_dirpath(req)):
@@ -241,6 +243,10 @@ class base_DirectoryPage(AdminHandler):
                 stat = ent.stat()
                 file = FileEntry(ent.name, stat, user=req._user)
                 filelist.append(file)
+            elif dirs and ent.is_dir():
+                stat = ent.stat()
+                dir = DirEntry(ent.name, stat, user=req._user)
+                filelist.append(dir)
         filelist.sort(key=lambda file:file.date)
         return filelist
 
@@ -557,7 +563,6 @@ def check_archive_dir(req, han):
     if val.startswith('/'):
         val = val[ 1 : ]
     req._dirname = val
-    req.loginfo('### _dirname=%s', val)
     return han(req)
 
 @beforeall(require_user)

@@ -2,3 +2,12 @@
 
 {% block title %}Archive/{{ dirname }}{% endblock %}
 
+{% block prefilelist %}
+
+{% if parentdir %}
+  <p>(<a href="{{ approot }}/arch/{{ parentdir }}">&#x2191; Parent directory</a>)</p>
+{% else %}
+  <p>(<a href="{{ approot }}/arch">&#x2191; Parent directory</a>)</p>
+{% endif %}
+
+{% endblock %}

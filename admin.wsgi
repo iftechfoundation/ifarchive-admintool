@@ -576,6 +576,9 @@ class han_ArchiveDir(base_DirectoryPage):
         else:
             map['uribase'] = 'arch/' + req._dirname
             map['dirname'] = req._dirname
+            parentdir, sep, _ = req._dirname.rpartition('/')
+            if parentdir and sep:
+                map['parentdir'] = parentdir
         map['files'] = self.get_filelist(req)
         return map
 

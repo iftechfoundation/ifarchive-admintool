@@ -424,38 +424,42 @@ class base_DirectoryPage(AdminHandler):
                                didmovei=filename, didnewname=newname)
         
         elif op == 'rename':
-            newname = req.get_input_field('newname')
-            if newname is not None:
-                newname = newname.strip()
-            if not newname:
-                return self.render(self.template, req,
-                                   op=op, opfile=filename,
-                                   formerror='You must supply a filename.')
-            if bad_filename(newname):
-                return self.render(self.template, req,
-                                   op=op, opfile=filename,
-                                   formerror='Invalid filename: "%s"' % (newname,))
-            if newname in FileEntry.specialnames:
-                return self.render(self.template, req,
-                                   op=op, opfile=filename,
-                                   formerror='Cannot use reserved filename: "%s"' % (newname,))
-            origpath = os.path.join(dirpath, filename)
-            newpath = os.path.join(dirpath, newname)
-            if os.path.exists(newpath):
-                return self.render(self.template, req,
-                                   op=op, opfile=filename,
-                                   formerror='Filename already in use: "%s"' % (newname,))
-            os.rename(origpath, newpath)
-            req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, dirname)
-            return self.render(self.template, req,
-                               didrename=filename, didnewname=newname)
-        
+            return self.do_post_rename(req, dirpath, filename)
         elif op == 'zip':
             return self.do_post_zip(req, dirpath, filename)
         else:
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))
 
+    def do_post_rename(self, req, dirpath, filename):
+        op = 'rename'
+        dirname = self.renderparams['dirname']
+        newname = req.get_input_field('newname')
+        if newname is not None:
+            newname = newname.strip()
+        if not newname:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               formerror='You must supply a filename.')
+        if bad_filename(newname):
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               formerror='Invalid filename: "%s"' % (newname,))
+        if newname in FileEntry.specialnames:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               formerror='Cannot use reserved filename: "%s"' % (newname,))
+        origpath = os.path.join(dirpath, filename)
+        newpath = os.path.join(dirpath, newname)
+        if os.path.exists(newpath):
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               formerror='Filename already in use: "%s"' % (newname,))
+        os.rename(origpath, newpath)
+        req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, dirname)
+        return self.render(self.template, req,
+                           didrename=filename, didnewname=newname)
+        
     def do_post_zip(self, req, dirpath, filename):
         op = 'zip'
         dirname = self.renderparams['dirname']

@@ -451,32 +451,36 @@ class base_DirectoryPage(AdminHandler):
                                didrename=filename, didnewname=newname)
         
         elif op == 'zip':
-            newname = filename+'.zip'
-            origpath = os.path.join(dirpath, filename)
-            newpath = os.path.join(dirpath, newname)
-            if os.path.exists(newpath):
-                return self.render(self.template, req,
-                                   op=op, opfile=filename,
-                                   formerror='File already exists: "%s"' % (newname,))
-            origmd5 = read_md5(origpath)
-            zip_compress(origpath, newpath)
-
-            # Now create a new upload entry with the new md5.
-            newsize = read_size(newpath)
-            newmd5 = read_md5(newpath)
-            curs = self.app.getdb().cursor()
-            res = curs.execute('SELECT uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about FROM uploads where md5 = ?', (origmd5,))
-            ### Would be easier to use UploadEntry objects here
-            for (uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) in list(res.fetchall()):
-                curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (uploadtime, newmd5, newsize, newname, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about))
-
-            req.loginfo('Zipped "%s" to "%s" in /%s', filename, newname, dirname)
-            return self.render(self.template, req,
-                               didzip=filename, didnewname=newname)
-            
+            return self.do_post_zip(req, dirpath, filename)
         else:
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))
+
+    def do_post_zip(self, req, dirpath, filename):
+        op = 'zip'
+        dirname = self.renderparams['dirname']
+        newname = filename+'.zip'
+        origpath = os.path.join(dirpath, filename)
+        newpath = os.path.join(dirpath, newname)
+        if os.path.exists(newpath):
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               formerror='File already exists: "%s"' % (newname,))
+        origmd5 = read_md5(origpath)
+        zip_compress(origpath, newpath)
+
+        # Now create a new upload entry with the new md5.
+        newsize = read_size(newpath)
+        newmd5 = read_md5(newpath)
+        curs = self.app.getdb().cursor()
+        res = curs.execute('SELECT uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about FROM uploads where md5 = ?', (origmd5,))
+        ### Would be easier to use UploadEntry objects here
+        for (uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) in list(res.fetchall()):
+            curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (uploadtime, newmd5, newsize, newname, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about))
+
+        req.loginfo('Zipped "%s" to "%s" in /%s', filename, newname, dirname)
+        return self.render(self.template, req,
+                           didzip=filename, didnewname=newname)
 
 
 @beforeall(require_role('incoming', 'admin'))

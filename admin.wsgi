@@ -214,11 +214,9 @@ class base_DirectoryPage(AdminHandler):
     and so on.
     """
     
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         """Return the (full) filesystem path of the directory that this
         subclass will operate on. Subclasses must customize this.
-        ### TODO: Pass req as an argument. (Some subclasses will cover
-        many directories, based on request parameters.)
         """
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
 
@@ -228,7 +226,7 @@ class base_DirectoryPage(AdminHandler):
         """
         if bad_filename(filename):
             return None
-        pathname = os.path.join(self.get_dirpath(), filename)
+        pathname = os.path.join(self.get_dirpath(req), filename)
         if not os.path.exists(pathname):
             return None
         stat = os.stat(pathname)
@@ -238,7 +236,7 @@ class base_DirectoryPage(AdminHandler):
         """Get a list of FileEntries from our directory.
         """
         filelist = []
-        for ent in os.scandir(self.get_dirpath()):
+        for ent in os.scandir(self.get_dirpath(req)):
             if ent.is_file():
                 stat = ent.stat()
                 file = FileEntry(ent.name, stat, user=req._user)
@@ -260,7 +258,7 @@ class base_DirectoryPage(AdminHandler):
         # dirname is the user-readable name (e.g. "incoming" or "unprocessed")
         dirname = self.renderparams['dirname']
         # dirpath is the filesystem path (e.g. "/var/ifarchive/incoming")
-        dirpath = self.get_dirpath()
+        dirpath = self.get_dirpath(req)
         # uribase is the URL element after approot (e.g. "incoming" or "arch/unprocessed")
         uribase = self.renderparams['uribase']
         
@@ -405,7 +403,7 @@ class han_Incoming(base_DirectoryPage):
         map['files'] = self.get_filelist(req)
         return map
 
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.incoming_dir
 
     def get_trashcount(self, req):
@@ -426,7 +424,7 @@ class han_Trash(base_DirectoryPage):
         map['files'] = self.get_filelist(req)
         return map
 
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.trash_dir
 
 
@@ -444,7 +442,7 @@ class han_Unprocessed(base_DirectoryPage):
         map['incomingcount'] = self.get_incomingcount(req)
         return map
 
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.unprocessed_dir
 
     def get_incomingcount(self, req):
@@ -464,7 +462,7 @@ class han_ArchiveDir(base_DirectoryPage):
         map['files'] = self.get_filelist(req)
         return map
 
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.archive_dir
 
 
@@ -475,7 +473,7 @@ class base_Download(AdminHandler):
     handling. (Incoming, Trash, etc.)
     """
     
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
         
     def do_get(self, req):
@@ -484,7 +482,7 @@ class base_Download(AdminHandler):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
         
-        dirpath = self.get_dirpath()
+        dirpath = self.get_dirpath(req)
         pathname = os.path.join(dirpath, filename)
         try:
             stat = os.stat(pathname)
@@ -518,17 +516,17 @@ class base_Download(AdminHandler):
 
 @beforeall(require_role('incoming', 'admin'))
 class han_DLIncoming(base_Download):
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.incoming_dir
 
 @beforeall(require_role('incoming', 'admin'))
 class han_DLTrash(base_Download):
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.trash_dir
 
 @beforeall(require_role('incoming', 'admin'))
 class han_DLUnprocessed(base_Download):
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.unprocessed_dir
 
 
@@ -539,7 +537,7 @@ class base_FileUploadInfo(AdminHandler):
     handling. (Incoming, Trash, etc.)
     """
     
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
         
     def do_get(self, req):
@@ -547,7 +545,7 @@ class base_FileUploadInfo(AdminHandler):
         if bad_filename(filename):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
-        pathname = os.path.join(self.get_dirpath(), filename)
+        pathname = os.path.join(self.get_dirpath(req), filename)
 
         try:
             stat = os.stat(pathname)
@@ -572,21 +570,21 @@ class base_FileUploadInfo(AdminHandler):
 class han_FUIIncoming(base_FileUploadInfo):
     renderparams = { 'navtab':'incoming', 'uribase':'incoming' }
 
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.incoming_dir
 
 @beforeall(require_role('incoming', 'admin'))
 class han_FUITrash(base_FileUploadInfo):
     renderparams = { 'navtab':'trash', 'uribase':'trash' }
 
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.trash_dir
 
 @beforeall(require_role('incoming', 'admin'))
 class han_FUIUnprocessed(base_FileUploadInfo):
     renderparams = { 'navtab':'unprocessed', 'uribase':'arch/unprocessed' }
 
-    def get_dirpath(self):
+    def get_dirpath(self, req):
         return self.app.unprocessed_dir
 
     

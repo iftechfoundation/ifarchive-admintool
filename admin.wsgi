@@ -449,7 +449,35 @@ class han_Unprocessed(base_DirectoryPage):
         count = len([ ent for ent in os.scandir(self.app.incoming_dir) if ent.is_file() ])
         return count
 
+def check_archive_dir(req, han):
+    dirname = req.match.groupdict()['dir']
+    if dirname.endswith('/'):
+        dirname = dirname[ : -1 ]
+        if not dirname:
+            raise HTTPRedirectPost(req.app.approot+'/arch')
+        else:
+            raise HTTPRedirectPost(req.app.approot+'/arch/'+dirname)
+    pathname = os.path.join(req.app.archive_dir, dirname)
+    try:
+        pathname = os.path.realpath(pathname, strict=True)
+    except:
+        msg = 'Directory not found: %s' % (dirname,)
+        raise HTTPError('404 Not Found', msg)
+    if (not os.path.isdir(pathname)) or os.path.islink(pathname):
+        msg = 'Not a directory: %s' % (dirname,)
+        raise HTTPError('404 Not Found', msg)
+    if not pathname.startswith(req.app.archive_dir):
+        msg = 'Not an Archive directory: %s' % (dirname,)
+        raise HTTPError('404 Not Found', msg)
+    val = pathname[ len(req.app.archive_dir) : ]
+    if val.startswith('/'):
+        val = val[ 1 : ]
+    req._dirname = val
+    req.loginfo('### _dirname=%s', val)
+    return han(req)
+
 @beforeall(require_user)
+@beforeall(check_archive_dir)
 class han_ArchiveDir(base_DirectoryPage):
     renderparams = {
         'navtab': 'archive',

@@ -15,12 +15,12 @@
     <dt>
     <span class="Details">{{ file.fdate }}
     {% if not file.isspecial %}
-      <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&filename={{ file.name|urlencode }}">(info)</a>
+      <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
     {% else %}
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     {% endif %}
     :</span>
-    <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
+    <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
     <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
     {% if filebuttons and not file.isspecial %}

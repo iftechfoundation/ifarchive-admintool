@@ -1,7 +1,15 @@
 
-{%- macro dirchain(ls) -%}
-  {% set slash = joiner('/') %}
-  {%- for label, uri in ls -%}
-    {{ slash() }}<a href="{{ approot }}/{{ uri|urlencode }}">{{ label }}</a>
-  {%- endfor -%}
+{%- macro dirchain(ls, lastbare=False) -%}
+  {% if not lastbare %}
+    {% set slash = joiner('/') %}
+    {%- for label, uri in ls -%}
+      {{ slash() }}<a href="{{ approot }}/{{ uri|urlencode }}">{{ label }}</a>
+    {%- endfor -%}
+  {% else %}
+    {% set slash = joiner('/') %}
+    {%- for label, uri in ls[0:-1] -%}
+      {{ slash() }}<a href="{{ approot }}/{{ uri|urlencode }}">{{ label }}</a>
+    {%- endfor -%}
+    {{ slash() }}{{ ls[-1][0] }}
+  {% endif %}
 {%- endmacro -%}

@@ -4,7 +4,7 @@
 {% block title %}Archive/{{ dirname }}{% endblock %}
 
 {% block usetitle %}
-<h1>{{ dirchain(uribase|splituri) }}</h1>
+<h1>{{ dirchain(uribase|splituri, lastbare=True) }}</h1>
 {% endblock %}
 
 {% block prefilelist %}

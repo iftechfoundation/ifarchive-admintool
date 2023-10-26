@@ -1,6 +1,11 @@
 {% extends "directory_base.html" %}
+{% from 'macros.html' import dirchain %}
 
 {% block title %}Archive/unprocessed{% endblock %}
+
+{% block usetitle %}
+<h1>{{ dirchain(uribase|splituri, lastbare=True) }}</h1>
+{% endblock %}
 
 {% block prefilelist %}
   <p>(<a href="{{ approot }}/arch">&#x2191; Parent directory</a>)</p>

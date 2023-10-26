@@ -1,4 +1,5 @@
 import re
+import os, os.path
 
 from adminlib.util import bad_filename, in_user_time
 
@@ -62,14 +63,22 @@ class DirEntry(ListEntry):
 class SymlinkEntry(ListEntry):
     """Represents one symlink in a directory.
     """
-    def __init__(self, filename, target, stat, broken=False, isdir=False, user=None):
+    def __init__(self, filename, target, stat, broken=False, isdir=False, realpath=None, user=None):
         self.name = filename
         self.target = target
+        self.realpath = realpath
         self.date = stat.st_mtime
         self.isdir = isdir
         self.isfile = not isdir
         self.broken = broken
         self.islink = True
+
+        if not self.realpath:
+            self.realdir = None
+        elif isdir:
+            self.realdir = self.realpath
+        else:
+            self.realdir = os.path.dirname(self.realpath)
 
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')

@@ -39,7 +39,7 @@ class FileEntry(ListEntry):
     # scripting. (HTML and also SVG.)
     pat_html = re.compile('[.](htm|html|svg)$', re.IGNORECASE)
     
-    def __init__(self, filename, stat, user=None):
+    def __init__(self, filename, stat, user=None, shortdate=False):
         # The user argument says what user to display this file *for*.
         # (We use this to localize the time to their timezone.) If
         # user is not provided, we'll display in UTC.
@@ -52,24 +52,24 @@ class FileEntry(ListEntry):
         self.isdir = False
         self.isfile = True
         
-        self.fdate = formatdate(self.date, user=user)
+        self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
 class DirEntry(ListEntry):
     """Represents one subdirectory in a directory.
     """
-    def __init__(self, dirname, stat, user=None):
+    def __init__(self, dirname, stat, user=None, shortdate=False):
         self.name = dirname
         self.date = stat.st_mtime
         self.islink = False
         self.isdir = True
         self.isfile = False
 
-        self.fdate = formatdate(self.date, user=user)
+        self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
 class SymlinkEntry(ListEntry):
     """Represents one symlink in a directory.
     """
-    def __init__(self, filename, target, stat, broken=False, isdir=False, realpath=None, user=None):
+    def __init__(self, filename, target, stat, broken=False, isdir=False, realpath=None, user=None, shortdate=False):
         self.name = filename
         self.target = target
         self.realpath = realpath
@@ -91,7 +91,7 @@ class SymlinkEntry(ListEntry):
             else:
                 self.realuri = 'arch'
 
-        self.fdate = formatdate(self.date, user=user)
+        self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
 class UploadEntry:
     """Represents one entry in the upload log.

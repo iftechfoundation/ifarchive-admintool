@@ -9,11 +9,15 @@
 
 {% block prefilelist %}
 
-{% if parentdir %}
-  <p>(<a href="{{ approot }}/arch/{{ parentdir|urlencode }}">&#x2191; Parent directory</a>)</p>
-{% elif not isroot %}
-  <p>(<a href="{{ approot }}/arch">&#x2191; Parent directory</a>)</p>
-{% endif %}
+<p>(Public page:
+  {% if not dirname %}
+    <a href="https://ifarchive.org/indexes/if-archive/">index</a>,
+    <a href="https://ifarchive.org/if-archive/">raw</a>)
+  {% else %}
+    <a href="https://ifarchive.org/indexes/if-archive/{{ dirname|urlencode }}/">index</a>,
+    <a href="https://ifarchive.org/if-archive/{{ dirname|urlencode }}/">raw</a>)
+  {% endif %}
+</p>
 
 <dl class="FileList">
   {% for dir in subdirs %}

@@ -3,6 +3,14 @@ import os, os.path
 
 from adminlib.util import bad_filename, in_user_time
 
+def formatdate(date, user=None, shortdate=False):
+    mtime = in_user_time(user, date)
+    if shortdate:
+        return mtime.strftime('%b %d, %H:%M %Z')
+    else:
+        return mtime.strftime('%b %d, %Y')
+
+
 class ListEntry:
     """Base class for FileEntry, DirEntry, SymlinkEntry.
     Objects in these classes should always have isfile, isdir, and
@@ -44,8 +52,7 @@ class FileEntry(ListEntry):
         self.isdir = False
         self.isfile = True
         
-        mtime = in_user_time(user, self.date)
-        self.fdate = mtime.strftime('%b %d, %H:%M %Z')
+        self.fdate = formatdate(self.date, user=user)
 
 class DirEntry(ListEntry):
     """Represents one subdirectory in a directory.
@@ -57,8 +64,7 @@ class DirEntry(ListEntry):
         self.isdir = True
         self.isfile = False
 
-        mtime = in_user_time(user, self.date)
-        self.fdate = mtime.strftime('%b %d, %H:%M %Z')
+        self.fdate = formatdate(self.date, user=user)
 
 class SymlinkEntry(ListEntry):
     """Represents one symlink in a directory.
@@ -85,8 +91,7 @@ class SymlinkEntry(ListEntry):
             else:
                 self.realuri = 'arch'
 
-        mtime = in_user_time(user, self.date)
-        self.fdate = mtime.strftime('%b %d, %H:%M %Z')
+        self.fdate = formatdate(self.date, user=user)
 
 class UploadEntry:
     """Represents one entry in the upload log.
@@ -113,6 +118,5 @@ class UploadEntry:
         self.ifdbid = ifdbid
         self.about = about
 
-        mtime = in_user_time(user, uploadtime)
-        self.fdate = mtime.strftime('%b %d, %H:%M %Z')
+        self.fdate = formatdate(uploadtime, user=user, shortdate=True)
         

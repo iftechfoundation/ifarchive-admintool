@@ -606,9 +606,6 @@ class han_ArchiveDir(base_DirectoryPage):
         else:
             map['uribase'] = 'arch/' + req._dirname
             map['dirname'] = req._dirname
-            parentdir, sep, _ = req._dirname.rpartition('/')
-            if parentdir and sep:
-                map['parentdir'] = parentdir
         ls = self.get_filelist(req, dirs=True)
         map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) ]
         dirls = [ ent for ent in ls if isinstance(ent, DirEntry) ]

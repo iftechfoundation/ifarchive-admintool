@@ -31,6 +31,9 @@ class FileEntry:
         self.size = stat.st_size
         self.isspecial = (filename in self.specialnames)
         self.ishtml = bool(self.pat_html.search(filename))
+        self.islink = False
+        self.isdir = False
+        self.isfile = True
         
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')
@@ -41,6 +44,24 @@ class DirEntry:
     def __init__(self, dirname, stat, user=None):
         self.name = dirname
         self.date = stat.st_mtime
+        self.islink = False
+        self.isdir = True
+        self.isfile = False
+
+        mtime = in_user_time(user, self.date)
+        self.fdate = mtime.strftime('%b %d, %H:%M %Z')
+
+class SymlinkEntry:
+    """Represents one symlink in a directory.
+    """
+    def __init__(self, filename, target, stat, broken=False, isdir=False, user=None):
+        self.name = filename
+        self.target = target
+        self.date = stat.st_mtime
+        self.isdir = isdir
+        self.isfile = not isdir
+        self.broken = broken
+        self.islink = True
 
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')

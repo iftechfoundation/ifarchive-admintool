@@ -13,18 +13,29 @@
     {% set isselected = (op and opfile == file.name) %}
 
     <dt>
-    <span class="Details">{{ file.fdate }}
-    {% if not file.isspecial %}
-      <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
-    {% else %}
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    {% endif %}
-    :</span>
-    <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
-    <span class="Details">({{ file.size|delimnumber }} bytes)</span>
+    {% if not file.islink %}
+      <span class="Details">{{ file.fdate }}
+      {% if not file.isspecial %}
+        <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
+      {% else %}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      {% endif %}
+      :</span>
+      <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
+      <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
-    {% if filebuttons and not file.isspecial %}
-    {% include "filebuttons.html" %}
+      {% if filebuttons and not file.isspecial %}
+      {% include "filebuttons.html" %}
+      {% endif %}
+
+    {% else %}
+      <span class="Details">{{ file.fdate }}
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      :</span>
+      <code>{{ file.name }}</code>
+      <span class="Details">(symlink
+      {% if file.broken %}<b>broken</b>{% endif %}
+      &#x2192; <code>{{ file.target }}</code>)</span>
     {% endif %}
 
   {% endfor %}

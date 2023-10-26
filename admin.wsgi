@@ -49,7 +49,7 @@ from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
-from adminlib.info import FileEntry, DirEntry, UploadEntry
+from adminlib.info import FileEntry, DirEntry, SymlinkEntry, UploadEntry
 from adminlib.admapp import AdminApp, AdminHandler
 
     
@@ -237,11 +237,20 @@ class base_DirectoryPage(AdminHandler):
     def get_filelist(self, req, dirs=False):
         """Get a list of FileEntries from our directory.
         Include DirEntries if requested.
-        ### symlinks?
         """
         filelist = []
         for ent in os.scandir(self.get_dirpath(req)):
-            if ent.is_file():
+            if ent.is_symlink():
+                target = os.readlink(ent)
+                path = os.path.realpath(ent.path)
+                if path.startswith(self.app.archive_dir+'/') and os.path.exists(path):
+                    stat = os.stat(path)
+                    file = SymlinkEntry(ent.name, target, stat, isdir=False, user=req._user)
+                    filelist.append(file)
+                else:
+                    file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=req._user)
+                    filelist.append(file)
+            elif ent.is_file():
                 stat = ent.stat()
                 file = FileEntry(ent.name, stat, user=req._user)
                 filelist.append(file)
@@ -249,6 +258,7 @@ class base_DirectoryPage(AdminHandler):
                 stat = ent.stat()
                 dir = DirEntry(ent.name, stat, user=req._user)
                 filelist.append(dir)
+        ### sort option
         filelist.sort(key=lambda file:file.date)
         return filelist
 
@@ -607,8 +617,8 @@ class han_ArchiveDir(base_DirectoryPage):
             map['uribase'] = 'arch/' + req._dirname
             map['dirname'] = req._dirname
         ls = self.get_filelist(req, dirs=True)
-        map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) ]
-        dirls = [ ent for ent in ls if isinstance(ent, DirEntry) ]
+        map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) or (isinstance(ent, SymlinkEntry) and not ent.isdir) ]
+        dirls = [ ent for ent in ls if isinstance(ent, DirEntry) or (isinstance(ent, SymlinkEntry) and ent.isdir) ]
         dirls.sort(key=lambda ent:ent.name)
         map['subdirs'] = dirls
         return map
@@ -633,8 +643,8 @@ class han_ArchiveRoot(base_DirectoryPage):
         map['dirname'] = ''
         map['isroot'] = True
         ls = self.get_filelist(req, dirs=True)
-        map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) ]
-        dirls = [ ent for ent in ls if isinstance(ent, DirEntry) ]
+        map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) or (isinstance(ent, SymlinkEntry) and not ent.isdir) ]
+        dirls = [ ent for ent in ls if isinstance(ent, DirEntry) or (isinstance(ent, SymlinkEntry) and ent.isdir) ]
         dirls.sort(key=lambda ent:ent.name)
         map['subdirs'] = dirls
         return map

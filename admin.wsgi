@@ -237,6 +237,8 @@ class base_DirectoryPage(AdminHandler):
     def get_filelist(self, req, dirs=False, sort=None):
         """Get a list of FileEntries from our directory.
         Include DirEntries if requested.
+        SymlinkEntries for files will always be included; for dirs too if
+        requested.
         """
         filelist = []
         for ent in os.scandir(self.get_dirpath(req)):
@@ -250,9 +252,9 @@ class base_DirectoryPage(AdminHandler):
                         stat = os.stat(path)
                         file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=False, user=req._user)
                         filelist.append(file)
-                    else:
-                        file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=req._user)
-                        filelist.append(file)
+                    elif dirs:
+                        dir = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=req._user)
+                        filelist.append(dir)
                 else:
                     file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=req._user)
                     filelist.append(file)

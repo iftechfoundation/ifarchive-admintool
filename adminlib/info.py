@@ -14,6 +14,7 @@ class FileEntry:
     # moved or renamed.
     specialnames = set([
         'Index',
+        'Master-Index',
         '.listing',
     ])
 

@@ -1,4 +1,5 @@
 {% extends "uploadlist_base.html" %}
+{% from 'macros.html' import dirchain %}
 
 {% block title %}
 Upload Info
@@ -7,7 +8,7 @@ Upload Info
 {% block preuploadlist %}
 
 <p>Info for
-  <code><a href="{{ approot }}/{{ uribase|urlencode }}">{{ uribase }}</a>/<a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ filename|urlencode }}">{{ filename }}</a></code>:
+  <code>{{ dirchain(uribase|splituri) }}/<a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ filename|urlencode }}">{{ filename }}</a></code>:
   ({{ filesize|delimnumber }} bytes)
 </p>
 

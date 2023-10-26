@@ -9,7 +9,7 @@ from tinyapp.handler import ReqHandler
 import tinyapp.auth
 
 from adminlib.session import find_user
-from adminlib.util import DelimNumber, Pluralize
+from adminlib.util import DelimNumber, Pluralize, SplitURI
 
 class AdminApp(TinyApp):
     """AdminApp: The TinyApp class.
@@ -70,6 +70,7 @@ class AdminApp(TinyApp):
                 extensions = [
                     DelimNumber,
                     Pluralize,
+                    SplitURI,
                 ],
                 autoescape = select_autoescape(),
                 keep_trailing_newline = True,

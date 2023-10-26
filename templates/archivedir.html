@@ -13,7 +13,7 @@
 <dl class="FileList">
   {% for dir in subdirs %}
     <dt><span class="Details">Subdir:</span>
-    <code><a href="{{ approot }}/{{ uribase }}/{{ dir.name|urlencode }}">{{ dir.name }}</a></code>
+    <code><a href="{{ approot }}/{{ uribase|urlencode }}/{{ dir.name|urlencode }}">{{ dir.name }}</a></code>
   {% endfor %}
 </dl>
 

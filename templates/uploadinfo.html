@@ -7,7 +7,7 @@ Upload Info
 {% block preuploadlist %}
 
 <p>Info for
-  <code><a href="{{ approot }}/{{ uribase }}">{{ uribase }}</a>/<a href="{{ approot }}/{{ uribase }}?view=dl&filename={{ filename|urlencode }}">{{ filename }}</a></code>:
+  <code><a href="{{ approot }}/{{ uribase|urlencode }}">{{ uribase }}</a>/<a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&filename={{ filename|urlencode }}">{{ filename }}</a></code>:
   ({{ filesize|delimnumber }} bytes)
 </p>
 

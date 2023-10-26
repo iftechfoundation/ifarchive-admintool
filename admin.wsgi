@@ -246,9 +246,13 @@ class base_DirectoryPage(AdminHandler):
                 # By this rule, a link to the root if-archive directory itself will show as broken. Fine.
                 if path.startswith(self.app.archive_dir+'/') and os.path.exists(path):
                     relpath = path[ len(self.app.archive_dir)+1 : ]
-                    stat = os.stat(path)
-                    file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=False, user=req._user)
-                    filelist.append(file)
+                    if os.path.isfile(path):
+                        stat = os.stat(path)
+                        file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=False, user=req._user)
+                        filelist.append(file)
+                    else:
+                        file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=req._user)
+                        filelist.append(file)
                 else:
                     file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=req._user)
                     filelist.append(file)

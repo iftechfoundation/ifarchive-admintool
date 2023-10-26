@@ -594,7 +594,10 @@ def check_archive_dir(req, han):
     
     pathname = os.path.join(req.app.archive_dir, dirname)
     try:
-        pathname = os.path.realpath(pathname, strict=True)
+        # I'd pass strict=True here but that's not available until 3.10. Instead we fake it.
+        pathname = os.path.realpath(pathname)
+        if not os.path.exists(pathname):
+            raise Exception('dir not found')
     except:
         msg = 'Directory not found: %s' % (dirname,)
         raise HTTPError('404 Not Found', msg)

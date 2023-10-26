@@ -73,12 +73,17 @@ class SymlinkEntry(ListEntry):
         self.broken = broken
         self.islink = True
 
-        if not self.realpath:
-            self.realdir = None
-        elif isdir:
-            self.realdir = self.realpath
+        if self.realpath is None:
+            self.realuri = None
         else:
-            self.realdir = os.path.dirname(self.realpath)
+            if self.isdir:
+                val = self.realpath
+            else:
+                val = os.path.dirname(self.realpath)
+            if val:
+                self.realuri = 'arch/'+val
+            else:
+                self.realuri = 'arch'
 
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')

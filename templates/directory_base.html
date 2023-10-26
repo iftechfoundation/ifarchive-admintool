@@ -35,7 +35,13 @@
       <code>{{ file.name }}</code>
       <span class="Details">(symlink
       {% if file.broken %}<b>broken</b>{% endif %}
-      &#x2192; <code>{{ file.target }}</code>)</span>
+      &#x2192;
+      {% if file.broken %}
+        <code>{{ file.target }}</code>
+      {%- else -%}
+        <code><a href="{{ approot }}/{{ file.realuri|urlencode }}">{{ file.target }}</a></code>
+      {%- endif -%}
+      )</span>
     {% endif %}
 
   {% endfor %}

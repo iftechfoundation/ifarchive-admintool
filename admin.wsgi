@@ -234,7 +234,7 @@ class base_DirectoryPage(AdminHandler):
         stat = os.stat(pathname)
         return FileEntry(filename, stat, user=req._user)
         
-    def get_filelist(self, req, dirs=False):
+    def get_filelist(self, req, dirs=False, sort=None):
         """Get a list of FileEntries from our directory.
         Include DirEntries if requested.
         """
@@ -258,8 +258,10 @@ class base_DirectoryPage(AdminHandler):
                 stat = ent.stat()
                 dir = DirEntry(ent.name, stat, user=req._user)
                 filelist.append(dir)
-        ### sort option
-        filelist.sort(key=lambda file:file.date)
+        if sort == 'date':
+            filelist.sort(key=lambda file:file.date)
+        elif sort == 'name':
+            filelist.sort(key=lambda file:file.name)
         return filelist
 
     def do_get(self, req):
@@ -520,7 +522,7 @@ class han_Incoming(base_DirectoryPage):
 
     def add_renderparams(self, req, map):
         map['trashcount'] = self.get_trashcount(req)
-        map['files'] = self.get_filelist(req)
+        map['files'] = self.get_filelist(req, sort='date')
         return map
 
     def get_dirpath(self, req):
@@ -541,7 +543,7 @@ class han_Trash(base_DirectoryPage):
     template = 'trash.html'
 
     def add_renderparams(self, req, map):
-        map['files'] = self.get_filelist(req)
+        map['files'] = self.get_filelist(req, sort='date')
         return map
 
     def get_dirpath(self, req):
@@ -558,7 +560,7 @@ class han_Unprocessed(base_DirectoryPage):
     template = 'unprocessed.html'
 
     def add_renderparams(self, req, map):
-        map['files'] = self.get_filelist(req)
+        map['files'] = self.get_filelist(req, sort='date')
         map['incomingcount'] = self.get_incomingcount(req)
         return map
 
@@ -616,7 +618,7 @@ class han_ArchiveDir(base_DirectoryPage):
         else:
             map['uribase'] = 'arch/' + req._dirname
             map['dirname'] = req._dirname
-        ls = self.get_filelist(req, dirs=True)
+        ls = self.get_filelist(req, dirs=True, sort='name')
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
         dirls.sort(key=lambda ent:ent.name)
@@ -642,7 +644,7 @@ class han_ArchiveRoot(base_DirectoryPage):
         map['uribase'] = 'arch'
         map['dirname'] = ''
         map['isroot'] = True
-        ls = self.get_filelist(req, dirs=True)
+        ls = self.get_filelist(req, dirs=True, sort='name')
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
         dirls.sort(key=lambda ent:ent.name)

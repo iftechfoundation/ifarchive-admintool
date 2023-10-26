@@ -234,7 +234,7 @@ class base_DirectoryPage(AdminHandler):
         stat = os.stat(pathname)
         return FileEntry(filename, stat, user=req._user)
         
-    def get_filelist(self, req, dirs=False, sort=None):
+    def get_filelist(self, req, dirs=False, shortdate=False, sort=None):
         """Get a list of FileEntries from our directory.
         Include DirEntries if requested.
         SymlinkEntries for files will always be included; for dirs too if
@@ -250,21 +250,21 @@ class base_DirectoryPage(AdminHandler):
                     relpath = path[ len(self.app.archive_dir)+1 : ]
                     if os.path.isfile(path):
                         stat = os.stat(path)
-                        file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=False, user=req._user)
+                        file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=False, user=req._user, shortdate=shortdate)
                         filelist.append(file)
                     elif dirs:
-                        dir = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=req._user)
+                        dir = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=req._user, shortdate=shortdate)
                         filelist.append(dir)
                 else:
-                    file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=req._user)
+                    file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=req._user, shortdate=shortdate)
                     filelist.append(file)
             elif ent.is_file():
                 stat = ent.stat()
-                file = FileEntry(ent.name, stat, user=req._user)
+                file = FileEntry(ent.name, stat, user=req._user, shortdate=shortdate)
                 filelist.append(file)
             elif dirs and ent.is_dir():
                 stat = ent.stat()
-                dir = DirEntry(ent.name, stat, user=req._user)
+                dir = DirEntry(ent.name, stat, user=req._user, shortdate=shortdate)
                 filelist.append(dir)
         if sort == 'date':
             filelist.sort(key=lambda file:file.date)

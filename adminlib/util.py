@@ -127,3 +127,20 @@ class Pluralize(jinja2.ext.Extension):
             return plural
             
         
+class SplitURI(jinja2.ext.Extension):
+    def __init__(self, env):
+        env.filters['splituri'] = self.splituri
+
+    @staticmethod
+    def splituri(val):
+        ls = val.split('/')
+        if not ls:
+            return []
+        if ls[0] == 'arch':
+            res = [ ('Archive', 'arch') ]
+            for ix in range(1, len(ls)):
+                res.append( (ls[ix], '/'.join(ls[ 0 : ix+1 ])) )
+            return res
+        return [ (val, val) ]
+    
+            

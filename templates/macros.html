@@ -1,0 +1,7 @@
+
+{%- macro dirchain(ls) -%}
+  {% set slash = joiner('/') %}
+  {%- for label, uri in ls -%}
+    {{ slash() }}<a href="{{ approot }}/{{ uri|urlencode }}">{{ label }}</a>
+  {%- endfor -%}
+{%- endmacro -%}

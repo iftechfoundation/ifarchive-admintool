@@ -1,6 +1,11 @@
 {% extends "directory_base.html" %}
+{% from 'macros.html' import dirchain %}
 
 {% block title %}Archive/{{ dirname }}{% endblock %}
+
+{% block usetitle %}
+<h1>{{ dirchain(uribase|splituri) }}</h1>
+{% endblock %}
 
 {% block prefilelist %}
 

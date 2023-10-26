@@ -14,7 +14,7 @@ User Info
   <li><span class="ItemName">Email:</span>
     {{ user.email }}
   <li><span class="ItemName">Roles:</span>
-    {{ user.roles | sort | join(', ') }}
+    {{ user.rolestr }}
   <li><span class="ItemName">Time zone:</span>
     {% if user.tzname %} {{ user.tzname }} {% else %} (not set, using UTC) {% endif %}
     &nbsp; <a href="{{ approot }}/user/changetz">(change)</a>

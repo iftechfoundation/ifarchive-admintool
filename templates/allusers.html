@@ -9,7 +9,7 @@ Admin Tool User List
 <ul>
   {% for user in users %}
   <li>{{ user.name }} &lt;{{ user.email }}&gt;
-    : {{ user.roles | sort | join(', ') }}
+    : {{ user.rolestr }}
   {% endfor %}
 </ul>
 

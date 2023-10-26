@@ -17,6 +17,7 @@ class User:
         self.name = name
         self.email = email
         self.sessionid = sessionid
+        self.rolestr = roles
         self.roles = set(roles.split(','))
         
         self.tzname = tzname

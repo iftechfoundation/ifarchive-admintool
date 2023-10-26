@@ -530,7 +530,7 @@ class han_Incoming(base_DirectoryPage):
 
     def add_renderparams(self, req, map):
         map['trashcount'] = self.get_trashcount(req)
-        map['files'] = self.get_filelist(req, sort='date')
+        map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         return map
 
     def get_dirpath(self, req):
@@ -551,7 +551,7 @@ class han_Trash(base_DirectoryPage):
     template = 'trash.html'
 
     def add_renderparams(self, req, map):
-        map['files'] = self.get_filelist(req, sort='date')
+        map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         return map
 
     def get_dirpath(self, req):
@@ -568,7 +568,7 @@ class han_Unprocessed(base_DirectoryPage):
     template = 'unprocessed.html'
 
     def add_renderparams(self, req, map):
-        map['files'] = self.get_filelist(req, sort='date')
+        map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         map['incomingcount'] = self.get_incomingcount(req)
         return map
 

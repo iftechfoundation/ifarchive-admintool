@@ -2,7 +2,15 @@ import re
 
 from adminlib.util import bad_filename, in_user_time
 
-class FileEntry:
+class ListEntry:
+    """Base class for FileEntry, DirEntry, SymlinkEntry.
+    Objects in these classes should always have isfile, isdir, and
+    islink set, and isdir should be (not isfile). (A link can
+    be either.)
+    """
+    pass
+
+class FileEntry(ListEntry):
     """Represents one file in a directory.
     
     FileEntries are used in the templates which display lists of
@@ -38,7 +46,7 @@ class FileEntry:
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')
 
-class DirEntry:
+class DirEntry(ListEntry):
     """Represents one subdirectory in a directory.
     """
     def __init__(self, dirname, stat, user=None):
@@ -51,7 +59,7 @@ class DirEntry:
         mtime = in_user_time(user, self.date)
         self.fdate = mtime.strftime('%b %d, %H:%M %Z')
 
-class SymlinkEntry:
+class SymlinkEntry(ListEntry):
     """Represents one symlink in a directory.
     """
     def __init__(self, filename, target, stat, broken=False, isdir=False, user=None):

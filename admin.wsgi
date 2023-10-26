@@ -617,8 +617,8 @@ class han_ArchiveDir(base_DirectoryPage):
             map['uribase'] = 'arch/' + req._dirname
             map['dirname'] = req._dirname
         ls = self.get_filelist(req, dirs=True)
-        map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) or (isinstance(ent, SymlinkEntry) and not ent.isdir) ]
-        dirls = [ ent for ent in ls if isinstance(ent, DirEntry) or (isinstance(ent, SymlinkEntry) and ent.isdir) ]
+        map['files'] = [ ent for ent in ls if ent.isfile ]
+        dirls = [ ent for ent in ls if ent.isdir ]
         dirls.sort(key=lambda ent:ent.name)
         map['subdirs'] = dirls
         return map
@@ -643,8 +643,8 @@ class han_ArchiveRoot(base_DirectoryPage):
         map['dirname'] = ''
         map['isroot'] = True
         ls = self.get_filelist(req, dirs=True)
-        map['files'] = [ ent for ent in ls if isinstance(ent, FileEntry) or (isinstance(ent, SymlinkEntry) and not ent.isdir) ]
-        dirls = [ ent for ent in ls if isinstance(ent, DirEntry) or (isinstance(ent, SymlinkEntry) and ent.isdir) ]
+        map['files'] = [ ent for ent in ls if ent.isfile ]
+        dirls = [ ent for ent in ls if ent.isdir ]
         dirls.sort(key=lambda ent:ent.name)
         map['subdirs'] = dirls
         return map

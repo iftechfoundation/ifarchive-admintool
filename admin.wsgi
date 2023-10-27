@@ -388,7 +388,6 @@ class base_DirectoryPage(AdminHandler):
         """
         self.check_fileops(req)
         # dirname is the user-readable name (e.g. "incoming" or "unprocessed")
-        dirname = self.renderparams['dirname']
         # dirpath is the filesystem path (e.g. "/var/ifarchive/incoming")
         dirpath = self.get_dirpath(req)
         # uribase is the URL element after approot (e.g. "incoming" or "arch/unprocessed")
@@ -445,46 +444,42 @@ class base_DirectoryPage(AdminHandler):
 
     def do_post_delete(self, req, dirpath, filename):
         op = 'delete'
-        dirname = self.renderparams['dirname']
         if dirpath == self.app.trash_dir:
             raise Exception('delete op cannot be used in the trash')
         newname = find_unused_filename(filename, self.app.trash_dir)
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(self.app.trash_dir, newname)
         os.rename(origpath, newpath)
-        req.loginfo('Deleted "%s" from /%s', filename, dirname)
+        req.loginfo('Deleted "%s" from /%s', filename, self.get_dirname(req))
         return self.render(self.template, req,
                            diddelete=filename, didnewname=newname)
         
     def do_post_moveu(self, req, dirpath, filename):
         op = 'moveu'
-        dirname = self.renderparams['dirname']
         if dirpath == self.app.unprocessed_dir:
             raise Exception('moveu op cannot be used in the unprocessed dir')
         newname = find_unused_filename(filename, self.app.unprocessed_dir)
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(self.app.unprocessed_dir, newname)
         os.rename(origpath, newpath)
-        req.loginfo('Moved "%s" from /%s to /unprocessed', filename, dirname)
+        req.loginfo('Moved "%s" from /%s to /unprocessed', filename, self.get_dirname(req))
         return self.render(self.template, req,
                            didmoveu=filename, didnewname=newname)
 
     def do_post_movei(self, req, dirpath, filename):
         op = 'movei'
-        dirname = self.renderparams['dirname']
         if dirpath == self.app.incoming_dir:
             raise Exception('movei op cannot be used in the incoming dir')
         newname = find_unused_filename(filename, self.app.incoming_dir)
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(self.app.incoming_dir, newname)
         os.rename(origpath, newpath)
-        req.loginfo('Moved "%s" from /%s to /incoming', filename, dirname)
+        req.loginfo('Moved "%s" from /%s to /incoming', filename, self.get_dirname(req))
         return self.render(self.template, req,
                            didmovei=filename, didnewname=newname)
 
     def do_post_rename(self, req, dirpath, filename):
         op = 'rename'
-        dirname = self.renderparams['dirname']
         newname = req.get_input_field('newname')
         if newname is not None:
             newname = newname.strip()
@@ -507,13 +502,12 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                formerror='Filename already in use: "%s"' % (newname,))
         os.rename(origpath, newpath)
-        req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, dirname)
+        req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,
                            didrename=filename, didnewname=newname)
         
     def do_post_zip(self, req, dirpath, filename):
         op = 'zip'
-        dirname = self.renderparams['dirname']
         newname = filename+'.zip'
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(dirpath, newname)
@@ -533,7 +527,7 @@ class base_DirectoryPage(AdminHandler):
         for (uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) in list(res.fetchall()):
             curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (uploadtime, newmd5, newsize, newname, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about))
 
-        req.loginfo('Zipped "%s" to "%s" in /%s', filename, newname, dirname)
+        req.loginfo('Zipped "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,
                            didzip=filename, didnewname=newname)
 
@@ -542,11 +536,12 @@ class base_DirectoryPage(AdminHandler):
 class han_Incoming(base_DirectoryPage):
     renderparams = {
         'navtab': 'incoming',
-        'uribase': 'incoming', 'dirname': 'incoming',
+        'uribase': 'incoming',
     }
     template = 'incoming.html'
 
     def add_renderparams(self, req, map):
+        map['dirname'] = self.get_dirname(req)
         map['fileops'] = req._fileops
         map['trashcount'] = self.get_trashcount(req)
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
@@ -555,6 +550,9 @@ class han_Incoming(base_DirectoryPage):
     def get_fileops(self, req):
         if req._user.has_role('incoming'):
             return ['moveu', 'rename', 'delete', 'zip']
+
+    def get_dirname(self, req):
+        return 'incoming'
 
     def get_dirpath(self, req):
         return self.app.incoming_dir
@@ -568,11 +566,12 @@ class han_Incoming(base_DirectoryPage):
 class han_Trash(base_DirectoryPage):
     renderparams = {
         'navtab': 'trash',
-        'uribase': 'trash', 'dirname': 'trash',
+        'uribase': 'trash',
     }
     template = 'trash.html'
 
     def add_renderparams(self, req, map):
+        map['dirname'] = self.get_dirname(req)
         map['fileops'] = req._fileops
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         return map
@@ -580,6 +579,9 @@ class han_Trash(base_DirectoryPage):
     def get_fileops(self, req):
         if req._user.has_role('incoming'):
             return ['movei', 'moveu', 'rename']
+
+    def get_dirname(self, req):
+        return 'trash'
 
     def get_dirpath(self, req):
         return self.app.trash_dir
@@ -589,11 +591,12 @@ class han_Trash(base_DirectoryPage):
 class han_Unprocessed(base_DirectoryPage):
     renderparams = {
         'navtab': 'unprocessed',
-        'uribase': 'arch/unprocessed', 'dirname': 'unprocessed',
+        'uribase': 'arch/unprocessed',
     }
     template = 'unprocessed.html'
 
     def add_renderparams(self, req, map):
+        map['dirname'] = self.get_dirname(req)
         map['fileops'] = req._fileops
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         map['incomingcount'] = self.get_incomingcount(req)
@@ -602,6 +605,9 @@ class han_Unprocessed(base_DirectoryPage):
     def get_fileops(self, req):
         if req._user.has_role('incoming'):
             return ['delete', 'movei', 'rename']
+
+    def get_dirname(self, req):
+        return 'unprocessed'
 
     def get_dirpath(self, req):
         return self.app.unprocessed_dir
@@ -653,13 +659,12 @@ class han_ArchiveDir(base_DirectoryPage):
     template = 'archivedir.html'
 
     def add_renderparams(self, req, map):
+        map['dirname'] = self.get_dirname(req)
         map['fileops'] = req._fileops
         if not req._dirname:
             map['uribase'] = 'arch'
-            map['dirname'] = ''
         else:
             map['uribase'] = 'arch/' + req._dirname
-            map['dirname'] = req._dirname
         ls = self.get_filelist(req, dirs=True, sort='name')
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
@@ -671,6 +676,12 @@ class han_ArchiveDir(base_DirectoryPage):
         if req._user.has_role('files'):
             return ['rename', 'delete', 'moveu']
 
+    def get_dirname(self, req):
+        if not req._dirname:
+            return ''
+        else:
+            return req._dirname
+            
     def get_dirpath(self, req):
         if not req._dirname:
             return self.app.archive_dir
@@ -686,6 +697,7 @@ class han_ArchiveRoot(base_DirectoryPage):
     template = 'archivedir.html'
 
     def add_renderparams(self, req, map):
+        map['dirname'] = self.get_dirname(req)
         map['fileops'] = req._fileops
         map['uribase'] = 'arch'
         map['dirname'] = ''
@@ -700,6 +712,9 @@ class han_ArchiveRoot(base_DirectoryPage):
     def get_fileops(self, req):
         return [] ###
 
+    def get_dirname(self, req):
+        return ''
+            
     def get_dirpath(self, req):
         return self.app.archive_dir
 

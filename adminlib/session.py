@@ -19,6 +19,11 @@ class User:
         self.sessionid = sessionid
         self.rolestr = roles
         self.roles = set(roles.split(','))
+
+        if 'admin' in self.roles:
+            # It's easier to special-case admin here. Add all the roles
+            # an admin can do, which is all of them.
+            self.roles.update(['incoming', 'index'])
         
         self.tzname = tzname
         self.tz = None
@@ -27,6 +32,9 @@ class User:
                 self.tz = pytz.timezone(tzname)
             except:
                 pass
+
+    def has_role(self, val):
+        return val in self.roles
 
 class Session:
     """Represents one login session for the admintool.

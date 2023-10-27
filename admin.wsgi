@@ -547,7 +547,6 @@ class han_Incoming(base_DirectoryPage):
     renderparams = {
         'navtab': 'incoming',
         'uribase': 'incoming', 'dirname': 'incoming',
-        ###'filebuttons': set(['moveu', 'rename', 'delete', 'zip']),
     }
     template = 'incoming.html'
 
@@ -574,7 +573,6 @@ class han_Trash(base_DirectoryPage):
     renderparams = {
         'navtab': 'trash',
         'uribase': 'trash', 'dirname': 'trash',
-        ###'filebuttons': set(['movei', 'moveu', 'rename']),
     }
     template = 'trash.html'
 
@@ -583,16 +581,19 @@ class han_Trash(base_DirectoryPage):
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         return map
 
+    def get_fileops(self, req):
+        if req._user.has_role('incoming'):
+            return ['movei', 'moveu', 'rename']
+
     def get_dirpath(self, req):
         return self.app.trash_dir
 
 
-@beforeall(require_role('incoming'))
+@beforeall(require_user)
 class han_Unprocessed(base_DirectoryPage):
     renderparams = {
         'navtab': 'unprocessed',
         'uribase': 'arch/unprocessed', 'dirname': 'unprocessed',
-        ###'filebuttons': set(['delete', 'movei', 'rename']),
     }
     template = 'unprocessed.html'
 
@@ -601,6 +602,10 @@ class han_Unprocessed(base_DirectoryPage):
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         map['incomingcount'] = self.get_incomingcount(req)
         return map
+
+    def get_fileops(self, req):
+        if req._user.has_role('incoming'):
+            return ['delete', 'movei', 'rename']
 
     def get_dirpath(self, req):
         return self.app.unprocessed_dir
@@ -648,7 +653,6 @@ def check_archive_dir(req, han):
 class han_ArchiveDir(base_DirectoryPage):
     renderparams = {
         'navtab': 'archive',
-        'filebuttons': None, ###
     }
     template = 'archivedir.html'
 
@@ -667,6 +671,9 @@ class han_ArchiveDir(base_DirectoryPage):
         map['subdirs'] = dirls
         return map
 
+    def get_fileops(self, req):
+        return [] ###
+
     def get_dirpath(self, req):
         if not req._dirname:
             return self.app.archive_dir
@@ -678,7 +685,6 @@ class han_ArchiveDir(base_DirectoryPage):
 class han_ArchiveRoot(base_DirectoryPage):
     renderparams = {
         'navtab': 'archive',
-        'filebuttons': None, ###
     }
     template = 'archivedir.html'
 
@@ -693,6 +699,9 @@ class han_ArchiveRoot(base_DirectoryPage):
         dirls.sort(key=lambda ent:ent.name)
         map['subdirs'] = dirls
         return map
+
+    def get_fileops(self, req):
+        return [] ###
 
     def get_dirpath(self, req):
         return self.app.archive_dir

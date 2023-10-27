@@ -7,6 +7,26 @@ dashline_pattern = re.compile('^[ ]*[-+=#*]+[ -+=#*]*$')
 
 convertermeta = markdown.Markdown(extensions = ['meta'])
 
+class IndexFile:
+    def __init__(self, headerlines, files):
+        self.files = files
+        self.metadata = OrderedDict()
+
+        headerstr = '\n'.join(headerlines)
+        headerstr = headerstr.rstrip() + '\n'
+        # Now headerstr starts with zero newlines and ends
+        # with one newline.
+
+        anyheader = bool(headerstr.strip())
+        if anyheader:
+            # Convert Markdown to HTML.
+            val = convertermeta.convert(headerstr)
+            for (mkey, mls) in convertermeta.Meta.items():
+                self.metadata[mkey] = list(mls)
+            convertermeta.Meta.clear()
+
+            ### stash val?
+            
 class IndexFileEntry:
     """One file entry in an Index file.
     """
@@ -95,5 +115,6 @@ def parse_index(pathname):
             filedesclines.append(bx)
 
     infl.close()
-    
-    return files
+
+    index = IndexFile(headerlines, files)
+    return index

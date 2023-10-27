@@ -10,6 +10,7 @@ convertermeta = markdown.Markdown(extensions = ['meta'])
 class IndexFile:
     def __init__(self, headerlines, files):
         self.files = files
+        self.filemap = { file.name:file for file in files }
         self.metadata = OrderedDict()
 
         headerstr = '\n'.join(headerlines)

@@ -397,8 +397,6 @@ class base_DirectoryPage(AdminHandler):
         """
         self.check_fileops(req)
         dirpath = self.get_dirpath(req)
-        # uribase is the URL element after approot (e.g. "incoming" or "arch/unprocessed")
-        uribase = self.renderparams['uribase']
         
         filename = req.get_input_field('filename')
         ent = self.get_file(filename, req)
@@ -408,7 +406,7 @@ class base_DirectoryPage(AdminHandler):
 
         # On any Cancel button, we redirect back to the GET for this page.
         if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+'/'+uribase)
+            raise HTTPRedirectPost(self.app.approot+'/'+req.path_info)
 
         # The operation may be defined by an "op" hidden field or by the
         # button just pressed. (Depending on what stage we're at.)

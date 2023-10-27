@@ -14,7 +14,7 @@
 
     <dt>
     {% if not file.islink %}
-      <span class="Details">{{ file.fdate }}
+      <span class="Details"><span class="Tabular">{{ file.fdate }}</span>
       {% if not file.isspecial %}
         <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
       {% else %}
@@ -29,7 +29,7 @@
       {% endif %}
 
     {% else %}
-      <span class="Details">{{ file.fdate }}
+      <span class="Details"><span class="Tabular">{{ file.fdate }}</span>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       :</span>
       <code>{{ file.name }}</code>

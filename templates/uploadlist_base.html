@@ -7,7 +7,7 @@
 {% for ent in uploads %}
 <ul class="InfoList">
   <li><span class="ItemName">Upload time:</span>
-    {{ ent.fdate }}
+    <span class="Tabular">{{ ent.fdate }}</span>
   <li><span class="ItemName">Filename:</span>
     <code>{{ ent.filename }}</code>
   {% if ent.filename != ent.origfilename %}

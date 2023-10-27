@@ -108,9 +108,13 @@ a:hover {
 }
 
 code {
-    font: 100% "Courier Prime", "Courier", sans-serif;
+    font: 100% "Courier Prime", "Courier", monospace;
     background: #ECE0B0;
     padding: 1px 2px;
+}
+
+.Tabular {
+    font-family: "Menlo", "Consolas", monospace;
 }
 
 ul {

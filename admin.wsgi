@@ -408,19 +408,15 @@ class base_DirectoryPage(AdminHandler):
         # button just pressed. (Depending on what stage we're at.)
         if req.get_input_field('op'):
             op = req.get_input_field('op')
-        elif req.get_input_field('delete'):
-            op = 'delete'
-        elif req.get_input_field('moveu'):
-            op = 'moveu'
-        elif req.get_input_field('movei'):
-            op = 'movei'
-        elif req.get_input_field('rename'):
-            op = 'rename'
-        elif req.get_input_field('zip'):
-            op = 'zip'
         else:
+            op = None
+            for val in req._fileops:
+                if req.get_input_field(val):
+                    op = val
+                    break
+        if not op or op not in req._fileops:
             return self.render(self.template, req,
-                               formerror='Invalid operation')
+                               formerror='Invalid operation: %s' % (op,))
 
         # If neither "confirm" nor "cancel" was pressed, we're at the
         # stage of showing those buttons. (And also the "rename" input

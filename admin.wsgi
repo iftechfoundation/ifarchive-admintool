@@ -218,9 +218,18 @@ class base_DirectoryPage(AdminHandler):
     
     def get_dirpath(self, req):
         """Return the (full) filesystem path of the directory that this
-        subclass will operate on. Subclasses must customize this.
+        subclass will operate on. (E.g. "/var/ifarchive/incoming" or
+        "/var/ifarchive/htdocs/if-archive/unprocessed".)
+        Subclasses must customize this.
         """
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
+
+    def get_dirname(self, req):
+        """Return the printable name of the directory that this
+        subclass will operate on. (E.g. "incoming" or "unprocessed".)
+        Subclasses must customize this.
+        """
+        raise NotImplementedError('%s: get_dirname not implemented' % (self.__class__.__name__,))
 
     def check_fileops(self, req):
         """Add a req._fileops field, containing file operations valid for
@@ -387,8 +396,6 @@ class base_DirectoryPage(AdminHandler):
         itself.
         """
         self.check_fileops(req)
-        # dirname is the user-readable name (e.g. "incoming" or "unprocessed")
-        # dirpath is the filesystem path (e.g. "/var/ifarchive/incoming")
         dirpath = self.get_dirpath(req)
         # uribase is the URL element after approot (e.g. "incoming" or "arch/unprocessed")
         uribase = self.renderparams['uribase']

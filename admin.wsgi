@@ -222,6 +222,25 @@ class base_DirectoryPage(AdminHandler):
         """
         raise NotImplementedError('%s: get_dirpath not implemented' % (self.__class__.__name__,))
 
+    def check_fileops(self, req):
+        """Add a req._fileops field, containing file operations valid for
+        the current user in this directory.
+        """
+        req._fileops = set()
+        if req._user:
+            ops = self.get_fileops(req)
+            if ops:
+                req._fileops.update(ops)
+
+    def get_fileops(self, req):
+        """Return the operations which are available for files in this
+        directory. This should be limited to what the req._user's roles
+        allow.
+        (You can assume that req._user is set when this is called.)
+        Subclasses should customize this to permit appropriate operations.
+        """
+        return None
+
     def get_file(self, filename, req):
         """Get one FileEntry from our directory, or None if the file
         does not exist.
@@ -278,6 +297,7 @@ class base_DirectoryPage(AdminHandler):
         """The GET case has to handle download and "show info" links,
         as well as the basic file list.
         """
+        self.check_fileops(req)
         view = req.get_query_field('view')
         if view:
             # In this case there will be a "filename" field in the query
@@ -366,6 +386,7 @@ class base_DirectoryPage(AdminHandler):
         after an operation is selected, and *also* the confirmed operation
         itself.
         """
+        self.check_fileops(req)
         # dirname is the user-readable name (e.g. "incoming" or "unprocessed")
         dirname = self.renderparams['dirname']
         # dirpath is the filesystem path (e.g. "/var/ifarchive/incoming")
@@ -521,19 +542,24 @@ class base_DirectoryPage(AdminHandler):
                            didzip=filename, didnewname=newname)
 
 
-@beforeall(require_role('incoming', 'admin'))
+@beforeall(require_role('incoming'))
 class han_Incoming(base_DirectoryPage):
     renderparams = {
         'navtab': 'incoming',
         'uribase': 'incoming', 'dirname': 'incoming',
-        'filebuttons': set(['moveu', 'rename', 'delete', 'zip']),
+        ###'filebuttons': set(['moveu', 'rename', 'delete', 'zip']),
     }
     template = 'incoming.html'
 
     def add_renderparams(self, req, map):
+        map['fileops'] = req._fileops
         map['trashcount'] = self.get_trashcount(req)
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         return map
+
+    def get_fileops(self, req):
+        if req._user.has_role('incoming'):
+            return ['moveu', 'rename', 'delete', 'zip']
 
     def get_dirpath(self, req):
         return self.app.incoming_dir
@@ -543,16 +569,17 @@ class han_Incoming(base_DirectoryPage):
         return count
 
 
-@beforeall(require_role('incoming', 'admin'))
+@beforeall(require_role('incoming'))
 class han_Trash(base_DirectoryPage):
     renderparams = {
         'navtab': 'trash',
         'uribase': 'trash', 'dirname': 'trash',
-        'filebuttons': set(['movei', 'moveu', 'rename']),
+        ###'filebuttons': set(['movei', 'moveu', 'rename']),
     }
     template = 'trash.html'
 
     def add_renderparams(self, req, map):
+        map['fileops'] = req._fileops
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         return map
 
@@ -560,16 +587,17 @@ class han_Trash(base_DirectoryPage):
         return self.app.trash_dir
 
 
-@beforeall(require_role('incoming', 'admin'))
+@beforeall(require_role('incoming'))
 class han_Unprocessed(base_DirectoryPage):
     renderparams = {
         'navtab': 'unprocessed',
         'uribase': 'arch/unprocessed', 'dirname': 'unprocessed',
-        'filebuttons': set(['delete', 'movei', 'rename']),
+        ###'filebuttons': set(['delete', 'movei', 'rename']),
     }
     template = 'unprocessed.html'
 
     def add_renderparams(self, req, map):
+        map['fileops'] = req._fileops
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         map['incomingcount'] = self.get_incomingcount(req)
         return map
@@ -625,6 +653,7 @@ class han_ArchiveDir(base_DirectoryPage):
     template = 'archivedir.html'
 
     def add_renderparams(self, req, map):
+        map['fileops'] = req._fileops
         if not req._dirname:
             map['uribase'] = 'arch'
             map['dirname'] = ''
@@ -654,6 +683,7 @@ class han_ArchiveRoot(base_DirectoryPage):
     template = 'archivedir.html'
 
     def add_renderparams(self, req, map):
+        map['fileops'] = req._fileops
         map['uribase'] = 'arch'
         map['dirname'] = ''
         map['isroot'] = True
@@ -668,7 +698,7 @@ class han_ArchiveRoot(base_DirectoryPage):
         return self.app.archive_dir
 
 
-@beforeall(require_role('incoming', 'admin'))
+@beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):
     renderparams = { 'navtab':'uploads', 'uribase':'uploadlog' }
 

@@ -24,7 +24,7 @@
       <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
       <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
-      {% if filebuttons and not file.isspecial %}
+      {% if fileops and not file.isspecial %}
       {% include "filebuttons.html" %}
       {% endif %}
 
@@ -53,7 +53,7 @@
 <p>{{ formerror }}</p>
 {% endif %}
 
-{% if filebuttons %}
+{% if fileops %}
 {% include "filebuttonresult.html" %}
 {% endif %}
 

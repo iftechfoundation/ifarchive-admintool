@@ -6,19 +6,19 @@
   <form method="post" action="{{ requri }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ file.name }}"/>
-  {% if 'zip' in filebuttons and file.ishtml %}
+  {% if 'zip' in fileops and file.ishtml %}
     <input class="FormButton" name="zip" type="submit" value="Zip">
   {% endif %}
-  {% if 'movei' in filebuttons %}
+  {% if 'movei' in fileops %}
     <input class="FormButton" name="movei" type="submit" value="Move In">
   {% endif %}
-  {% if 'moveu' in filebuttons %}
+  {% if 'moveu' in fileops %}
     <input class="FormButton" name="moveu" type="submit" value="Move Up">
   {% endif %}
-  {% if 'rename' in filebuttons %}
+  {% if 'rename' in fileops %}
     <input class="FormButton" name="rename" type="submit" value="Rename">
   {% endif %}
-  {% if 'delete' in filebuttons %}
+  {% if 'delete' in fileops %}
     <input class="FormButton" name="delete" type="submit" value="Delete">
   {% endif %}
   </form>

@@ -676,14 +676,13 @@ class han_ArchiveDir(base_DirectoryPage):
         dirls.sort(key=lambda ent:ent.name)
         map['subdirs'] = dirls
 
-        try:
-            if req._dirname:
-                indexdir = IndexDir(map['dirname'], rootdir=self.app.archive_dir)
-                map['indexdir'] = indexdir
-                map['indexdirdesc'] = indexdir.description
-                map['indexdirmeta'] = indexdir.metadata
-        except:
-            pass
+        indexdir = None
+        indexpath = os.path.join(self.get_dirpath(req), 'Index')
+        if req._dirname and os.path.isfile(indexpath):
+            indexdir = IndexDir(map['dirname'], rootdir=self.app.archive_dir)
+            map['indexdir'] = indexdir
+            map['indexdirdesc'] = indexdir.description
+            map['indexdirmeta'] = indexdir.metadata
         
         return map
 

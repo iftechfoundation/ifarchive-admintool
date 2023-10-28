@@ -44,14 +44,14 @@ from tinyapp.handler import before, beforeall
 from tinyapp.excepts import HTTPError, HTTPRedirectPost, HTTPRawResponse
 from tinyapp.util import random_bytes, time_now
 
+from adminlib.admapp import AdminApp, AdminHandler
 from adminlib.session import User, Session
 from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, UploadEntry
-from adminlib.admapp import AdminApp, AdminHandler
-
+from adminlib.index import IndexDir
     
 # URL handlers...
 
@@ -675,6 +675,15 @@ class han_ArchiveDir(base_DirectoryPage):
         dirls = [ ent for ent in ls if ent.isdir ]
         dirls.sort(key=lambda ent:ent.name)
         map['subdirs'] = dirls
+
+        try:
+            if req._dirname:
+                indexdir = IndexDir(map['dirname'], rootdir=self.app.archive_dir)
+                map['indexdir'] = indexdir
+                map['dirdesc'] = '\n'.join(indexdir.description)
+        except:
+            pass
+        
         return map
 
     def get_fileops(self, req):

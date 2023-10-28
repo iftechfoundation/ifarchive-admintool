@@ -22,8 +22,10 @@
 <dl class="FileList">
   {% for dir in subdirs %}
     <dt><span class="Details">Subdir:</span>
-    <code><a href="{{ approot }}/{{ uribase|urlencode }}/{{ dir.name|urlencode }}">{{ dir.name }}</a></code>
-    {% if dir.islink %}
+    {% if not dir.islink %}
+      <code><a href="{{ approot }}/{{ uribase|urlencode }}/{{ dir.name|urlencode }}">{{ dir.name }}</a></code>
+    {% else %}
+      <code>{{ dir.name }}</code>
       <span class="Details">(symlink
       {% if dir.broken %}<b>broken</b>{% endif %}
       &#x2192;

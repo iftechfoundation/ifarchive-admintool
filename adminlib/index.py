@@ -17,12 +17,13 @@ class IndexDir:
         self.indexpath = os.path.join(rootdir, dirname, 'Index')
 
         self.description = []
+        self.metadata = OrderedDict()
         self.files = OrderedDict()
 
         # Parse the existing Index file.
         infl = open(self.indexpath, encoding='utf-8')
         curfile = None
-        curmetaline = None
+        curmetaline = True
         
         for ln in infl.readlines():
             if filename_pattern.match(ln):
@@ -34,7 +35,27 @@ class IndexDir:
                 continue
             
             if not curfile:
-                # Directory description line.
+                if curmetaline is not None:
+                    match = meta_start_pattern.match(ln)
+                    match2 = meta_cont_pattern.match(ln)
+                    if ln.strip() == '':
+                        curmetaline = None
+                    elif match:
+                        # New metadata line
+                        curmetaline = match.group(1)
+                        val = ln[match.end() : ].strip()
+                        self.add_metadata(curmetaline, val, dirty=False)
+                        continue
+                    elif type(curmetaline) is str and match2:
+                        val = ln[match2.end() : ].strip()
+                        self.add_metadata(curmetaline, val, dirty=False)
+                        continue
+                    else:
+                        curmetaline = None
+                # We're done with the directory metadata, so this is a directory description line.
+                # For consistency, the description will always start with a blank line.
+                if len(self.description) == 0 and ln.strip() != '':
+                    self.description.append('\n')
                 self.description.append(ln)
                 continue
 
@@ -69,6 +90,15 @@ class IndexDir:
 
     def __repr__(self):
         return '<IndexDir %s>' % (self.dirname,)
+
+    def add_metadata(self, key, val, dirty=True):
+        ls = self.metadata.get(key)
+        if ls is None:
+            ls = []
+            self.metadata[key] = ls
+        ls.append(val)
+        if dirty:
+            self.dirty = True
 
 
 class IndexFile:

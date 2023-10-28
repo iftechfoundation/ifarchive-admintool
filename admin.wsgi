@@ -671,19 +671,31 @@ class han_ArchiveDir(base_DirectoryPage):
         else:
             map['uribase'] = 'arch/' + req._dirname
         ls = self.get_filelist(req, dirs=True, sort='name')
-        map['files'] = [ ent for ent in ls if ent.isfile ]
-        dirls = [ ent for ent in ls if ent.isdir ]
-        dirls.sort(key=lambda ent:ent.name)
-        map['subdirs'] = dirls
 
         indexdir = None
         indexpath = os.path.join(self.get_dirpath(req), 'Index')
         if req._dirname and os.path.isfile(indexpath):
             indexdir = IndexDir(map['dirname'], rootdir=self.app.archive_dir)
-            map['indexdir'] = indexdir
-            map['indexdirdesc'] = indexdir.description
+            
+        map['indexdir'] = indexdir
+        if indexdir:
+            if indexdir.description:
+                map['indexdirdesc'] = indexdir.description.strip()
             map['indexdirmeta'] = indexdir.metadata
-        
+
+            for ent in ls:
+                ifile = indexdir.filemap.get(ent.name)
+                if ifile:
+                    if ifile.description:
+                        ent.indexdesc = ifile.description.strip()
+                    ent.indexmeta = ifile.metadata
+                ### stash for a non-list
+
+        map['files'] = [ ent for ent in ls if ent.isfile ]
+        dirls = [ ent for ent in ls if ent.isdir ]
+        dirls.sort(key=lambda ent:ent.name)
+        map['subdirs'] = dirls
+            
         return map
 
     def get_fileops(self, req):

@@ -18,7 +18,8 @@ class IndexDir:
 
         self.description = []
         self.metadata = OrderedDict()
-        self.files = OrderedDict()
+        self.files = []
+        self.filemap = OrderedDict()
 
         # Parse the existing Index file.
         infl = open(self.indexpath, encoding='utf-8')
@@ -31,7 +32,8 @@ class IndexDir:
                 filename = ln[1:].strip()
                 curfile = IndexFile(filename, self)
                 curmetaline = True
-                self.files[filename] = curfile
+                self.files.append(curfile)
+                self.filemap[filename] = curfile
                 continue
             
             if not curfile:

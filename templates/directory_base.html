@@ -2,8 +2,6 @@
 
 {% block content %}
 
-{% block prefilelist %}{% endblock %}
-
 {% if indexdirdesc or indexdirmeta %}
   <ul class="InfoList">
   {% if indexdirdesc %}
@@ -16,6 +14,8 @@
   {% endif %}
   </ul>
 {% endif %}
+
+{% block prefilelist %}{% endblock %}
 
 {% if not files %}
   <p>No files in <code>/{{ dirname }}</code>.<p>

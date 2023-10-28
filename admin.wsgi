@@ -681,6 +681,7 @@ class han_ArchiveDir(base_DirectoryPage):
                 indexdir = IndexDir(map['dirname'], rootdir=self.app.archive_dir)
                 map['indexdir'] = indexdir
                 map['indexdirdesc'] = indexdir.description
+                map['indexdirmeta'] = indexdir.metadata
         except:
             pass
         

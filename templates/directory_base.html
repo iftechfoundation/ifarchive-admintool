@@ -4,8 +4,17 @@
 
 {% block prefilelist %}{% endblock %}
 
-{% if indexdirdesc %}
-  <div class="FileComments">{{ indexdirdesc }}</div>
+{% if indexdirdesc or indexdirmeta %}
+  <ul class="InfoList">
+  {% if indexdirdesc %}
+    <li><div class="FileComments">{{ indexdirdesc }}</div>
+  {% endif %}
+  {% if indexdirmeta %}
+    {% for key, val in indexdirmeta %}
+    <li>{{ key }}: {{ val }}
+    {% endfor %}
+  {% endif %}
+  </ul>
 {% endif %}
 
 {% if not files %}

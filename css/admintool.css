@@ -179,6 +179,11 @@ ul.UserInfoList li {
     font-style: italic;
 }
 
+.MetadataLine {
+    font-size: 85%;
+    font-family: "Menlo", "Consolas", monospace;
+}
+
 @media screen and (max-width: 480px) {
     #header h1 {
         font-size: 120%;

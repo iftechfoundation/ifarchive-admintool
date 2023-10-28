@@ -17,7 +17,7 @@ class IndexDir:
         self.indexpath = os.path.join(rootdir, dirname, 'Index')
 
         self.description = []
-        self.metadata = OrderedDict()
+        self.metadata = []
         self.files = []
         self.filemap = OrderedDict()
 
@@ -46,11 +46,11 @@ class IndexDir:
                         # New metadata line
                         curmetaline = match.group(1)
                         val = ln[match.end() : ].strip()
-                        self.add_metadata(curmetaline, val, dirty=False)
+                        self.metadata.append( (curmetaline, val) )
                         continue
                     elif type(curmetaline) is str and match2:
                         val = ln[match2.end() : ].strip()
-                        self.add_metadata(curmetaline, val, dirty=False)
+                        self.metadata.append( (curmetaline, val) )
                         continue
                     else:
                         curmetaline = None
@@ -71,11 +71,11 @@ class IndexDir:
                     # New metadata line
                     curmetaline = match.group(1)
                     val = ln[match.end() : ].strip()
-                    curfile.add_metadata(curmetaline, val, dirty=False)
+                    curfile.metadata.append( (curmetaline, val) )
                     continue
                 elif type(curmetaline) is str and match2:
                     val = ln[match2.end() : ].strip()
-                    curfile.add_metadata(curmetaline, val, dirty=False)
+                    curfile.metadata.append( (curmetaline, val) )
                     continue
                 else:
                     curmetaline = None
@@ -93,32 +93,14 @@ class IndexDir:
     def __repr__(self):
         return '<IndexDir %s>' % (self.dirname,)
 
-    def add_metadata(self, key, val, dirty=True):
-        ls = self.metadata.get(key)
-        if ls is None:
-            ls = []
-            self.metadata[key] = ls
-        ls.append(val)
-        if dirty:
-            self.dirty = True
-
 
 class IndexFile:
     def __init__(self, filename, dir):
         self.filename = filename
         self.dir = dir
         self.description = []
-        self.metadata = OrderedDict()
-        self.dirty = False
+        self.metadata = []
         
     def __repr__(self):
         return '<IndexFile %s>' % (self.filename,)
 
-    def add_metadata(self, key, val, dirty=True):
-        ls = self.metadata.get(key)
-        if ls is None:
-            ls = []
-            self.metadata[key] = ls
-        ls.append(val)
-        if dirty:
-            self.dirty = True

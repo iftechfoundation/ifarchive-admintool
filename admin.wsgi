@@ -680,7 +680,7 @@ class han_ArchiveDir(base_DirectoryPage):
             if req._dirname:
                 indexdir = IndexDir(map['dirname'], rootdir=self.app.archive_dir)
                 map['indexdir'] = indexdir
-                map['dirdesc'] = '\n'.join(indexdir.description)
+                map['indexdirdesc'] = indexdir.description
         except:
             pass
         

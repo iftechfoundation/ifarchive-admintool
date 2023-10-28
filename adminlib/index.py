@@ -16,7 +16,8 @@ class IndexDir:
         self.dirname = dirname
         self.indexpath = os.path.join(rootdir, dirname, 'Index')
 
-        self.description = []
+        self.description = None
+        self.desclines = []
         self.metadata = []
         self.files = []
         self.filemap = OrderedDict()
@@ -56,9 +57,9 @@ class IndexDir:
                         curmetaline = None
                 # We're done with the directory metadata, so this is a directory description line.
                 # For consistency, the description will always start with a blank line.
-                if len(self.description) == 0 and ln.strip() != '':
-                    self.description.append('\n')
-                self.description.append(ln)
+                if len(self.desclines) == 0 and ln.strip() != '':
+                    self.desclines.append('\n')
+                self.desclines.append(ln)
                 continue
 
             # Part of the file entry.
@@ -82,13 +83,18 @@ class IndexDir:
                 # We're done with the metadata, so this is a description line.
 
             # For consistency, the description will always start with a blank line.
-            if len(curfile.description) == 0 and ln.strip() != '':
-                curfile.description.append('\n')
+            if len(curfile.desclines) == 0 and ln.strip() != '':
+                curfile.desclines.append('\n')
                 
-            curfile.description.append(ln)
+            curfile.desclines.append(ln)
             
-                
         infl.close()
+
+        if self.desclines:
+            self.description = ''.join(self.desclines)
+        for file in self.files:
+            if file.desclines:
+                file.description = ''.join(file.desclines)
 
     def __repr__(self):
         return '<IndexDir %s>' % (self.dirname,)
@@ -98,7 +104,8 @@ class IndexFile:
     def __init__(self, filename, dir):
         self.filename = filename
         self.dir = dir
-        self.description = []
+        self.description = None
+        self.desclines = []
         self.metadata = []
         
     def __repr__(self):

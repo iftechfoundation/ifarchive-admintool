@@ -4,8 +4,12 @@
 
 {% block prefilelist %}{% endblock %}
 
+{% if indexdirdesc %}
+  <div class="FileComments">{{ indexdirdesc }}</div>
+{% endif %}
+
 {% if not files %}
-<p>No files in <code>/{{ dirname }}</code>.<p>
+  <p>No files in <code>/{{ dirname }}</code>.<p>
 {% endif %}
 
 <dl class="FileList">

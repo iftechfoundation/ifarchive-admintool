@@ -50,7 +50,7 @@ from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
-from adminlib.info import FileEntry, DirEntry, SymlinkEntry, UploadEntry
+from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
 from adminlib.index import IndexDir
     
 # URL handlers...
@@ -679,6 +679,7 @@ class han_ArchiveDir(base_DirectoryPage):
             
         map['indexdir'] = indexdir
         if indexdir:
+            ifnames = set([ ifile.filename for ifile in indexdir.files ])
             if indexdir.description:
                 map['indexdirdesc'] = indexdir.description.strip()
             map['indexdirmeta'] = indexdir.metadata
@@ -689,7 +690,13 @@ class han_ArchiveDir(base_DirectoryPage):
                     if ifile.description:
                         ent.indexdesc = ifile.description.strip()
                     ent.indexmeta = ifile.metadata
-                ### stash for a non-list
+                ifnames.discard(ent.name)
+
+            if ifnames:
+                ifnames = list(ifnames)
+                ifnames.sort()
+                for name in ifnames:
+                    ls.append(IndexOnlyEntry(indexdir.filemap[name].filename, date=indexdir.date, user=req._user))
 
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]

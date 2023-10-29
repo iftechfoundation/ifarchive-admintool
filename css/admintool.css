@@ -142,7 +142,14 @@ ul.UserInfoList li {
     margin-top: 6px;
 }
 
-.FileList dd {
+.FileList dd.FileInfoList {
+    margin-left: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 0px;
+}
+
+.FileList dd.FileButtons {
     margin-left: 0px;
     padding-left: 40px;
 }

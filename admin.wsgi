@@ -696,7 +696,12 @@ class han_ArchiveDir(base_DirectoryPage):
                 ifnames = list(ifnames)
                 ifnames.sort()
                 for name in ifnames:
-                    ls.append(IndexOnlyEntry(indexdir.filemap[name].filename, date=indexdir.date, user=req._user))
+                    ifile = indexdir.filemap[name]
+                    ent = IndexOnlyEntry(ifile.filename, date=indexdir.date, user=req._user)
+                    if ifile.description:
+                        ent.indexdesc = ifile.description.strip()
+                    ent.indexmeta = ifile.metadata
+                    ls.append(ent)
 
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]

@@ -51,6 +51,7 @@ class FileEntry(ListEntry):
         self.islink = False
         self.isdir = False
         self.isfile = True
+        self.isbroken = False
         
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
@@ -63,6 +64,7 @@ class DirEntry(ListEntry):
         self.islink = False
         self.isdir = True
         self.isfile = False
+        self.isbroken = False
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
@@ -90,6 +92,24 @@ class SymlinkEntry(ListEntry):
                 self.realuri = 'arch/'+val
             else:
                 self.realuri = 'arch'
+
+        self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
+
+class IndexOnlyEntry(ListEntry):
+    """Represents a file that doesn't exist at all (in this directory),
+    but which has Index metadata. We want to show these entries in
+    the file list, so we need a ListEntry class.
+    (We'll pass in the date of the Index file.)
+    """
+    def __init__(self, filename, date=None, user=None, shortdate=False):
+        self.name = filename
+        self.date = date
+        self.isfile = True
+        self.isdir = False
+        self.islink = False
+        self.isspecial = False
+        self.ishtml = False
+        self.isbroken = True
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 

@@ -60,10 +60,7 @@ class FileEntry(ListEntry):
         self.size = stat.st_size
         self.isspecial = (filename in self.specialnames)
         self.ishtml = bool(self.pat_html.search(filename))
-        self.islink = False
-        self.isdir = False
         self.isfile = True
-        self.isbroken = False
         
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
@@ -73,10 +70,7 @@ class DirEntry(ListEntry):
     def __init__(self, dirname, stat, user=None, shortdate=False):
         ListEntry.__init__(self, dirname)
         self.date = stat.st_mtime
-        self.islink = False
         self.isdir = True
-        self.isfile = False
-        self.isbroken = False
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
@@ -117,10 +111,6 @@ class IndexOnlyEntry(ListEntry):
         ListEntry.__init__(self, filename)
         self.date = date
         self.isfile = True
-        self.isdir = False
-        self.islink = False
-        self.isspecial = False
-        self.ishtml = False
         self.isbroken = True
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)

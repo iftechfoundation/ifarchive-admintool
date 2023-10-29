@@ -1,7 +1,7 @@
 import re
 import os, os.path
 
-from adminlib.util import bad_filename, in_user_time
+from adminlib.util import in_user_time
 
 def formatdate(date, user=None, shortdate=False):
     mtime = in_user_time(user, date)
@@ -17,7 +17,19 @@ class ListEntry:
     islink set, and isdir should be (not isfile). (A link can
     be either.)
     """
-    pass
+    def __init__(self, name):
+        self.name = name
+        self.date = None
+
+        # Exactly one of these should wind up set.
+        self.isdir = False
+        self.isfile = False
+        
+        self.islink = False
+
+        # For symlinks, isbroken means the target is missing. For files,
+        # isbroken means the file is missing (e.g. IndexOnlyEntry).
+        self.isbroken = False
 
 class FileEntry(ListEntry):
     """Represents one file in a directory.
@@ -40,10 +52,10 @@ class FileEntry(ListEntry):
     pat_html = re.compile('[.](htm|html|svg)$', re.IGNORECASE)
     
     def __init__(self, filename, stat, user=None, shortdate=False):
+        ListEntry.__init__(self, filename)
         # The user argument says what user to display this file *for*.
         # (We use this to localize the time to their timezone.) If
         # user is not provided, we'll display in UTC.
-        self.name = filename
         self.date = stat.st_mtime
         self.size = stat.st_size
         self.isspecial = (filename in self.specialnames)
@@ -59,7 +71,7 @@ class DirEntry(ListEntry):
     """Represents one subdirectory in a directory.
     """
     def __init__(self, dirname, stat, user=None, shortdate=False):
-        self.name = dirname
+        ListEntry.__init__(self, dirname)
         self.date = stat.st_mtime
         self.islink = False
         self.isdir = True
@@ -72,7 +84,7 @@ class SymlinkEntry(ListEntry):
     """Represents one symlink in a directory.
     """
     def __init__(self, filename, target, stat, broken=False, isdir=False, realpath=None, user=None, shortdate=False):
-        self.name = filename
+        ListEntry.__init__(self, filename)
         self.target = target
         self.realpath = realpath
         self.date = stat.st_mtime
@@ -102,7 +114,7 @@ class IndexOnlyEntry(ListEntry):
     (We'll pass in the date of the Index file.)
     """
     def __init__(self, filename, date=None, user=None, shortdate=False):
-        self.name = filename
+        ListEntry.__init__(self, filename)
         self.date = date
         self.isfile = True
         self.isdir = False
@@ -112,6 +124,7 @@ class IndexOnlyEntry(ListEntry):
         self.isbroken = True
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
+
 
 class UploadEntry:
     """Represents one entry in the upload log.

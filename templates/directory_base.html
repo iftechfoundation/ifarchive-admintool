@@ -37,8 +37,18 @@
       <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
       <span class="Details">({{ file.size|delimnumber }} bytes)</span>
 
-      {% if file.indexdesc %}
-      <dd><div class="FileComments">{{ file.indexdesc }}</div>
+      {% if file.indexdesc or file.indexmeta %}
+      <dd class="FileInfoList">
+        <ul>
+        {% if file.indexdesc %}
+        <div class="FileComments">{{ file.indexdesc }}</div>
+        {% endif %}
+        {% if file.indexmeta %}
+          {% for key, val in file.indexmeta %}
+          <li class="MetadataLine">{{ key }}: {{ val }}
+          {% endfor %}
+        {% endif %}
+        </ul>
       {% endif %}
       
       {% if fileops and not file.isspecial %}

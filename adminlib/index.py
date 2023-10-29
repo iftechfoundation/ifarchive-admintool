@@ -22,6 +22,9 @@ class IndexDir:
         self.files = []
         self.filemap = OrderedDict()
 
+        stat = os.stat(self.indexpath)
+        self.date = stat.st_mtime
+
         # Parse the existing Index file.
         infl = open(self.indexpath, encoding='utf-8')
         curfile = None

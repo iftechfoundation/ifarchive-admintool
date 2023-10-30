@@ -117,6 +117,20 @@ def in_user_time(user, timestamp):
     return dat
 
 
+def clean_newlines(val):
+    """Convert alien newlines to regular newlines.
+    Also remove trailing whitespace.
+    (If the value is completely whitespace, this returns ''.
+    Otherwise, the result will end with exactly one newline.)
+    """
+    val = val.replace('\r\n', '\n')
+    val = val.replace('\r', '\n')
+    val = val.rstrip()
+    if val:
+        val += '\n'
+    return val
+
+    
 class DelimNumber(jinja2.ext.Extension):
     """Jinja extension: Display a number with place separators.
     E.g "12,345,678". If the value is not an integer or str(int),

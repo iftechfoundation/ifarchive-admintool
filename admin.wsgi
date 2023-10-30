@@ -406,7 +406,7 @@ class base_DirectoryPage(AdminHandler):
 
         # On any Cancel button, we redirect back to the GET for this page.
         if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+'/'+req.path_info)
+            raise HTTPRedirectPost(self.app.approot+req.path_info)
 
         # The operation may be defined by an "op" hidden field or by the
         # button just pressed. (Depending on what stage we're at.)

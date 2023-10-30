@@ -757,6 +757,11 @@ class han_ArchiveRoot(base_DirectoryPage):
         return self.app.archive_dir
 
 
+@beforeall(require_role('index'))
+class han_EditIndexFile(AdminHandler):
+    def do_get(self, req):
+        return self.render('editindexreq.html', req)
+    
 @beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):
     renderparams = { 'navtab':'uploads', 'uribase':'uploadlog' }
@@ -813,6 +818,7 @@ handlers = [
     ('/arch', han_ArchiveRoot),
     ('/arch/unprocessed', han_Unprocessed),
     ('/arch/(?P<dir>.+)', han_ArchiveDir),
+    ('/editindex', han_EditIndexFile),
     ('/uploadlog', han_UploadLog),
     ('/debugdump', han_DebugDump),
     ('/debugdump/(?P<arg>.+)', han_DebugDump),

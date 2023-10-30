@@ -18,26 +18,3 @@
 
 {% endblock %}
 
-{% block prefilelist %}
-
-<dl class="FileList">
-  {% for dir in subdirs %}
-    <dt><span class="Details">Subdir:</span>
-    {% if not dir.islink %}
-      <code><a href="{{ approot }}/{{ uribase|urlencode }}/{{ dir.name|urlencode }}">{{ dir.name }}</a></code>
-    {% else %}
-      <code>{{ dir.name }}</code>
-      <span class="Details">(symlink
-      {% if dir.broken %}<b>broken</b>{% endif %}
-      &#x2192;
-      {% if dir.broken %}
-        <code>{{ dir.target }}</code>
-      {%- else -%}
-        <code><a href="{{ approot }}/{{ dir.realuri|urlencode }}">{{ dir.target }}</a></code>
-      {%- endif -%}
-    )</span>
-    {% endif %}
-  {% endfor %}
-</dl>
-
-{% endblock %}

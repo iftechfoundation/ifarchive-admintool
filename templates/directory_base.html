@@ -20,6 +20,7 @@
 {% if subdirs %}
   <dl class="FileList">
     {% for dir in subdirs %}
+    
       <dt><span class="Details">Subdir:</span>
       {% if not dir.islink %}
         <code><a href="{{ approot }}/{{ uribase|urlencode }}/{{ dir.name|urlencode }}">{{ dir.name }}</a></code>
@@ -35,6 +36,21 @@
         {%- endif -%}
       )</span>
       {% endif %}
+      
+      {% if dir.indexdesc or dir.indexmeta %}
+      <dd class="FileInfoList">
+        <ul>
+        {% if dir.indexdesc %}
+        <div class="FileComments">{{ dir.indexdesc }}</div>
+        {% endif %}
+        {% if dir.indexmeta %}
+          {% for key, val in dir.indexmeta %}
+          <li class="MetadataLine">{{ key }}: {{ val }}
+          {% endfor %}
+        {% endif %}
+        </ul>
+      {% endif %}
+      
     {% endfor %}
   </dl>
 {% endif %}

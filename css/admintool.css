@@ -117,6 +117,10 @@ code {
     font-family: "Menlo", "Consolas", monospace;
 }
 
+.Emph {
+    font-style: italic;
+}
+
 ul {
     list-style: none;
     padding-left: 16px;

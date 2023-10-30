@@ -50,6 +50,7 @@ from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
+from adminlib.util import canon_archivedir, FileConsistency
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
 from adminlib.index import IndexDir
     
@@ -633,25 +634,12 @@ def check_archive_dir(req, han):
     if not dirname:
         req._dirname = ''
         return han(req)
-    
-    pathname = os.path.join(req.app.archive_dir, dirname)
+
     try:
-        # I'd pass strict=True here but that's not available until 3.10. Instead we fake it.
-        pathname = os.path.realpath(pathname)
-        if not os.path.exists(pathname):
-            raise Exception('dir not found')
-    except:
-        msg = 'Directory not found: %s' % (dirname,)
-        raise HTTPError('404 Not Found', msg)
-    if (not os.path.isdir(pathname)) or os.path.islink(pathname):
-        msg = 'Not a directory: %s' % (dirname,)
-        raise HTTPError('404 Not Found', msg)
-    if not pathname.startswith(req.app.archive_dir):
-        msg = 'Not an Archive directory: %s' % (dirname,)
-        raise HTTPError('404 Not Found', msg)
-    val = pathname[ len(req.app.archive_dir) : ]
-    if val.startswith('/'):
-        val = val[ 1 : ]
+        val = canon_archivedir(dirname, archivedir=req.app.archive_dir)
+    except FileConsistency as ex:
+        raise HTTPError('404 Not Found', str(ex))
+    
     req._dirname = val
     return han(req)
 

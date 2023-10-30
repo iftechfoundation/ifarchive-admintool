@@ -47,7 +47,8 @@ from tinyapp.util import random_bytes, time_now
 from adminlib.admapp import AdminApp, AdminHandler
 from adminlib.session import User, Session
 from adminlib.session import require_user, require_role
-from adminlib.util import bad_filename, in_user_time, read_md5, read_size
+from adminlib.util import bad_filename, in_user_time, clean_newlines
+from adminlib.util import read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
 from adminlib.util import canon_archivedir, FileConsistency
@@ -748,6 +749,9 @@ class han_ArchiveRoot(base_DirectoryPage):
 @beforeall(require_role('index'))
 class han_EditIndexFile(AdminHandler):
     def get_indextext(self, dirname):
+        """Return the contents of a directory's Index file, or the empty
+        string if there is no such file.
+        """
         indextext = ''
         try:
             fl = open(os.path.join(self.app.archive_dir, dirname, 'Index'), encoding='utf-8')
@@ -807,10 +811,12 @@ class han_EditIndexFile(AdminHandler):
             return self.render('editindexall.html', req,
                                indextext=indextext,
                                dirname=dirname)
-        
+
+        newtext = req.get_input_field('textarea', '')
+        newtext = clean_newlines(newtext)
         return self.render('editindexall.html', req,
                            dirname=dirname,
-                           formerror='### working: '+dirname)
+                           formerror='### working: %s: %r' % (dirname, newtext))
 
 @beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):

@@ -751,9 +751,7 @@ class han_EditIndexFile(AdminHandler):
         return self.render('editindexreq.html', req)
 
     def do_post(self, req):
-        dirname = req.get_input_field('dir')
-        if not dirname:
-            dirname = ''
+        dirname = req.get_input_field('dir', '')
         filename = req.get_input_field('file')
         try:
             dirname = canon_archivedir(dirname, archivedir=self.app.archive_dir)
@@ -762,7 +760,7 @@ class han_EditIndexFile(AdminHandler):
                                formerror='Bad directory: %s' % (str(ex),))
         
         return self.render('editindexreq.html', req,
-                           formerror='### Working on it...')
+                           formerror='### Working on it: %s' % (dirname,))
 
 
 @beforeall(require_role('incoming'))

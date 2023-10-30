@@ -281,21 +281,21 @@ class TinyRequest:
         """Shortcut for logging at ERROR level."""
         self.app.logerror(self, msg, *args)
 
-    def get_query_field(self, key):
+    def get_query_field(self, key, default=None):
         """Get one field in the QUERY_STRING.
         """
         ls = self.query.get(key)
         if ls:
             return ls[0]
-        return None
+        return default
 
-    def get_input_field(self, key):
+    def get_input_field(self, key, default=None):
         """Get one form field in a POST request.
         """
         ls = self.input.get(key)
         if ls:
             return ls[0]
-        return None
+        return default
 
     def set_status(self, val):
         """Set the response HTTP status.

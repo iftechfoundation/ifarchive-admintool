@@ -754,11 +754,24 @@ class han_EditIndexFile(AdminHandler):
         dirname = req.get_input_field('dir', '')
         filename = req.get_input_field('file')
         try:
+            if dirname.startswith('/'):
+                dirname = dirname[ 1 : ]
             dirname = canon_archivedir(dirname, archivedir=self.app.archive_dir)
         except FileConsistency as ex:
             return self.render('editindexreq.html', req,
                                formerror='Bad directory: %s' % (str(ex),))
-        
+
+        if not dirname:
+            return self.render('editindexreq.html', req,
+                               formerror='The Archive root directory has no Index file.')
+        if dirname == 'unprocessed':
+            return self.render('editindexreq.html', req,
+                               formerror='The Archive /unprocessed directory has no Index file.')
+
+        if filename:
+            return self.render('editindexreq.html', req,
+                               formerror='### Index editing for a individual file entry is not yet supported.')
+            
         return self.render('editindexreq.html', req,
                            formerror='### Working on it: %s' % (dirname,))
 

@@ -77,6 +77,12 @@ body {
     min-width: 50%;
 }
 
+.FormTextArea {
+    font-size: 100%;
+    margin: 4px;
+    width: 100%;
+}
+
 .FormButton {
     font-size: 100%;
     margin: 4px;
@@ -93,6 +99,11 @@ body {
 .FormAction {
     font-style: italic;
     margin: 4px 8px;
+}
+
+.FormWarning {
+    font-size: 85%;
+    font-style: italic;
 }
 
 a {

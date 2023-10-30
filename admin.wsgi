@@ -751,6 +751,13 @@ class han_EditIndexFile(AdminHandler):
         return self.render('editindexreq.html', req)
 
     def do_post(self, req):
+        op = req.get_input_field('op')
+        if not op:
+            return self.do_post_bare(req)
+        else:
+            return self.do_post_editall(req)
+
+    def do_post_bare(self, req):
         dirname = req.get_input_field('dir', '')
         filename = req.get_input_field('file')
         try:
@@ -771,10 +778,24 @@ class han_EditIndexFile(AdminHandler):
         if filename:
             return self.render('editindexreq.html', req,
                                formerror='### Index editing for a individual file entry is not yet supported.')
-            
-        return self.render('editindexreq.html', req,
-                           formerror='### Working on it: %s' % (dirname,))
 
+        indextext = ''
+        try:
+            fl = open(os.path.join(self.app.archive_dir, dirname, 'Index'), encoding='utf-8')
+            indextext = fl.read()
+            fl.close()
+        except:
+            pass
+            
+        return self.render('editindexall.html', req,
+                           indextext=indextext,
+                           dirname=dirname)
+
+    def do_post_editall(self, req):
+        dirname = req.get_input_field('dirname')
+        return self.render('editindexall.html', req,
+                           dirname=dirname,
+                           formerror='### working: '+dirname)
 
 @beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):

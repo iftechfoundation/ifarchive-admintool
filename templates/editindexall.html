@@ -1,0 +1,31 @@
+{% extends "page.html" %}
+
+{% block title %}
+Edit Index File
+{% endblock %}
+
+{% block content %}
+
+<p>Editing {{ dirname }}/Index</p>
+
+<form method="post" action="{{ requri }}">
+
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+<input type="hidden" name="op" value="editall"/>
+<input type="hidden" name="dirname" value="{{ dirname }}"/>
+
+<div>
+<textarea class="FormTextArea" name="textarea" rows=20 spellcheck="false" autocomplete="disabled">{{ indextext }}</textarea>
+</div>
+
+<div>
+<input class="FormButton" name="commit" type="submit" value="Save">
+</div>
+
+{% if formerror %}
+<p>{{ formerror }}</p>
+{% endif %}
+
+</form>
+
+{% endblock %}

@@ -814,6 +814,14 @@ class han_EditIndexFile(AdminHandler):
 
         newtext = req.get_input_field('textarea', '')
         newtext = clean_newlines(newtext)
+
+        oldtext = self.get_indextext(dirname)
+        if newtext == clean_newlines(oldtext):
+            return self.render('editindexall.html', req,
+                               indextext=oldtext,
+                               dirname=dirname,
+                               formerror='No changes to save.')
+
         return self.render('editindexall.html', req,
                            dirname=dirname,
                            formerror='### working: %s: %r' % (dirname, newtext))

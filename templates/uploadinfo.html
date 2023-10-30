@@ -8,7 +8,7 @@ Upload Info
 {% block preuploadlist %}
 
 <p>Info for
-  <code>{{ dirchain(uribase|splituri) }}/<a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ filename|urlencode }}">{{ filename }}</a></code>:
+  {{ dirchain(uribase|splituri) }}/<code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ filename|urlencode }}">{{ filename }}</a></code>:
   ({{ filesize|delimnumber }} bytes)
 </p>
 

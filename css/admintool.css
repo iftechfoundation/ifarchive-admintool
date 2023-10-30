@@ -78,6 +78,7 @@ body {
 }
 
 .FormTextArea {
+    font-family: "Menlo", "Consolas", monospace;
     font-size: 100%;
     margin: 4px;
     width: 100%;

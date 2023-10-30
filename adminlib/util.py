@@ -17,7 +17,7 @@ def canon_archivedir(dirname, archivedir):
     Return its relative path after resolving all symlinks, etc.
     If the path is to the Archive root, returns ''.
     If the path refers to a nonexistent directory, or one outside the
-    Archive tree, returns None.
+    Archive tree, raises FileConsistency.
     (The archivedir argument must be an absolute path.)
     """
     pathname = os.path.join(archivedir, dirname)

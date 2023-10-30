@@ -28,14 +28,19 @@
     <dt>
     {% if not file.islink %}
       <span class="Details"><span class="Tabular">{{ file.fdate }}</span>
-      {% if not file.isspecial %}
-        <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
-      {% else %}
+      {% if file.isspecial or file.isbroken %}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      {% else %}
+        <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
       {% endif %}
       :</span>
-      <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
-      <span class="Details">({{ file.size|delimnumber }} bytes)</span>
+      {% if file.isbroken %}
+        <code>{{ file.name }}</code>
+        <span class="Details Emph">(file not in this directory)</span>
+      {% else %}
+        <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
+        <span class="Details">({{ file.size|delimnumber }} bytes)</span>
+      {% endif %}
 
       {% if file.indexdesc or file.indexmeta %}
       <dd class="FileInfoList">

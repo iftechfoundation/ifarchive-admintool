@@ -747,6 +747,16 @@ class han_ArchiveRoot(base_DirectoryPage):
 
 @beforeall(require_role('index'))
 class han_EditIndexFile(AdminHandler):
+    def get_indextext(self, dirname):
+        indextext = ''
+        try:
+            fl = open(os.path.join(self.app.archive_dir, dirname, 'Index'), encoding='utf-8')
+            indextext = fl.read()
+            fl.close()
+        except:
+            pass
+        return indextext
+        
     def do_get(self, req):
         return self.render('editindexreq.html', req)
 
@@ -779,13 +789,7 @@ class han_EditIndexFile(AdminHandler):
             return self.render('editindexreq.html', req,
                                formerror='### Index editing for a individual file entry is not yet supported.')
 
-        indextext = ''
-        try:
-            fl = open(os.path.join(self.app.archive_dir, dirname, 'Index'), encoding='utf-8')
-            indextext = fl.read()
-            fl.close()
-        except:
-            pass
+        indextext = self.get_indextext(dirname)
             
         return self.render('editindexall.html', req,
                            indextext=indextext,
@@ -793,6 +797,16 @@ class han_EditIndexFile(AdminHandler):
 
     def do_post_editall(self, req):
         dirname = req.get_input_field('dirname')
+        
+        if req.get_input_field('cancel'):
+            raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
+
+        if req.get_input_field('revert'):
+            indextext = self.get_indextext(dirname)
+            return self.render('editindexall.html', req,
+                               indextext=indextext,
+                               dirname=dirname)
+        
         return self.render('editindexall.html', req,
                            dirname=dirname,
                            formerror='### working: '+dirname)

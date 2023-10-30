@@ -16,5 +16,16 @@
   {% endif %}
 </p>
 
+{% if dirname %}
+<div>
+<form method="post" action="{{ approot }}/editindex">
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+<input type="hidden" name="dir" value="{{ dirname }}"/>
+<input class="FormButton" name="commit" type="submit" value="Edit Index File">
+<span class="FormWarning">(the whole thing)</span>
+</form>
+</div>
+{% endif %}
+
 {% endblock %}
 

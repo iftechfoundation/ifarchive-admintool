@@ -712,7 +712,7 @@ class han_ArchiveDir(base_DirectoryPage):
 
     def get_fileops(self, req):
         if req._user.has_role('files'):
-            return ['rename', 'delete', 'moveu']
+            return ['rename', 'delete', 'moveu', 'eindex']
 
     def get_dirname(self, req):
         if not req._dirname:

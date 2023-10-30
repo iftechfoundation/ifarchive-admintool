@@ -31,6 +31,10 @@ class ListEntry:
         # isbroken means the file is missing (e.g. IndexOnlyEntry).
         self.isbroken = False
 
+        # These may be filled in later.
+        self.indexdesc = None
+        self.indexmeta = None
+
 class FileEntry(ListEntry):
     """Represents one file in a directory.
     

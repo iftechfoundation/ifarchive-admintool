@@ -761,7 +761,12 @@ class han_ArchiveRoot(base_DirectoryPage):
 class han_EditIndexFile(AdminHandler):
     def do_get(self, req):
         return self.render('editindexreq.html', req)
-    
+
+    def do_post(self, req):
+        return self.render('editindexreq.html', req,
+                           formerror='### Working on it...')
+
+
 @beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):
     renderparams = { 'navtab':'uploads', 'uribase':'uploadlog' }

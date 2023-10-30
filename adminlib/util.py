@@ -8,6 +8,37 @@ import zipfile
 
 import jinja2.ext
 
+class FileConsistency(Exception):
+    def __init__(self, msg, dir):
+        Exception.__init__(self, '%s: %s' % (msg, dir,))
+
+def canon_archivedir(dirname, archivedir):
+    """Verify that a directory path is a valid Archive directory.
+    Return its relative path after resolving all symlinks, etc.
+    If the path is to the Archive root, returns ''.
+    If the path refers to a nonexistent directory, or one outside the
+    Archive tree, returns None.
+    (The archivedir argument must be an absolute path.)
+    """
+    pathname = os.path.join(archivedir, dirname)
+    try:
+        # I'd pass strict=True here but that's not available until 3.10. Instead we fake it.
+        pathname = os.path.realpath(pathname)
+        if not os.path.exists(pathname):
+            raise Exception('dir not found')
+    except:
+        raise FileConsistency('directory not found', dirname)
+    
+    if not pathname.startswith(archivedir):
+        raise FileConsistency('not an Archive directory', dirname)
+    if (not os.path.isdir(pathname)) or os.path.islink(pathname):
+        raise FileConsistency('not a directory', dirname)
+    
+    val = pathname[ len(archivedir) : ]
+    if val.startswith('/'):
+        val = val[ 1 : ]
+    return val
+
 def bad_filename(val):
     """Check whether a string is the kind of thing that could cause
     filesystem problems.

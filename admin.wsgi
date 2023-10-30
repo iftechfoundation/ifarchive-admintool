@@ -768,8 +768,9 @@ class han_EditIndexFile(AdminHandler):
             return self.do_post_editall(req)
 
     def do_post_bare(self, req):
-        dirname = req.get_input_field('dir', '')
-        filename = req.get_input_field('file')
+        dirname = req.get_input_field('filedir', '')
+        filename = req.get_input_field('filename')
+        
         try:
             if dirname.startswith('/'):
                 dirname = dirname[ 1 : ]

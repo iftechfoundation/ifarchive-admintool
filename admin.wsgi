@@ -529,10 +529,10 @@ class base_DirectoryPage(AdminHandler):
         newsize = read_size(newpath)
         newmd5 = read_md5(newpath)
         curs = self.app.getdb().cursor()
-        res = curs.execute('SELECT uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about FROM uploads where md5 = ?', (origmd5,))
-        ### Would be easier to use UploadEntry objects here
-        for (uploadtime, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) in list(res.fetchall()):
-            curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (uploadtime, newmd5, newsize, newname, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about))
+        res = curs.execute('SELECT * FROM uploads where md5 = ?', (origmd5,))
+        for tup in list(res.fetchall()):
+            ent = UploadEntry(tup)
+            curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (ent.uploadtime, newmd5, newsize, newname, ent.origfilename, ent.donorname, ent.donoremail, ent.donorip, ent.donoruseragent, ent.permission, ent.suggestdir, ent.ifdbid, ent.about))
 
         req.loginfo('Zipped "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,

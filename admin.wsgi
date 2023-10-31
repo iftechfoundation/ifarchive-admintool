@@ -822,6 +822,16 @@ class han_EditIndexFile(AdminHandler):
                                dirname=dirname,
                                formerror='No changes to save.')
 
+        if len(oldtext.strip()):
+            # Save a copy of the old text in the trash.
+            trashname = 'Index-%s' % (dirname.replace('/', '-'),)
+            trashname = find_unused_filename(trashname, dir=self.app.trash_dir)
+            trashpath = os.path.join(self.app.trash_dir, trashname)
+            outfl = open(trashpath, 'w', encoding='utf-8')
+            outfl.write(oldtext)
+            outfl.close()
+            
+
         return self.render('editindexall.html', req,
                            dirname=dirname,
                            formerror='### working: %s: %r' % (dirname, newtext))

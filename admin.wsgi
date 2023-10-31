@@ -749,17 +749,18 @@ class han_ArchiveRoot(base_DirectoryPage):
 @beforeall(require_role('index'))
 class han_EditIndexFile(AdminHandler):
     def get_indextext(self, dirname):
-        """Return the contents of a directory's Index file, or the empty
-        string if there is no such file.
+        """Return the contents and the mod timestamp of a directory's Index
+        file. If the file does not exist, returns ('', 0).
         """
-        indextext = ''
-        try:
-            fl = open(os.path.join(self.app.archive_dir, dirname, 'Index'), encoding='utf-8')
-            indextext = fl.read()
-            fl.close()
-        except:
-            pass
-        return indextext
+        indexpath = os.path.join(self.app.archive_dir, dirname, 'Index')
+        if not os.path.exists(indexpath):
+            return ('', 0)
+        
+        fl = open(indexpath, encoding='utf-8')
+        indextext = fl.read()
+        fl.close()
+        stat = os.stat(indexpath)
+        return (indextext, stat.st_mtime)
         
     def do_get(self, req):
         return self.render('editindexreq.html', req)
@@ -794,33 +795,44 @@ class han_EditIndexFile(AdminHandler):
             return self.render('editindexreq.html', req,
                                formerror='### Index editing for a individual file entry is not yet supported.')
 
-        indextext = self.get_indextext(dirname)
+        indextext, indextime = self.get_indextext(dirname)
             
         return self.render('editindexall.html', req,
                            indextext=indextext,
+                           indextime=int(indextime),
                            dirname=dirname)
 
     def do_post_editall(self, req):
         dirname = req.get_input_field('dirname')
+        modtime = req.get_input_field('indextime', 0)
         
         if req.get_input_field('cancel'):
             raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
 
         if req.get_input_field('revert'):
-            indextext = self.get_indextext(dirname)
+            indextext, indextime = self.get_indextext(dirname)
             return self.render('editindexall.html', req,
                                indextext=indextext,
+                               indextime=int(indextime),
                                dirname=dirname)
 
         newtext = req.get_input_field('textarea', '')
         newtext = clean_newlines(newtext)
 
-        oldtext = self.get_indextext(dirname)
+        oldtext, oldtime = self.get_indextext(dirname)
         if newtext == clean_newlines(oldtext):
             return self.render('editindexall.html', req,
                                indextext=oldtext,
+                               indextime=int(oldtime),
                                dirname=dirname,
                                formerror='No changes to save.')
+
+        if int(oldtime) != int(modtime):
+            return self.render('editindexall.html', req,
+                               indextext=newtext,
+                               indextime=int(modtime),
+                               dirname=dirname,
+                               formerror='Index file has been modified since you began editing!')
 
         if len(oldtext.strip()):
             # Save a copy of the old text in the trash.

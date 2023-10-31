@@ -830,11 +830,21 @@ class han_EditIndexFile(AdminHandler):
             outfl = open(trashpath, 'w', encoding='utf-8')
             outfl.write(oldtext)
             outfl.close()
-            
 
-        return self.render('editindexall.html', req,
-                           dirname=dirname,
-                           formerror='### working: %s: %r' % (dirname, newtext))
+        newpath = os.path.join(self.app.archive_dir, dirname, 'Index')
+        if not newtext:
+            # Delete the Index file entirely.
+            if os.path.exists(newpath):
+                os.remove(newpath)
+                req.loginfo('Deleted Index in /%s' % (dirname,))
+        else:
+            # Write out the new Index file.
+            outfl = open(newpath, 'w', encoding='utf-8')
+            outfl.write(newtext)
+            outfl.close()
+            req.loginfo('Updated Index in /%s' % (dirname,))
+
+        raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
 
 @beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):

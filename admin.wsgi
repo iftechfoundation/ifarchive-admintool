@@ -916,7 +916,7 @@ class han_EditIndexFile(AdminHandler):
         newdesc = clean_newlines(newdesc)
         newmeta = clean_newlines(newmeta)
         
-        newmetacount = len(newmeta.split('\n'))
+        newmetacount = len([ val for val in newmeta.split('\n') if val.strip() ])
             
         return self.render('editindexone.html', req,
                            indextime=modtime,

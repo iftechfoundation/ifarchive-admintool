@@ -927,8 +927,16 @@ class han_EditIndexFile(AdminHandler):
                                metadata=oldmeta,
                                metacount=oldmetacount,
                                formerror='No changes to save.')
-            
-            
+
+        if int(oldtime) != int(modtime):
+            return self.render('editindexone.html', req,
+                               indextime=int(oldtime),
+                               dirname=dirname, filename=filename, filetype=filetype,
+                               description=newdesc,
+                               metadata=newmeta,
+                               metacount=newmetacount,
+                               formerror='Index file has been modified since you began editing!')
+        
         return self.render('editindexone.html', req,
                            indextime=int(modtime),
                            dirname=dirname, filename=filename, filetype=filetype,

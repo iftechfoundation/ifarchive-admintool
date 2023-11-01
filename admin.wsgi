@@ -51,6 +51,7 @@ from adminlib.util import bad_filename, in_user_time, clean_newlines
 from adminlib.util import read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
+from adminlib.util import urlencode
 from adminlib.util import canon_archivedir, FileConsistency
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
 from adminlib.index import IndexDir
@@ -408,7 +409,7 @@ class base_DirectoryPage(AdminHandler):
 
         # On any Cancel button, we redirect back to the GET for this page.
         if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+req.path_info)
+            raise HTTPRedirectPost(self.app.approot+req.path_info+'#list_'+urlencode(filename))
 
         # The operation may be defined by an "op" hidden field or by the
         # button just pressed. (Depending on what stage we're at.)
@@ -889,7 +890,7 @@ class han_EditIndexFile(AdminHandler):
         modtime = req.get_input_field('indextime', 0)
         
         if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
+            raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname+'#list_'+urlencode(filename))
 
         return self.render('editindexone.html', req,
                            indextime=modtime,

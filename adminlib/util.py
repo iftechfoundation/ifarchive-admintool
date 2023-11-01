@@ -4,6 +4,7 @@ import os, os.path
 import pytz
 import datetime
 import hashlib
+import urllib.parse
 import zipfile
 
 
@@ -115,6 +116,12 @@ def in_user_time(user, timestamp):
         dat = dat.astimezone(tz_utc)
     return dat
 
+def urlencode(val):
+    """Percent-encode an URL (or part thereof). This should be compatible
+    with the Jinja |urlencode filter, although I haven't completely verified
+    that yet.
+    """
+    return urllib.parse.quote(val)
 
 def clean_newlines(val):
     """Convert alien newlines to regular newlines.

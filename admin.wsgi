@@ -795,7 +795,7 @@ class han_EditIndexFile(AdminHandler):
 
         if filename:
             return self.render('editindexreq.html', req,
-                               formerror='### Index editing for a individual file entry is not yet supported.')
+                               formerror='### Index editing for a individual file entry is not yet supported. (%s, %s)' % (dirname, filename,))
 
         indextext, indextime = self.get_indextext(dirname)
             

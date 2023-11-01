@@ -52,6 +52,11 @@
         </ul>
       {% endif %}
       
+      {% if fileops %}
+      {% set ent = dir %}
+      {% include "filebuttons.html" %}
+      {% endif %}
+      
     {% endfor %}
   </dl>
 {% endif %}
@@ -98,6 +103,7 @@
       {% endif %}
       
       {% if fileops and not file.isspecial %}
+      {% set ent = file %}
       {% include "filebuttons.html" %}
       {% endif %}
 

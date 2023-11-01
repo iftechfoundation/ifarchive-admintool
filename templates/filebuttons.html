@@ -5,7 +5,7 @@
 
   <form method="post" action="{{ requri }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
-  <input type="hidden" name="filename" value="{{ file.name }}"/>
+  <input type="hidden" name="filename" value="{{ ent.name }}"/>
   <input type="hidden" name="filedir" value="{{ dirname }}"/>
   {# All items get "Edit Index".
     Note that the field names "filename" and "filedir" must match
@@ -14,8 +14,8 @@
     <input class="FormButton" formaction="{{ approot }}/editindex" name="eindex" type="submit" value="Edit Index">
   {% endif %}
   {# Only existent files (not directories) get these buttons. #}
-  {% if file.isfile and not file.isbroken %}
-    {% if 'zip' in fileops and file.ishtml %}
+  {% if ent.isfile and not ent.isbroken %}
+    {% if 'zip' in fileops and ent.ishtml %}
       <input class="FormButton" name="zip" type="submit" value="Zip">
     {% endif %}
     {% if 'movei' in fileops %}

@@ -7,6 +7,14 @@
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ ent.name }}"/>
   <input type="hidden" name="filedir" value="{{ dirname }}"/>
+  {% if ent.islink %}
+    <input type="hidden" name="filetype" value="link"/>
+  {% elif ent.isfile %}
+    <input type="hidden" name="filetype" value="file"/>
+  {% elif ent.isdir %}
+    <input type="hidden" name="filetype" value="dir"/>
+  {% endif %}
+  
   {# All items get "Edit Index".
     Note that the field names "filename" and "filedir" must match
     the form in editindexreq.html. #}

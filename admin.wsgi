@@ -913,8 +913,8 @@ class han_EditIndexFile(AdminHandler):
 
         newdesc = req.get_input_field('description', '')
         newmeta = req.get_input_field('metadata', '')
-        newdesc = clean_newlines(newdesc)
-        newmeta = clean_newlines(newmeta)
+        newdesc = clean_newlines(newdesc, prestrip=True)
+        newmeta = clean_newlines(newmeta, prestrip=True)
         
         newmetacount = len([ val for val in newmeta.split('\n') if val.strip() ])
 
@@ -938,6 +938,8 @@ class han_EditIndexFile(AdminHandler):
                                metadata=newmeta,
                                metacount=newmetacount,
                                formerror='Metadata error: %s' % (ex,))
+
+        
         
         if int(oldtime) != int(modtime):
             return self.render('editindexone.html', req,

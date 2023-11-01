@@ -125,15 +125,19 @@ def urlencode(val):
     """
     return urllib.parse.quote(val)
 
-def clean_newlines(val):
+def clean_newlines(val, prestrip=False):
     """Convert alien newlines to regular newlines.
     Also remove trailing whitespace.
+    If prestrip is true, remove leading newlines (but not leading indentation).
     (If the value is completely whitespace, this returns ''.
     Otherwise, the result will end with exactly one newline.)
     """
     val = val.replace('\r\n', '\n')
     val = val.replace('\r', '\n')
     val = val.rstrip()
+    if prestrip:
+        while val.startswith('\n'):
+            val = val[ 1 : ]
     if val:
         val += '\n'
     return val

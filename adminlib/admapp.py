@@ -9,7 +9,7 @@ from tinyapp.handler import ReqHandler
 import tinyapp.auth
 
 from adminlib.session import find_user
-from adminlib.util import DelimNumber, Pluralize, SplitURI
+from adminlib.jenv import DelimNumber, Pluralize, SplitURI
 
 class AdminApp(TinyApp):
     """AdminApp: The TinyApp class.

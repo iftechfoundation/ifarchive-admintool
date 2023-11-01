@@ -9,6 +9,8 @@ import zipfile
 
 
 class FileConsistency(Exception):
+    """Exception raised when checking file and directory names.
+    """
     def __init__(self, msg, dir):
         Exception.__init__(self, '%s: %s' % (msg, dir,))
 

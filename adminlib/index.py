@@ -12,6 +12,14 @@ meta_start_pattern = re.compile('^[ ]?[ ]?[ ]?([a-zA-Z0-9_-]+):')
 meta_cont_pattern = re.compile('^(    |\\t)')
 
 class IndexDir:
+    @staticmethod
+    def if_present(dirname, rootdir=None):
+        indexpath = os.path.join(rootdir, dirname, 'Index')
+        if not os.path.isfile(indexpath):
+            return None
+        else:
+            return IndexDir(dirname, rootdir=rootdir)
+    
     def __init__(self, dirname, rootdir=None):
         self.dirname = dirname
         self.indexpath = os.path.join(rootdir, dirname, 'Index')

@@ -885,6 +885,9 @@ class han_EditIndexFile(AdminHandler):
         filetype = req.get_input_field('filetype')
         modtime = req.get_input_field('indextime', 0)
         
+        if req.get_input_field('cancel'):
+            raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
+
         return self.render('editindexone.html', req,
                            indextime=modtime,
                            dirname=dirname, filename=filename, filetype=filetype,

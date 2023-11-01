@@ -1,0 +1,48 @@
+{% extends "page.html" %}
+
+{% block title %}
+Edit Index File
+{% endblock %}
+
+{% block content %}
+
+<p>Editing Archive/{{ dirname }}/Index
+entry for <code>{{ filename }}</code></p>
+
+<form method="post" action="{{ requri }}">
+
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+<input type="hidden" name="op" value="editone"/>
+<input type="hidden" name="filename" value="{{ filename }}"/>
+<input type="hidden" name="dirname" value="{{ dirname }}"/>
+<input type="hidden" name="indextime" value="{{ indextime }}"/>
+
+<p class="ItemName">Description:</p>
+
+<div>
+<textarea class="FormTextArea" name="description" rows=10 spellcheck="false" autocomplete="disabled">
+{{ description }}
+</textarea>
+</div>
+
+<p class="ItemName">Metadata:</p>
+
+<div>
+<textarea class="FormTextArea" name="metadata" rows=10 spellcheck="false" autocomplete="disabled">
+{{ metadata }}
+</textarea>
+</div>
+
+<div>
+<input class="FormButton HotButton" name="commit" type="submit" value="Save">
+<input class="FormButton" name="revert" type="submit" value="Revert">
+<input class="FormButton" name="cancel" type="submit" value="Cancel">
+</div>
+
+{% if formerror %}
+<p>{{ formerror }}</p>
+{% endif %}
+
+</form>
+
+{% endblock %}

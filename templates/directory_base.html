@@ -18,6 +18,7 @@
 {% block prefilelist %}{% endblock %}
 
 {% if subdirs %}
+  <hr>
   <dl class="FileList">
     {% for dir in subdirs %}
     
@@ -54,6 +55,8 @@
     {% endfor %}
   </dl>
 {% endif %}
+
+<hr>
 
 {% if not files %}
   <p>No files in <code>/{{ dirname }}</code>.<p>

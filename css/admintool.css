@@ -121,6 +121,12 @@ a:hover {
     color: #D11515;
 }
 
+hr {
+    border: none;
+    height: 2px;
+    background: #F0D0A0;
+}
+
 code {
     font: 100% "Courier Prime", "Courier", monospace;
     background: #ECE0B0;

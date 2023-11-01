@@ -8,12 +8,17 @@ Edit Index File
 
 <p>
 Editing Archive/{{ dirname }}/Index
-entry for
-{% if filename == '.' %}
+entry for <code>{{ filename }}</code>
+{% if filetype == 'file' %}
+(file)
+{% elif filetype == 'dir' %}
+(subdir)
+{% elif filetype == 'link' %}
+(symlink)
+{% elif filetype == 'root' %}
 (the directory itself)
-{% else %}
-<code>{{ filename }}</code>
 {% endif %}
+
 </p>
 
 <form method="post" action="{{ requri }}">

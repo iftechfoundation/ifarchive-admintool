@@ -800,6 +800,7 @@ class han_EditIndexFile(AdminHandler):
 
             
         if filename:
+            filetype = req.get_input_field('filetype')
             indexdir = IndexDir(dirname, rootdir=self.app.archive_dir)
             ient = indexdir.getmap().get(filename)
             if ient:
@@ -814,7 +815,7 @@ class han_EditIndexFile(AdminHandler):
                                description=desc,
                                metadata=metas,
                                indextime=indextime,
-                               dirname=dirname, filename=filename)
+                               dirname=dirname, filename=filename, filetype=filetype)
         else:
             indextext, indextime = self.get_indextext(dirname)
             return self.render('editindexall.html', req,
@@ -881,11 +882,12 @@ class han_EditIndexFile(AdminHandler):
     def do_post_editone(self, req):
         dirname = req.get_input_field('dirname')
         filename = req.get_input_field('filename')
+        filetype = req.get_input_field('filetype')
         modtime = req.get_input_field('indextime', 0)
         
         return self.render('editindexone.html', req,
                            indextime=modtime,
-                           dirname=dirname, filename=filename,
+                           dirname=dirname, filename=filename, filetype=filetype,
                            formerror='### working')
 
 @beforeall(require_role('incoming'))

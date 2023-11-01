@@ -20,7 +20,6 @@ class IndexDir:
         self.desclines = []
         self.metadata = []
         self.files = []
-        self.filemap = OrderedDict()
 
         stat = os.stat(self.indexpath)
         self.date = stat.st_mtime
@@ -37,7 +36,6 @@ class IndexDir:
                 curfile = IndexFile(filename, self)
                 curmetaline = True
                 self.files.append(curfile)
-                self.filemap[filename] = curfile
                 continue
             
             if not curfile:
@@ -102,6 +100,17 @@ class IndexDir:
     def __repr__(self):
         return '<IndexDir %s>' % (self.dirname,)
 
+    def getmap(self):
+        map = OrderedDict()
+        for file in self.files:
+            map[file.filename] = file
+        dir = IndexFile('.', self)
+        map['.'] = dir
+        dir.description = self.description
+        dir.desclines = self.desclines
+        dir.metadata = self.metadata
+        return map
+    
 
 class IndexFile:
     def __init__(self, filename, dir):

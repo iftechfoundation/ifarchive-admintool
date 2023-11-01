@@ -668,13 +668,15 @@ class han_ArchiveDir(base_DirectoryPage):
             
         map['indexdir'] = indexdir
         if indexdir:
+            ifmap = indexdir.getmap()
+            # ifnames excludes '.'
             ifnames = set([ ifile.filename for ifile in indexdir.files ])
             if indexdir.description:
                 map['indexdirdesc'] = indexdir.description.strip()
             map['indexdirmeta'] = indexdir.metadata
 
             for ent in ls:
-                ifile = indexdir.filemap.get(ent.name)
+                ifile = ifmap.get(ent.name)
                 if ifile:
                     if ifile.description:
                         ent.indexdesc = ifile.description.strip()
@@ -685,7 +687,7 @@ class han_ArchiveDir(base_DirectoryPage):
                 ifnames = list(ifnames)
                 ifnames.sort()
                 for name in ifnames:
-                    ifile = indexdir.filemap[name]
+                    ifile = ifmap[name]
                     ent = IndexOnlyEntry(ifile.filename, date=indexdir.date, user=req._user)
                     if ifile.description:
                         ent.indexdesc = ifile.description.strip()

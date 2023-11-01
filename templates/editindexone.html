@@ -26,6 +26,9 @@ entry for <code>{{ filename }}</code>
 <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
 <input type="hidden" name="op" value="editone"/>
 <input type="hidden" name="filename" value="{{ filename }}"/>
+{% if filetype %}
+  <input type="hidden" name="filetype" value="{{ filetype }}"/>
+{% endif %}
 <input type="hidden" name="dirname" value="{{ dirname }}"/>
 <input type="hidden" name="indextime" value="{{ indextime }}"/>
 

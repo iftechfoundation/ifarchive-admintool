@@ -894,9 +894,34 @@ class han_EditIndexFile(AdminHandler):
         if req.get_input_field('cancel'):
             raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname+'#list_'+urlencode(filename))
 
+        if req.get_input_field('revert'):
+            ient = None
+            indexdir = IndexDir.if_present(dirname, rootdir=self.app.archive_dir)
+            if indexdir:
+                ient = indexdir.getmap().get(filename)
+            if ient:
+                desc = ient.description.strip()
+                metas = '\n'.join([ '%s: %s' % (key, val,) for (key, val) in ient.metadata ])
+                metacount = len(ient.metadata)
+                indextime = int(indexdir.date)
+            else:
+                desc = ''
+                metas = ''
+                metacount = 0
+                indextime = 0
+            return self.render('editindexone.html', req,
+                               description=desc,
+                               metadata=metas,
+                               metacount=metacount,
+                               indextime=indextime,
+                               dirname=dirname, filename=filename, filetype=filetype)
+            
         return self.render('editindexone.html', req,
                            indextime=modtime,
                            dirname=dirname, filename=filename, filetype=filetype,
+                           description='###',
+                           metadata='###',
+                           metacount=0,
                            formerror='### working')
 
 @beforeall(require_role('incoming'))

@@ -4,6 +4,13 @@ import os, os.path
 from adminlib.util import in_user_time
 
 def formatdate(date, user=None, shortdate=False):
+    """Format a timestamp into human-readable form. If user is provided,
+    we use the user's time zone.
+    If shortdate is false, this looks like "Oct 28, 2023".
+    If shortdate is true, this looks like "Oct 28, 14:38 EDT".
+    The point is to use shortdate=True for date lists that are known to be
+    all recent.
+    """
     mtime = in_user_time(user, date)
     if shortdate:
         return mtime.strftime('%b %d, %H:%M %Z')

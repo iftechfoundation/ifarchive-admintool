@@ -928,6 +928,17 @@ class han_EditIndexFile(AdminHandler):
                                metacount=oldmetacount,
                                formerror='No changes to save.')
 
+        try:
+            newmetalines = IndexDir.check_metablock(newmeta)
+        except Exception as ex:
+            return self.render('editindexone.html', req,
+                               indextime=int(oldtime),
+                               dirname=dirname, filename=filename, filetype=filetype,
+                               description=newdesc,
+                               metadata=newmeta,
+                               metacount=newmetacount,
+                               formerror='Metadata error: %s' % (ex,))
+        
         if int(oldtime) != int(modtime):
             return self.render('editindexone.html', req,
                                indextime=int(oldtime),

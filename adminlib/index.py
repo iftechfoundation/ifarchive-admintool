@@ -58,7 +58,7 @@ class IndexDir:
                 val = ln[match2.end() : ].strip()
                 res.append( (curmetaline, val) )
                 continue
-            raise Exception('Not a metadata line')
+            raise Exception('not a metadata line: '+ln)
         return res
     
     def __init__(self, dirname, rootdir=None):

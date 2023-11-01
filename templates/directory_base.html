@@ -22,7 +22,7 @@
   <dl class="FileList">
     {% for dir in subdirs %}
     
-      <dt><span class="Details">Subdir:</span>
+      <dt id="list_{{ dir.name |urlencode }}"><span class="Details">Subdir:</span>
       {% if not dir.islink %}
         <code><a href="{{ approot }}/{{ uribase|urlencode }}/{{ dir.name|urlencode }}">{{ dir.name }}</a></code>
       {% else %}
@@ -71,7 +71,7 @@
   {% for file in files %}
     {% set isselected = (op and opfile == file.name) %}
 
-    <dt>
+    <dt id="list_{{ file.name |urlencode }}">
     {% if not file.islink %}
       <span class="Details"><span class="Tabular">{{ file.fdate }}</span>
       {% if file.isspecial or file.isbroken %}

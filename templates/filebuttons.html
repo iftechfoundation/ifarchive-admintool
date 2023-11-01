@@ -3,7 +3,7 @@
 
 {% if not isselected %}
 
-  <form method="post" action="{{ requri }}">
+  <form method="post" action="{{ requri }}#list_{{ ent.name |urlencode }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ ent.name }}"/>
   <input type="hidden" name="filedir" value="{{ dirname }}"/>

@@ -828,7 +828,7 @@ class han_EditIndexFile(AdminHandler):
                                description=desc,
                                metadata=metas,
                                metacount=metacount,
-                               indextime=indextime,
+                               indextime=int(indextime),
                                dirname=dirname, filename=filename, filetype=filetype)
         else:
             indextext, indextime = self.get_indextext(dirname)
@@ -908,7 +908,7 @@ class han_EditIndexFile(AdminHandler):
                                description=desc,
                                metadata=metas,
                                metacount=metacount,
-                               indextime=indextime,
+                               indextime=int(indextime),
                                dirname=dirname, filename=filename, filetype=filetype)
 
         newdesc = req.get_input_field('description', '')
@@ -917,9 +917,20 @@ class han_EditIndexFile(AdminHandler):
         newmeta = clean_newlines(newmeta)
         
         newmetacount = len([ val for val in newmeta.split('\n') if val.strip() ])
+
+        olddesc, oldmeta, oldmetacount, oldtime = self.get_indexentry(dirname, filename)
+        if olddesc.strip() == newdesc.strip() and oldmeta.strip() == newmeta.strip():
+            return self.render('editindexone.html', req,
+                               indextime=int(oldtime),
+                               dirname=dirname, filename=filename, filetype=filetype,
+                               description=olddesc,
+                               metadata=oldmeta,
+                               metacount=oldmetacount,
+                               formerror='No changes to save.')
+            
             
         return self.render('editindexone.html', req,
-                           indextime=modtime,
+                           indextime=int(modtime),
                            dirname=dirname, filename=filename, filetype=filetype,
                            description=newdesc,
                            metadata=newmeta,

@@ -764,6 +764,27 @@ class han_EditIndexFile(AdminHandler):
         fl.close()
         stat = os.stat(indexpath)
         return (indextext, stat.st_mtime)
+
+    def get_indexentry(self, dirname, filename):
+        """Return one index entry (description, metadata, mod timestamp)
+        from an Index file. If the Index or file does not exists, returns
+        ('', '', 0, 0).
+        """
+        ient = None
+        indexdir = IndexDir.if_present(dirname, rootdir=self.app.archive_dir)
+        if indexdir:
+            ient = indexdir.getmap().get(filename)
+        if ient:
+            desc = ient.description.strip()
+            metastr = '\n'.join([ '%s: %s' % (key, val,) for (key, val) in ient.metadata ])
+            metacount = len(ient.metadata)
+            indextime = int(indexdir.date)
+        else:
+            desc = ''
+            metastr = ''
+            metacount = 0
+            indextime = 0
+        return (desc, metastr, metacount, indextime)
         
     def do_get(self, req):
         return self.render('editindexreq.html', req)
@@ -802,20 +823,7 @@ class han_EditIndexFile(AdminHandler):
             
         if filename:
             filetype = req.get_input_field('filetype')
-            ient = None
-            indexdir = IndexDir.if_present(dirname, rootdir=self.app.archive_dir)
-            if indexdir:
-                ient = indexdir.getmap().get(filename)
-            if ient:
-                desc = ient.description.strip()
-                metas = '\n'.join([ '%s: %s' % (key, val,) for (key, val) in ient.metadata ])
-                metacount = len(ient.metadata)
-                indextime = int(indexdir.date)
-            else:
-                desc = ''
-                metas = ''
-                metacount = 0
-                indextime = 0
+            desc, metas, metacount, indextime = self.get_indexentry(dirname, filename)
             return self.render('editindexone.html', req,
                                description=desc,
                                metadata=metas,
@@ -895,20 +903,7 @@ class han_EditIndexFile(AdminHandler):
             raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname+'#list_'+urlencode(filename))
 
         if req.get_input_field('revert'):
-            ient = None
-            indexdir = IndexDir.if_present(dirname, rootdir=self.app.archive_dir)
-            if indexdir:
-                ient = indexdir.getmap().get(filename)
-            if ient:
-                desc = ient.description.strip()
-                metas = '\n'.join([ '%s: %s' % (key, val,) for (key, val) in ient.metadata ])
-                metacount = len(ient.metadata)
-                indextime = int(indexdir.date)
-            else:
-                desc = ''
-                metas = ''
-                metacount = 0
-                indextime = 0
+            desc, metas, metacount, indextime = self.get_indexentry(dirname, filename)
             return self.render('editindexone.html', req,
                                description=desc,
                                metadata=metas,

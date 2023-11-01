@@ -162,6 +162,11 @@ ul.UserInfoList li {
     margin-bottom: 4px;
 }
 
+.DirButtons {
+    margin-left: 0px;
+    padding-left: 40px;
+}
+
 .FileList dt {
     margin-top: 6px;
 }

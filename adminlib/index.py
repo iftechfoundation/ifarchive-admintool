@@ -12,8 +12,16 @@ meta_start_pattern = re.compile('^[ ]?[ ]?[ ]?([a-zA-Z0-9_-]+):')
 meta_cont_pattern = re.compile('^(    |\\t)')
 
 class IndexDir:
+    """Represents the contents of an Index file. This is a bunch of
+    IndexFile objects, each with a description and metadata, plus
+    possibly description/metadata for the directory itself.
+    """
+    
     @staticmethod
     def if_present(dirname, rootdir=None):
+        """Construct an	IndexDir by reading in an Index	file.
+        If the Index is not present, this returns None.
+        """
         indexpath = os.path.join(rootdir, dirname, 'Index')
         if not os.path.isfile(indexpath):
             return None
@@ -21,6 +29,9 @@ class IndexDir:
             return IndexDir(dirname, rootdir=rootdir)
     
     def __init__(self, dirname, rootdir=None):
+        """Construct an IndexDir by reading in an Index file.
+        If the Index is not present, this throws an exception.
+        """
         self.dirname = dirname
         self.indexpath = os.path.join(rootdir, dirname, 'Index')
 
@@ -109,6 +120,11 @@ class IndexDir:
         return '<IndexDir %s>' % (self.dirname,)
 
     def getmap(self):
+        """Create and return a dict mapping filenames to IndexFile objects.
+        The dict also contains a '.' entry for the directory data itself.
+        (Note that IndexDir.files does not contain the '.' entry. It's just
+        handy for the caller of getmap().)
+        """
         map = OrderedDict()
         for file in self.files:
             map[file.filename] = file
@@ -121,6 +137,12 @@ class IndexDir:
     
 
 class IndexFile:
+    """Represents one entry in an Index file. Note that, despite the name,
+    this may represent a file, subdirectory, symlink, or even a file
+    that does not exist in the directory at all. The Index file doesn't
+    distinguish these cases; you have to look at the directory itself.
+    """
+    
     def __init__(self, filename, dir):
         self.filename = filename
         self.dir = dir

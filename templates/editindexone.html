@@ -40,7 +40,7 @@ entry for <code>{{ filename }}</code>
 <p class="ItemName">Metadata:</p>
 
 <div>
-<textarea class="FormTextArea" name="metadata" rows=10 spellcheck="false" autocomplete="disabled">
+<textarea class="FormTextArea" name="metadata" rows={{ [ metacount+2, 10 ] |min }} spellcheck="false" autocomplete="disabled">
 {{ metadata }}
 </textarea>
 </div>

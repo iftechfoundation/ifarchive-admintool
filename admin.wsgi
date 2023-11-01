@@ -806,14 +806,17 @@ class han_EditIndexFile(AdminHandler):
             if ient:
                 desc = ient.description.strip()
                 metas = '\n'.join([ '%s: %s' % (key, val,) for (key, val) in ient.metadata ])
+                metacount = len(ient.metadata)
                 indextime = int(indexdir.date)
             else:
                 desc = ''
                 metas = ''
+                metacount = 0
                 indextime = 0
             return self.render('editindexone.html', req,
                                description=desc,
                                metadata=metas,
+                               metacount=metacount,
                                indextime=indextime,
                                dirname=dirname, filename=filename, filetype=filetype)
         else:

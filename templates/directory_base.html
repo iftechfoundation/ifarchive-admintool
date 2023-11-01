@@ -101,11 +101,6 @@
         {% endif %}
         </ul>
       {% endif %}
-      
-      {% if fileops and not file.isspecial %}
-      {% set ent = file %}
-      {% include "filebuttons.html" %}
-      {% endif %}
 
     {% else %}
       <span class="Details"><span class="Tabular">{{ file.fdate }}</span>
@@ -121,6 +116,11 @@
         <code><a href="{{ approot }}/{{ file.realuri|urlencode }}">{{ file.target }}</a></code>
       {%- endif -%}
       )</span>
+    {% endif %}
+      
+    {% if fileops and not file.isspecial %}
+    {% set ent = file %}
+    {% include "filebuttons.html" %}
     {% endif %}
 
   {% endfor %}

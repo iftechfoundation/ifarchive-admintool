@@ -14,7 +14,7 @@
     <input class="FormButton" formaction="{{ approot }}/editindex" name="eindex" type="submit" value="Edit Index">
   {% endif %}
   {# Only existent files (not directories) get these buttons. #}
-  {% if ent.isfile and not ent.isbroken %}
+  {% if ent.isfile and not ent.islink and not ent.isbroken %}
     {% if 'zip' in fileops and ent.ishtml %}
       <input class="FormButton" name="zip" type="submit" value="Zip">
     {% endif %}

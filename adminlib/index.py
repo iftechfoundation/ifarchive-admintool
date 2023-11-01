@@ -27,6 +27,39 @@ class IndexDir:
             return None
         else:
             return IndexDir(dirname, rootdir=rootdir)
+
+    @staticmethod
+    def check_metablock(val):
+        """Verify that a chunk of text looks like a block of metadata
+        lines (and no other text except whitespace).
+        (We're tolerant of whitespace and blank lines. This means we accept
+        blocks that *wouldn't* be valid in an Index file metadata segment.
+        That's okay; this function is used for parsing the metadata text
+        field in a web form.)
+        Returns a list of key/value pairs, suitable for use in
+        IndexFile.
+        This uses similar parsing code to IndexDir.
+        """
+        res = []
+        curmetaline = None
+        lines = val.split('\n')
+        for ln in lines:
+            ln = ln.rstrip()
+            if not ln:
+                continue
+            match = meta_start_pattern.match(ln)
+            match2 = meta_cont_pattern.match(ln)
+            if match:
+                key = curmetaline = match.group(1)
+                val = ln[match.end() : ].strip()
+                res.append( (curmetaline, val) )
+                continue
+            if curmetaline and match2:
+                val = ln[match2.end() : ].strip()
+                res.append( (curmetaline, val) )
+                continue
+            raise Exception('Not a metadata line')
+        return res
     
     def __init__(self, dirname, rootdir=None):
         """Construct an IndexDir by reading in an Index file.

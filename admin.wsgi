@@ -771,8 +771,13 @@ class han_EditIndexFile(AdminHandler):
         op = req.get_input_field('op')
         if not op:
             return self.do_post_bare(req)
-        else:
+        elif op == 'editall':
             return self.do_post_editall(req)
+        elif op == 'editone':
+            return self.do_post_editone(req)
+        else:
+            return self.render('editindexreq.html', req,
+                               formerror='Invalid operation')
 
     def do_post_bare(self, req):
         dirname = req.get_input_field('filedir', '')
@@ -872,6 +877,16 @@ class han_EditIndexFile(AdminHandler):
             req.loginfo('Updated Index in /%s' % (dirname,))
 
         raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
+
+    def do_post_editone(self, req):
+        dirname = req.get_input_field('dirname')
+        filename = req.get_input_field('filename')
+        modtime = req.get_input_field('indextime', 0)
+        
+        return self.render('editindexone.html', req,
+                           indextime=modtime,
+                           dirname=dirname, filename=filename,
+                           formerror='### working')
 
 @beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):

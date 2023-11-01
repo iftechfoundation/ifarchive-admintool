@@ -6,8 +6,15 @@ Edit Index File
 
 {% block content %}
 
-<p>Editing Archive/{{ dirname }}/Index
-entry for <code>{{ filename }}</code></p>
+<p>
+Editing Archive/{{ dirname }}/Index
+entry for
+{% if filename == '.' %}
+(the directory itself)
+{% else %}
+<code>{{ filename }}</code>
+{% endif %}
+</p>
 
 <form method="post" action="{{ requri }}">
 

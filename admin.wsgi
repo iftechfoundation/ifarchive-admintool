@@ -793,16 +793,29 @@ class han_EditIndexFile(AdminHandler):
             return self.render('editindexreq.html', req,
                                formerror='The Archive /unprocessed directory has no Index file.')
 
-        if filename:
-            return self.render('editindexreq.html', req,
-                               formerror='### Index editing for a individual file entry is not yet supported. (%s, %s)' % (dirname, filename,))
-
-        indextext, indextime = self.get_indextext(dirname)
             
-        return self.render('editindexall.html', req,
-                           indextext=indextext,
-                           indextime=int(indextime),
-                           dirname=dirname)
+        if filename:
+            indexdir = IndexDir(dirname, rootdir=self.app.archive_dir)
+            ient = indexdir.getmap().get(filename)
+            if ient:
+                desc = ient.description.strip()
+                metas = '\n'.join([ '%s: %s' % (key, val,) for (key, val) in ient.metadata ])
+                indextime = int(indexdir.date)
+            else:
+                desc = ''
+                metas = ''
+                indextime = 0
+            return self.render('editindexone.html', req,
+                               description=desc,
+                               metadata=metas,
+                               indextime=indextime,
+                               dirname=dirname, filename=filename)
+        else:
+            indextext, indextime = self.get_indextext(dirname)
+            return self.render('editindexall.html', req,
+                               indextext=indextext,
+                               indextime=int(indextime),
+                               dirname=dirname)
 
     def do_post_editall(self, req):
         dirname = req.get_input_field('dirname')

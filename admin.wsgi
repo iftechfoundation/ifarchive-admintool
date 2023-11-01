@@ -915,13 +915,20 @@ class han_EditIndexFile(AdminHandler):
                                metacount=metacount,
                                indextime=indextime,
                                dirname=dirname, filename=filename, filetype=filetype)
+
+        newdesc = req.get_input_field('description', '')
+        newmeta = req.get_input_field('metadata', '')
+        newdesc = clean_newlines(newdesc)
+        newmeta = clean_newlines(newmeta)
+        
+        newmetacount = len(newmeta.split('\n'))
             
         return self.render('editindexone.html', req,
                            indextime=modtime,
                            dirname=dirname, filename=filename, filetype=filetype,
-                           description='###',
-                           metadata='###',
-                           metacount=0,
+                           description=newdesc,
+                           metadata=newmeta,
+                           metacount=newmetacount,
                            formerror='### working')
 
 @beforeall(require_role('incoming'))

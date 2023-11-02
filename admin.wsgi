@@ -922,7 +922,7 @@ class han_EditIndexFile(AdminHandler):
         indexdir, olddesc, oldmeta, oldmetacount = self.get_indexentry(dirname, filename)
         if olddesc.strip() == newdesc.strip() and oldmeta.strip() == newmeta.strip():
             return self.render('editindexone.html', req,
-                               indextime=int(indexdir.date),
+                               indextime=int(modtime),
                                dirname=dirname, filename=filename, filetype=filetype,
                                description=olddesc,
                                metadata=oldmeta,
@@ -933,7 +933,7 @@ class han_EditIndexFile(AdminHandler):
             newmetalines = IndexDir.check_metablock(newmeta)
         except Exception as ex:
             return self.render('editindexone.html', req,
-                               indextime=int(indexdir.date),
+                               indextime=int(modtime),
                                dirname=dirname, filename=filename, filetype=filetype,
                                description=newdesc,
                                metadata=newmeta,
@@ -944,7 +944,7 @@ class han_EditIndexFile(AdminHandler):
         
         if int(indexdir.date) != int(modtime):
             return self.render('editindexone.html', req,
-                               indextime=int(indexdir.date),
+                               indextime=int(modtime),
                                dirname=dirname, filename=filename, filetype=filetype,
                                description=newdesc,
                                metadata=newmeta,

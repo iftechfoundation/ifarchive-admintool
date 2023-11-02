@@ -771,7 +771,7 @@ class han_EditIndexFile(AdminHandler):
         ('', '', 0, 0).
         """
         ient = None
-        indexdir = IndexDir.if_present(dirname, rootdir=self.app.archive_dir)
+        indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
         if indexdir:
             ient = indexdir.getmap().get(filename)
         if ient:

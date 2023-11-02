@@ -766,25 +766,22 @@ class han_EditIndexFile(AdminHandler):
         return (indextext, stat.st_mtime)
 
     def get_indexentry(self, dirname, filename):
-        """Return one index entry (description, metadata, mod timestamp)
-        from an Index file. If the Index or file does not exists, returns
-        ('', '', 0, 0).
+        """Return one index entry (description, metadata, metalinecount)
+        from an Index file, as well as the owning IndexDir.
+        If the Index or file does not exists, returns (i, '', '', 0) where
+        i is a blank IndexDir.
         """
-        ient = None
         indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
-        if indexdir:
-            ient = indexdir.getmap().get(filename)
+        ient = indexdir.getmap().get(filename)
         if ient:
             desc = ient.description.strip()
             metastr = '\n'.join([ '%s: %s' % (key, val,) for (key, val) in ient.metadata ])
             metacount = len(ient.metadata)
-            indextime = int(indexdir.date)
         else:
             desc = ''
             metastr = ''
             metacount = 0
-            indextime = 0
-        return (desc, metastr, metacount, indextime)
+        return (indexdir, desc, metastr, metacount)
         
     def do_get(self, req):
         return self.render('editindexreq.html', req)
@@ -823,18 +820,18 @@ class han_EditIndexFile(AdminHandler):
             
         if filename:
             filetype = req.get_input_field('filetype')
-            desc, metas, metacount, indextime = self.get_indexentry(dirname, filename)
+            indexdir, desc, metas, metacount = self.get_indexentry(dirname, filename)
             return self.render('editindexone.html', req,
                                description=desc,
                                metadata=metas,
                                metacount=metacount,
-                               indextime=int(indextime),
+                               indextime=int(indexdir.date),
                                dirname=dirname, filename=filename, filetype=filetype)
         else:
             indextext, indextime = self.get_indextext(dirname)
             return self.render('editindexall.html', req,
                                indextext=indextext,
-                               indextime=int(indextime),
+                               indextime=int(indexdir.date),
                                dirname=dirname)
 
     def do_post_editall(self, req):
@@ -903,12 +900,12 @@ class han_EditIndexFile(AdminHandler):
             raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname+'#list_'+urlencode(filename))
 
         if req.get_input_field('revert'):
-            desc, metas, metacount, indextime = self.get_indexentry(dirname, filename)
+            indexdir, desc, metas, metacount = self.get_indexentry(dirname, filename)
             return self.render('editindexone.html', req,
                                description=desc,
                                metadata=metas,
                                metacount=metacount,
-                               indextime=int(indextime),
+                               indextime=int(indexdir.date),
                                dirname=dirname, filename=filename, filetype=filetype)
 
         newdesc = req.get_input_field('description', '')
@@ -918,10 +915,10 @@ class han_EditIndexFile(AdminHandler):
         
         newmetacount = len([ val for val in newmeta.split('\n') if val.strip() ])
 
-        olddesc, oldmeta, oldmetacount, oldtime = self.get_indexentry(dirname, filename)
+        indexdir, olddesc, oldmeta, oldmetacount = self.get_indexentry(dirname, filename)
         if olddesc.strip() == newdesc.strip() and oldmeta.strip() == newmeta.strip():
             return self.render('editindexone.html', req,
-                               indextime=int(oldtime),
+                               indextime=int(indexdir.date),
                                dirname=dirname, filename=filename, filetype=filetype,
                                description=olddesc,
                                metadata=oldmeta,
@@ -932,7 +929,7 @@ class han_EditIndexFile(AdminHandler):
             newmetalines = IndexDir.check_metablock(newmeta)
         except Exception as ex:
             return self.render('editindexone.html', req,
-                               indextime=int(oldtime),
+                               indextime=int(indexdir.date),
                                dirname=dirname, filename=filename, filetype=filetype,
                                description=newdesc,
                                metadata=newmeta,
@@ -941,9 +938,9 @@ class han_EditIndexFile(AdminHandler):
 
         
         
-        if int(oldtime) != int(modtime):
+        if int(indexdir.date) != int(modtime):
             return self.render('editindexone.html', req,
-                               indextime=int(oldtime),
+                               indextime=int(indexdir.date),
                                dirname=dirname, filename=filename, filetype=filetype,
                                description=newdesc,
                                metadata=newmeta,

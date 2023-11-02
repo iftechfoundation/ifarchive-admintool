@@ -199,6 +199,31 @@ class IndexDir:
         self.files.append(file)
         return
 
+    def write(self):
+        """Write the contents back out to the Index file.
+        """
+        outfl = open(self.indexpath+'XXX', 'w', encoding='utf-8')
+        
+        if self.metadata:
+            for key, val in self.metadata:
+                outfl.write('%s: %s\n' % (key, val,))
+        if self.description:
+            outfl.write(self.description)
+        else:
+            outfl.write('\n')
+
+        for file in self.files:
+            outfl.write('# %s\n' % (file.filename,))
+            if file.metadata:
+                for key, val in file.metadata:
+                    outfl.write('%s: %s\n' % (key, val,))
+            if file.description:
+                outfl.write(file.description)
+            else:
+                outfl.write('\n')
+
+        outfl.close()
+
 class IndexFile:
     """Represents one entry in an Index file. Note that, despite the name,
     this may represent a file, subdirectory, symlink, or even a file

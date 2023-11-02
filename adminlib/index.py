@@ -18,17 +18,6 @@ class IndexDir:
     """
     
     @staticmethod
-    def if_present(dirname, rootdir=None):
-        """Construct an	IndexDir by reading in an Index	file.
-        If the Index is not present, this returns None.
-        """
-        indexpath = os.path.join(rootdir, dirname, 'Index')
-        if not os.path.isfile(indexpath):
-            return None
-        else:
-            return IndexDir(dirname, rootdir=rootdir)
-
-    @staticmethod
     def check_metablock(val):
         """Verify that a chunk of text looks like a block of metadata
         lines (and no other text except whitespace).
@@ -61,11 +50,11 @@ class IndexDir:
             raise Exception('not a metadata line: '+ln)
         return res
     
-    def __init__(self, dirname, rootdir=None, blank=False):
+    def __init__(self, dirname, rootdir=None, orblank=False):
         """Construct an IndexDir by reading in an Index file.
-        If the Index is not present, this throws an exception.
-        Except if blank is true, we don't even try to read an Index
-        and just return an empty IndexDir.
+        If the Index is not present, we throw an exception,
+        unless orblank is true, in which case we return an empty
+        IndexDir.
         """
         self.dirname = dirname
         self.indexpath = os.path.join(rootdir, dirname, 'Index')
@@ -75,7 +64,7 @@ class IndexDir:
         self.metadata = []
         self.files = []
 
-        if blank:
+        if orblank and not os.path.isfile(self.indexpath):
             self.date = 0
             return
         

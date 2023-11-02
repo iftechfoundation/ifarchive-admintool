@@ -202,7 +202,7 @@ class IndexDir:
     def write(self):
         """Write the contents back out to the Index file.
         """
-        outfl = open(self.indexpath+'XXX', 'w', encoding='utf-8')
+        outfl = open(self.indexpath, 'w', encoding='utf-8')
 
         # For tidiness, we'll keep track of whether the last thing printed was a blank line (or start of file). This lets us ensure that a "#" line always has a blank before it.
         lastblank = True

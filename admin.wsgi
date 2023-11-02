@@ -853,6 +853,10 @@ class han_EditIndexFile(AdminHandler):
 
         oldtext, oldtime = self.get_indextext(dirname)
         if newtext == clean_newlines(oldtext):
+            # Really we're comparing against the current Index file,
+            # not the one the user saw when they hit Edit. So this could
+            # show a spurious "no changes to save" error if two users
+            # make the same change at the same time. Sorry.
             return self.render('editindexall.html', req,
                                indextext=oldtext,
                                indextime=int(oldtime),

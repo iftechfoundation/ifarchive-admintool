@@ -950,14 +950,23 @@ class han_EditIndexFile(AdminHandler):
                                metadata=newmeta,
                                metacount=newmetacount,
                                formerror='Index file has been modified since you began editing!')
+
+        oldtext, oldtime = self.get_indextext(dirname)
+        if len(oldtext.strip()):
+            # Save a copy of the old text in the trash.
+            trashname = 'Index-%s' % (dirname.replace('/', '-'),)
+            trashname = find_unused_filename(trashname, dir=self.app.trash_dir)
+            trashpath = os.path.join(self.app.trash_dir, trashname)
+            outfl = open(trashpath, 'w', encoding='utf-8')
+            outfl.write(oldtext)
+            outfl.close()
+
+        # Write out the new Index file.
+        indexdir.update(filename, newdesc, newmetalines)
+        indexdir.write()
+        req.loginfo('Updated Index entry for "%s" in /%s' % (filename, dirname,))
         
-        return self.render('editindexone.html', req,
-                           indextime=int(modtime),
-                           dirname=dirname, filename=filename, filetype=filetype,
-                           description=newdesc,
-                           metadata=newmeta,
-                           metacount=newmetacount,
-                           formerror='### working')
+        raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
 
 @beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):

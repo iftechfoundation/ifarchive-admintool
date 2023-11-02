@@ -203,24 +203,33 @@ class IndexDir:
         """Write the contents back out to the Index file.
         """
         outfl = open(self.indexpath+'XXX', 'w', encoding='utf-8')
+
+        # For tidiness, we'll keep track of whether the last thing printed was a blank line (or start of file). This lets us ensure that a "#" line always has a blank before it.
+        lastblank = True
         
         if self.metadata:
             for key, val in self.metadata:
                 outfl.write('%s: %s\n' % (key, val,))
         if self.description:
             outfl.write(self.description)
+            lastblank = (self.description == '\n' or self.description.endswith('\n\n'))
         else:
             outfl.write('\n')
+            lastblank = True
 
         for file in self.files:
+            if not lastblank:
+                outfl.write('\n')
             outfl.write('# %s\n' % (file.filename,))
             if file.metadata:
                 for key, val in file.metadata:
                     outfl.write('%s: %s\n' % (key, val,))
             if file.description:
                 outfl.write(file.description)
+                lastblank = (file.description == '\n' or file.description.endswith('\n\n'))
             else:
                 outfl.write('\n')
+                lastblank = True
 
         outfl.close()
 

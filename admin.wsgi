@@ -831,7 +831,7 @@ class han_EditIndexFile(AdminHandler):
             indextext, indextime = self.get_indextext(dirname)
             return self.render('editindexall.html', req,
                                indextext=indextext,
-                               indextime=int(indexdir.date),
+                               indextime=int(indextime),
                                dirname=dirname)
 
     def do_post_editall(self, req):

@@ -856,7 +856,7 @@ class han_EditIndexFile(AdminHandler):
             # Really we're comparing against the current Index file,
             # not the one the user saw when they hit Edit. So this could
             # show a spurious "no changes to save" error if two users
-            # make the same change at the same time. Sorry.
+            # make the exact same change at the same time. Sorry.
             return self.render('editindexall.html', req,
                                indextext=oldtext,
                                indextime=int(oldtime),

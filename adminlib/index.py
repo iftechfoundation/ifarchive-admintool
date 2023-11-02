@@ -162,7 +162,42 @@ class IndexDir:
         dir.desclines = self.desclines
         dir.metadata = self.metadata
         return map
-    
+
+    def update(self, filename, desc, metadata):
+        """Update (or add) a file entry (or directory entry, if filename
+        is '.'.)
+        We are careful to make sure that the description begins with a
+        newline and ends with two newlines. (Or, if blank, is None.)
+        This will produce clean formatting when written out.
+        Note: we don't set desclines at all. Sorry. Not needed at this
+        time.
+        """
+        desc = desc.rstrip()
+        if not desc:
+            desc = None
+        else:
+            while desc.startswith('\n'):
+                desc = desc[ 1 : ]
+            desc = '\n%s\n\n' % (desc,)
+
+        if filename == '.':
+            self.description = desc
+            self.desclines = None
+            self.metadata = metadata
+            return
+
+        for file in self.files:
+            if file.filename == filename:
+                file.description = desc
+                file.desclines = None
+                file.metadata = metadata
+                return
+            
+        file = IndexFile(filename, self)
+        file.description = desc
+        file.metadata = metadata
+        self.files.append(file)
+        return
 
 class IndexFile:
     """Represents one entry in an Index file. Note that, despite the name,

@@ -61,9 +61,11 @@ class IndexDir:
             raise Exception('not a metadata line: '+ln)
         return res
     
-    def __init__(self, dirname, rootdir=None):
+    def __init__(self, dirname, rootdir=None, blank=False):
         """Construct an IndexDir by reading in an Index file.
         If the Index is not present, this throws an exception.
+        Except if blank is true, we don't even try to read an Index
+        and just return an empty IndexDir.
         """
         self.dirname = dirname
         self.indexpath = os.path.join(rootdir, dirname, 'Index')
@@ -73,6 +75,10 @@ class IndexDir:
         self.metadata = []
         self.files = []
 
+        if blank:
+            self.date = 0
+            return
+        
         stat = os.stat(self.indexpath)
         self.date = stat.st_mtime
 
@@ -150,7 +156,7 @@ class IndexDir:
                 file.description = ''.join(file.desclines)
 
     def __repr__(self):
-        return '<IndexDir %s>' % (self.dirname,)
+        return '<IndexDir %s (%s files)>' % (self.dirname, len(self.files),)
 
     def getmap(self):
         """Create and return a dict mapping filenames to IndexFile objects.

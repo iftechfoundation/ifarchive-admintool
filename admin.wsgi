@@ -774,7 +774,10 @@ class han_EditIndexFile(AdminHandler):
         indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
         ient = indexdir.getmap().get(filename)
         if ient:
-            desc = ient.description.strip()
+            if ient.description:
+                desc = ient.description.strip()
+            else:
+                desc = ''
             metastr = '\n'.join([ '%s: %s' % (key, val,) for (key, val) in ient.metadata ])
             metacount = len(ient.metadata)
         else:

@@ -19,24 +19,24 @@
     Note that the field names "filename" and "filedir" must match
     the form in editindexreq.html. #}
   {% if 'eindex' in fileops %}
-    <input class="FormButton" formaction="{{ approot }}/editindex" name="eindex" type="submit" value="Edit Index">
+    <input class="FormButton SmallButton" formaction="{{ approot }}/editindex" name="eindex" type="submit" value="Edit Index">
   {% endif %}
   {# Only existent files (not directories) get these buttons. #}
   {% if ent.isfile and not ent.islink and not ent.isbroken %}
     {% if 'zip' in fileops and ent.ishtml %}
-      <input class="FormButton" name="zip" type="submit" value="Zip">
+      <input class="FormButton SmallButton" name="zip" type="submit" value="Zip">
     {% endif %}
     {% if 'movei' in fileops %}
-      <input class="FormButton" name="movei" type="submit" value="Move In">
+      <input class="FormButton SmallButton" name="movei" type="submit" value="Move In">
     {% endif %}
     {% if 'moveu' in fileops %}
-      <input class="FormButton" name="moveu" type="submit" value="Move Up">
+      <input class="FormButton SmallButton" name="moveu" type="submit" value="Move Up">
     {% endif %}
     {% if 'rename' in fileops %}
-      <input class="FormButton" name="rename" type="submit" value="Rename">
+      <input class="FormButton SmallButton" name="rename" type="submit" value="Rename">
     {% endif %}
     {% if 'delete' in fileops %}
-      <input class="FormButton" name="delete" type="submit" value="Delete">
+      <input class="FormButton SmallButton" name="delete" type="submit" value="Delete">
     {% endif %}
   {% endif %}
   </form>

@@ -70,7 +70,15 @@ class han_Home(AdminHandler):
         # Sorry about the special case.
         unproccount = len([ ent for ent in os.scandir(self.app.unprocessed_dir) if ent.is_file() and ent.name != '.listing' ])
 
-        return self.render('front.html', req, incount=incount, unproccount=unproccount)
+        locktime = None
+        try:
+            stat = os.stat(self.app.build_lock_path)
+            locktime = int(time.time() - stat.st_mtime)
+        except:
+            pass
+
+        return self.render('front.html', req,
+                           incount=incount, unproccount=unproccount, locktime=locktime)
 
     def do_post(self, req):
         formname = req.get_input_field('name')

@@ -6,13 +6,15 @@
 {% block usetitle %}
 <h1>{{ dirchain(uribase|splituri, lastbare=True) }}</h1>
 
-<p>(Public site:
+<p>Public site:
   {% if not dirname %}
     <a href="https://ifarchive.org/indexes/if-archive/">index</a>,
-    <a href="https://ifarchive.org/if-archive/">raw</a>)
+    <a href="https://ifarchive.org/if-archive/">raw</a>
   {% else %}
     <a href="https://ifarchive.org/indexes/if-archive/{{ dirname|urlencode }}/">index</a>,
-    <a href="https://ifarchive.org/if-archive/{{ dirname|urlencode }}/">raw</a>)
+    <a href="https://ifarchive.org/if-archive/{{ dirname|urlencode }}/">raw</a>,
+    copyable:
+    <input class="FormTextHalfLine" id="dirnamefield" type="text" readonly="" value="{{ dirname }}">
   {% endif %}
 </p>
 

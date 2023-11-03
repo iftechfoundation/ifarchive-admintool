@@ -99,6 +99,10 @@ body {
     background-color: #EFA;
 }
 
+.SmallButton {
+    font-size: 85%;
+}
+
 .FormAction {
     font-style: italic;
     margin: 4px 8px;

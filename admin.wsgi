@@ -1023,6 +1023,7 @@ class han_RebuildIndexes(AdminHandler):
                                formerror='Error: %s' % (ex,),
                                errortext=errortext)
             
+        req.loginfo('Requested index rebuild')
         raise HTTPRedirectPost(self.app.approot)
     
 class han_DebugDump(AdminHandler):

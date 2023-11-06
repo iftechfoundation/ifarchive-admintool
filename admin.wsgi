@@ -1000,9 +1000,23 @@ class han_RebuildIndexes(AdminHandler):
         return self.render('rebuild.html', req,
                            locktime=locktime)
 
-    #def do_post(self, req):
-    #    val = req.get_input_field('commit')
+    def do_post(self, req):
+        locktime = self.app.get_locktime()
+        val = req.get_input_field('commit')
+        if not val:
+            return self.render('rebuild.html', req,
+                               locktime=locktime,
+                               formerror='Button not pressed')
 
+        try:
+            args = [ self.app.build_script_path ]
+            subprocess.run(args, check=True)
+        except Exception as ex:
+            return self.render('rebuild.html', req,
+                               locktime=locktime,
+                               formerror='Error: '+str(ex))
+            
+        raise HTTPRedirectPost(self.app.approot)
     
 class han_DebugDump(AdminHandler):
     """Display all request information. I used this a lot during testing

@@ -25,4 +25,8 @@ Rebuild Indexes
 <p>{{ formerror }}</p>
 {% endif %}
 
+{% if errortext %}
+<div class="FileComments">{{ errortext }}</div>
+{% endif %}
+
 {% endblock %}

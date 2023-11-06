@@ -14,6 +14,7 @@ import time
 import os, os.path
 import hashlib
 import configparser
+import subprocess
 import logging, logging.handlers
 
 
@@ -1010,11 +1011,17 @@ class han_RebuildIndexes(AdminHandler):
 
         try:
             args = [ self.app.build_script_path ]
-            subprocess.run(args, check=True)
+            subprocess.run(args, check=True, text=True, capture_output=True)
         except Exception as ex:
+            errortext = ''
+            if ex.stdout:
+                errortext += ex.stdout
+            if ex.stderr:
+                errortext += ex.stderr
             return self.render('rebuild.html', req,
                                locktime=locktime,
-                               formerror='Error: '+str(ex))
+                               formerror='Error: %s' % (ex,),
+                               errortext=errortext)
             
         raise HTTPRedirectPost(self.app.approot)
     

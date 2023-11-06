@@ -40,7 +40,8 @@ class AdminApp(TinyApp):
         self.max_trash_age = config['AdminTool'].getint('MaxTrashAge')
 
         self.db_path = config['DEFAULT']['DBFile']
-        self.build_lock_path = config['DEFAULT']['BuildLockFile']
+        self.build_script_path = config['AdminTool']['BuildScriptFile']
+        self.build_lock_path = config['AdminTool']['BuildLockFile']
         self.template_path = config['AdminTool']['TemplateDir']
         self.app_css_uri = config['AdminTool']['AppCSSURI']
 

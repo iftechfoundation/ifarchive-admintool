@@ -7,15 +7,15 @@
 
   <a {% if navtab=='top' %} class="Selected" {% endif %} href="{{ approot }}">Home</a>
   
-  {% if isadmin or ('incoming' in user.roles) %}
+  {% if 'incoming' in user.roles %}
   <a {% if navtab=='uploads' %} class="Selected" {% endif %} href="{{ approot }}/uploadlog">UploadLog</a>
   {% endif %}
 
-  {% if isadmin or ('incoming' in user.roles) %}
+  {% if 'incoming' in user.roles %}
   <a {% if navtab=='incoming' %} class="Selected" {% endif %} href="{{ approot }}/incoming">Incoming</a>
   {% endif %}
 
-  {% if isadmin or ('unprocessed' in user.roles) %}
+  {% if 'incoming' in user.roles %}
   <a {% if navtab=='unprocessed' %} class="Selected" {% endif %} href="{{ approot }}/arch/unprocessed">Unprocessed</a>
   {% endif %}
 
@@ -23,7 +23,7 @@
   <a {% if navtab=='archive' %} class="Selected" {% endif %} href="{{ approot }}/arch">Archive</a>
   {% endif %}
 
-  {% if isadmin or ('incoming' in user.roles) %}
+  {% if 'incoming' in user.roles %}
   <a {% if navtab=='trash' %} class="Selected" {% endif %} href="{{ approot }}/trash">Trash</a>
   {% endif %}
 

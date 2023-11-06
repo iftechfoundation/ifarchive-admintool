@@ -24,22 +24,6 @@
   {% endif %}
 </p>
 
-{% if locktime is none %}
-  {% if user and 'rebuild' in user.roles %}
-  <div>
-    <form method="post" action="{{ approot }}/rebuild">
-    <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
-    <input class="FormButton" name="commit" type="submit" value="Rebuild">
-    all index pages.
-    <div class="FormWarning">This will take 10-15 seconds.</div>
-  </form>
-  </div>
-  {% endif %}
-{% else %}
-  <p>
-    Index rebuild is currently running (for {{ locktime }} {{ locktime|plural('second', 'seconds') }}).
-    <a href="{{ approot }}/rebuild">Reload page</a> to see if it's finished.
-  </p>
-{% endif %}
+{% include "rebuild_widget.html" %}
 
 {% endblock %}

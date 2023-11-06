@@ -70,12 +70,7 @@ class han_Home(AdminHandler):
         # Sorry about the special case.
         unproccount = len([ ent for ent in os.scandir(self.app.unprocessed_dir) if ent.is_file() and ent.name != '.listing' ])
 
-        locktime = None
-        try:
-            stat = os.stat(self.app.build_lock_path)
-            locktime = int(time.time() - stat.st_mtime)
-        except:
-            pass
+        locktime = self.app.get_locktime()
 
         return self.render('front.html', req,
                            incount=incount, unproccount=unproccount, locktime=locktime)
@@ -1001,16 +996,12 @@ class han_UploadLog(AdminHandler):
 class han_RebuildIndexes(AdminHandler):
 
     def do_get(self, req):
-        locktime = None
-        try:
-            stat = os.stat(self.app.build_lock_path)
-            locktime = int(time.time() - stat.st_mtime)
-        except:
-            pass
-
+        locktime = self.app.get_locktime()
         return self.render('rebuild.html', req,
                            locktime=locktime)
-        
+
+    #def do_post(self, req):
+    #    val = req.get_input_field('commit')
 
     
 class han_DebugDump(AdminHandler):

@@ -1,3 +1,4 @@
+import time
 import os.path
 import threading
 import sqlite3
@@ -103,6 +104,18 @@ class AdminApp(TinyApp):
             map.update(params)
         yield tem.render(**map)
 
+    def get_locktime(self):
+        """Check whether the rebuild-index lock file exists. If it does,
+        return its age in seconds. If not, return None.
+        (This is used by a couple of handlers, so it's easiest to put
+        it here.)
+        """
+        try:
+            stat = os.stat(self.build_lock_path)
+            locktime = int(time.time() - stat.st_mtime)
+            return locktime
+        except:
+            return None
 
 class AdminRequest(TinyRequest):
     """Our app-specific subclass of TinyRequest. This just has a spot

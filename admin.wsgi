@@ -1011,6 +1011,8 @@ class han_RebuildIndexes(AdminHandler):
 
         try:
             args = [ self.app.build_script_path ]
+            if self.app.secure_site:
+                args.insert(0, '/usr/bin/sudo')
             subprocess.run(args, check=True, text=True, capture_output=True)
         except Exception as ex:
             errortext = ''

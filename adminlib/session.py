@@ -23,7 +23,7 @@ class User:
         if 'admin' in self.roles:
             # It's easier to special-case admin here. Add all the roles
             # an admin can do, which is all of them.
-            self.roles.update(['incoming', 'index', 'files', 'rebuild'])
+            self.roles.update(['incoming', 'index', 'filing', 'rebuild'])
         
         self.tzname = tzname
         self.tz = None

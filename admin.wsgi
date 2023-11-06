@@ -997,6 +997,22 @@ class han_UploadLog(AdminHandler):
         return self.render('uploadlog.html', req, uploads=uploads, start=start, limit=self.PAGE_LIMIT, prevstart=max(0, start-self.PAGE_LIMIT), nextstart=start+self.PAGE_LIMIT)
     
         
+@beforeall(require_role('rebuild'))
+class han_RebuildIndexes(AdminHandler):
+
+    def do_get(self, req):
+        locktime = None
+        try:
+            stat = os.stat(self.app.build_lock_path)
+            locktime = int(time.time() - stat.st_mtime)
+        except:
+            pass
+
+        return self.render('rebuild.html', req,
+                           locktime=locktime)
+        
+
+    
 class han_DebugDump(AdminHandler):
     """Display all request information. I used this a lot during testing
     but it should be disabled in production.
@@ -1037,6 +1053,7 @@ handlers = [
     ('/arch/(?P<dir>.+)', han_ArchiveDir),
     ('/editindex', han_EditIndexFile),
     ('/uploadlog', han_UploadLog),
+    ('/rebuild', han_RebuildIndexes),
     ('/debugdump', han_DebugDump),
     ('/debugdump/(?P<arg>.+)', han_DebugDump),
 ]

@@ -1,8 +1,6 @@
 
 {% if user %}
 
-{% set isadmin = ('admin' in user.roles) %}
-
 <div id="navbar">
 
   <a {% if navtab=='top' %} class="Selected" {% endif %} href="{{ approot }}">Home</a>
@@ -27,7 +25,7 @@
   <a {% if navtab=='trash' %} class="Selected" {% endif %} href="{{ approot }}/trash">Trash</a>
   {% endif %}
 
-  {% if isadmin %}
+  {% if 'admin' in user.roles %}
   <a {% if navtab=='admin' %} class="Selected" {% endif %} href="{{ approot }}/admin">Admin&#xB2;</a>
   {% endif %}
 

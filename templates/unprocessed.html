@@ -1,5 +1,6 @@
 {% extends "directory_base.html" %}
 {% from 'macros.html' import dirchain %}
+{% from 'macros.html' import optlink %}
 
 {% block title %}Archive/unprocessed{% endblock %}
 
@@ -19,7 +20,7 @@
 {% if incomingcount %}
 <p>({% if files %}Also, {% else %}{% endif %}{{ incomingcount }}
   {{ incomingcount|plural('file is', 'files are') }} in
-  <code><a href="{{ approot }}/incoming">/incoming</a></code>.)</p>
+  <code>{{ optlink('/incoming', '/incoming', ('incoming' in user.roles)) }}</code>.)</p>
 {% endif %}
 
 {% endblock %}

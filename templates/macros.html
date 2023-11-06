@@ -13,3 +13,11 @@
     {{ slash() }}{{ ls[-1][0] }}
   {% endif %}
 {%- endmacro -%}
+
+{%- macro optlink(text, uri, flag) -%}
+  {%- if flag -%}
+    <a href="{{ approot }}{{ uri|urlencode }}">{{ text }}</a>
+  {%- else -%}
+    {{ text }}
+  {%- endif -%}
+{%- endmacro -%}

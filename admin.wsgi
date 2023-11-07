@@ -1160,8 +1160,8 @@ handlers = [
     ('/editindex', han_EditIndexFile),
     ('/uploadlog', han_UploadLog),
     ('/rebuild', han_RebuildIndexes),
-    ('/debugdump', han_DebugDump),
-    ('/debugdump/(?P<arg>.+)', han_DebugDump),
+    #('/debugdump', han_DebugDump),
+    #('/debugdump/(?P<arg>.+)', han_DebugDump),
 ]
 
 # Create the application instance itself.

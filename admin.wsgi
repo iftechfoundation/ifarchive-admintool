@@ -102,8 +102,6 @@ class han_Home(AdminHandler):
             return self.render('login.html', req,
                                    formerror='The name and password do not match.')
 
-        ### set name cookie for future logins? (filled into login.html form)
-
         sessionid = random_bytes(20)
         req.set_cookie('sessionid', sessionid, maxage=self.app.max_session_age, httponly=True, secure=self.app.secure_site)
         now = time_now()

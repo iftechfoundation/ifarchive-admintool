@@ -703,6 +703,14 @@ class han_Unprocessed(base_DirectoryPage):
         return count
 
 def check_archive_dir(req, han):
+    """Request filter which checks the "dir" element of a URI match.
+    (This is the (?P<dir>.+) part of the handler spec.) We make sure it's
+    a valid archive directory and set req._dirname for future reference.
+    
+    While we're checking, we also redirect ".../games/" to ".../games"
+    (removing the trailing directory slash). This avoids some canonical-dir
+    questions.
+    """
     dirname = req.match.groupdict()['dir']
     if dirname.endswith('/'):
         dirname = dirname[ : -1 ]

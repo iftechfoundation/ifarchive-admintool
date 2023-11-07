@@ -888,6 +888,11 @@ class han_EditIndexFile(AdminHandler):
                                formerror='Invalid operation')
 
     def do_post_bare(self, req):
+        """Handle the case where someone pressed the "Edit Index"
+        or "Edit Index File" button and we arrived here ready to edit.
+        Display either the editindexall or editindexone form,
+        depending on whether a filename was supplied.
+        """
         dirname = req.get_input_field('filedir', '')
         filename = req.get_input_field('filename')
         
@@ -924,6 +929,8 @@ class han_EditIndexFile(AdminHandler):
                                dirname=dirname)
 
     def do_post_editall(self, req):
+        """Handle editing an entire raw Index file.
+        """
         dirname = req.get_input_field('dirname')
         modtime = req.get_input_field('indextime', 0)
         
@@ -984,6 +991,8 @@ class han_EditIndexFile(AdminHandler):
         raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
 
     def do_post_editone(self, req):
+        """Handle editing one entry in an Index file.
+        """
         dirname = req.get_input_field('dirname')
         filename = req.get_input_field('filename')
         filetype = req.get_input_field('filetype')

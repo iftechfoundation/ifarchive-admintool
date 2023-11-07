@@ -201,6 +201,9 @@ class IndexDir:
 
     def gettext(self):
         """Return the original Index file as raw text.
+        (This ignores any modifications you might have made to the contents.
+        We use it to fetch the original of a Index before writing out a
+        modified version.)
         """
         infl = open(self.indexpath, encoding='utf-8')
         dat = infl.read()

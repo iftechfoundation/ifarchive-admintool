@@ -468,7 +468,7 @@ class base_DirectoryPage(AdminHandler):
         op = 'move'
         destopt = req.get_input_field('destopt')
         destdir = req.get_input_field('destination')
-        if not destopt and not destdir:
+        if (not destopt or destopt == 'other') and not destdir:
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='You must select a destination.')

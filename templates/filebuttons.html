@@ -83,7 +83,7 @@
   {% endif %}
   {% if dirname != 'unprocessed' %}
   <div>
-    <input id="destopt_unp" type="radio" name="destopt" value="unp">
+    <input id="destopt_unp" type="radio" name="destopt" value="unp" {% if dirname == 'incoming' %} checked {% endif %}>
     <label for="destopt_unp">if-archive/unprocessed</label>
   </div>
   {% endif %}

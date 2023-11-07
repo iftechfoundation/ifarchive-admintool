@@ -484,6 +484,8 @@ class base_DirectoryPage(AdminHandler):
 
         if destopt == 'inc':
             # This isn't in the Archive tree, so handle it as a special case.
+            # Note that we auto-rename if necessary. (The user might not
+            # know what's in /incoming.)
             newname = find_unused_filename(filename, self.app.incoming_dir)
             origpath = os.path.join(dirpath, filename)
             newpath = os.path.join(self.app.incoming_dir, newname)
@@ -522,6 +524,11 @@ class base_DirectoryPage(AdminHandler):
 
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(self.app.archive_dir, newdir, filename)
+
+        if os.path.exists(newpath):
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='A file named %s already exists in %s.' % (filename, newdir,))
             
         return self.render(self.template, req,
                            op=op, opfile=filename,

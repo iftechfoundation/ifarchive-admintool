@@ -498,21 +498,21 @@ class base_DirectoryPage(AdminHandler):
         if not newname:
             return self.render(self.template, req,
                                op=op, opfile=filename,
-                               formerror='You must supply a filename.')
+                               selecterror='You must supply a filename.')
         if bad_filename(newname):
             return self.render(self.template, req,
                                op=op, opfile=filename,
-                               formerror='Invalid filename: "%s"' % (newname,))
+                               selecterror='Invalid filename: "%s"' % (newname,))
         if newname in FileEntry.specialnames:
             return self.render(self.template, req,
                                op=op, opfile=filename,
-                               formerror='Cannot use reserved filename: "%s"' % (newname,))
+                               selecterror='Cannot use reserved filename: "%s"' % (newname,))
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(dirpath, newname)
         if os.path.exists(newpath):
             return self.render(self.template, req,
                                op=op, opfile=filename,
-                               formerror='Filename already in use: "%s"' % (newname,))
+                               selecterror='Filename already in use: "%s"' % (newname,))
         os.rename(origpath, newpath)
         req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,
@@ -526,7 +526,7 @@ class base_DirectoryPage(AdminHandler):
         if os.path.exists(newpath):
             return self.render(self.template, req,
                                op=op, opfile=filename,
-                               formerror='File already exists: "%s"' % (newname,))
+                               selecterror='File already exists: "%s"' % (newname,))
         origmd5 = read_md5(origpath)
         zip_compress(origpath, newpath)
 

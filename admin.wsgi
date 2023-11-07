@@ -534,30 +534,6 @@ class base_DirectoryPage(AdminHandler):
         return self.render(self.template, req,
                                didmove=filename, didnewdir=newdir)
         
-    def do_post_moveu(self, req, dirpath, filename):
-        op = 'moveu'
-        if dirpath == self.app.unprocessed_dir:
-            raise Exception('moveu op cannot be used in the unprocessed dir')
-        newname = find_unused_filename(filename, self.app.unprocessed_dir)
-        origpath = os.path.join(dirpath, filename)
-        newpath = os.path.join(self.app.unprocessed_dir, newname)
-        os.rename(origpath, newpath)
-        req.loginfo('Moved "%s" from /%s to /unprocessed', filename, self.get_dirname(req))
-        return self.render(self.template, req,
-                           didmoveu=filename, didnewname=newname)
-
-    def do_post_movei(self, req, dirpath, filename):
-        op = 'movei'
-        if dirpath == self.app.incoming_dir:
-            raise Exception('movei op cannot be used in the incoming dir')
-        newname = find_unused_filename(filename, self.app.incoming_dir)
-        origpath = os.path.join(dirpath, filename)
-        newpath = os.path.join(self.app.incoming_dir, newname)
-        os.rename(origpath, newpath)
-        req.loginfo('Moved "%s" from /%s to /incoming', filename, self.get_dirname(req))
-        return self.render(self.template, req,
-                           didmovei=filename, didnewname=newname)
-
     def do_post_rename(self, req, dirpath, filename):
         op = 'rename'
         newname = req.get_input_field('newname')

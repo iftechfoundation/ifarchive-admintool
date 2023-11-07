@@ -561,7 +561,7 @@ class han_Incoming(base_DirectoryPage):
 
     def get_fileops(self, req):
         if req._user.has_role('incoming'):
-            return ['moveu', 'rename', 'delete', 'zip']
+            return ['move', 'rename', 'delete', 'zip']
 
     def get_dirname(self, req):
         return 'incoming'
@@ -590,7 +590,7 @@ class han_Trash(base_DirectoryPage):
 
     def get_fileops(self, req):
         if req._user.has_role('incoming'):
-            return ['movei', 'moveu', 'rename']
+            return ['move', 'rename']
 
     def get_dirname(self, req):
         return 'trash'
@@ -616,7 +616,7 @@ class han_Unprocessed(base_DirectoryPage):
 
     def get_fileops(self, req):
         if req._user.has_role('incoming'):
-            return ['delete', 'movei', 'rename']
+            return ['delete', 'move', 'rename']
 
     def get_dirname(self, req):
         return 'unprocessed'
@@ -708,7 +708,7 @@ class han_ArchiveDir(base_DirectoryPage):
 
     def get_fileops(self, req):
         if req._user.has_role('filing'):
-            return ['rename', 'delete', 'moveu', 'eindex']
+            return ['rename', 'delete', 'move', 'eindex']
 
     def get_dirname(self, req):
         if not req._dirname:
@@ -744,7 +744,7 @@ class han_ArchiveRoot(base_DirectoryPage):
         return map
 
     def get_fileops(self, req):
-        return [] ###
+        return []
 
     def get_dirname(self, req):
         return ''

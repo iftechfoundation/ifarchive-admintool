@@ -26,11 +26,8 @@
     {% if 'zip' in fileops and ent.ishtml %}
       <input class="FormButton SmallButton" name="zip" type="submit" value="Zip">
     {% endif %}
-    {% if 'movei' in fileops %}
-      <input class="FormButton SmallButton" name="movei" type="submit" value="Move In">
-    {% endif %}
-    {% if 'moveu' in fileops %}
-      <input class="FormButton SmallButton" name="moveu" type="submit" value="Move Up">
+    {% if 'move' in fileops %}
+      <input class="FormButton SmallButton" name="move" type="submit" value="Move">
     {% endif %}
     {% if 'rename' in fileops %}
       <input class="FormButton SmallButton" name="rename" type="submit" value="Rename">
@@ -71,24 +68,27 @@
   </div>
   </form>
 
-  {% elif op == 'moveu' %}
+  {% elif op == 'move' %}
   
-  <div class="FormAction">Really move <code>{{ opfile }}</code> to <code>/unprocessed</code>?</div>
+  <div class="FormAction">Move <code>{{ opfile }}</code> to...</div>
   <form method="post" action="{{ requri }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ opfile }}"/>
   <input type="hidden" name="op" value="{{ op }}"/>
-  <input class="FormButton HotButton" name="confirm" type="submit" value="Move">
-  <input class="FormButton" name="cancel" type="submit" value="Cancel">
-  </form>
-  
-  {% elif op == 'movei' %}
-  
-  <div class="FormAction">Really move <code>{{ opfile }}</code> to <code>/incoming</code>?</div>
-  <form method="post" action="{{ requri }}">
-  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
-  <input type="hidden" name="filename" value="{{ opfile }}"/>
-  <input type="hidden" name="op" value="{{ op }}"/>
+  <div>
+    <input id="move_inc" type="radio" name="move" value="inc">
+    <label for="move_inc">/incoming</label>
+  </div>
+  <div>
+    <input id="move_unp" type="radio" name="move" value="unp">
+    <label for="move_unp">/unprocessed</label>
+  </div>
+  <div>
+    <input id="move_other" type="radio" name="move" value="other">
+    <label for="move_other">if-archive/</label>
+    <input class="FormInput" autocomplete="disabled"
+      id="dest_field" name="destination" type="input" placeholder="Directory">
+  </div>
   <input class="FormButton HotButton" name="confirm" type="submit" value="Move">
   <input class="FormButton" name="cancel" type="submit" value="Cancel">
   </form>

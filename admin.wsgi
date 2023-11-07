@@ -442,10 +442,8 @@ class base_DirectoryPage(AdminHandler):
         
         if op == 'delete':
             return self.do_post_delete(req, dirpath, filename)
-        elif op == 'moveu':
-            return self.do_post_moveu(req, dirpath, filename)
-        elif op == 'movei':
-            return self.do_post_movei(req, dirpath, filename)
+        elif op == 'move':
+            return self.do_post_move(req, dirpath, filename)
         elif op == 'rename':
             return self.do_post_rename(req, dirpath, filename)
         elif op == 'zip':
@@ -465,6 +463,28 @@ class base_DirectoryPage(AdminHandler):
         req.loginfo('Deleted "%s" from /%s', filename, self.get_dirname(req))
         return self.render(self.template, req,
                            diddelete=filename, didnewname=newname)
+        
+    def do_post_move(self, req, dirpath, filename):
+        op = 'move'
+        destopt = req.get_input_field('destopt')
+        destdir = req.get_input_field('destination')
+        if not destopt and not destdir:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You must select a destination.')
+
+        if destopt and destopt == 'inc' and destdir:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You selected both /incoming and %s; which is it?' % (destdir,))
+        if destopt and destopt == 'unp' and destdir:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You selected both /unprocessed and %s; which is it?' % (destdir,))
+            
+        return self.render(self.template, req,
+                           op=op, opfile=filename,
+                           selecterror='### working... "%s" "%s"' % (destopt, destdir,))
         
     def do_post_moveu(self, req, dirpath, filename):
         op = 'moveu'

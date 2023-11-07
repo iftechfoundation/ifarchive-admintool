@@ -560,12 +560,22 @@ class base_DirectoryPage(AdminHandler):
         
         os.rename(origpath, newpath)
 
-        # See if we need to rename an Index entry.
-        indexdir = IndexDir(self.get_dirname(req), rootdir=self.app.archive_dir, orblank=True)
+        dirname = self.get_dirname(req)
+        
+        # See if we need to rename an Index entry as well.
+        indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
         ient = indexdir.getmap().get(filename)
         if ient:
+            # Save a copy of the old text in the trash.
+            indextext = indexdir.gettext()
+            trashname = 'Index-%s' % (dirname.replace('/', '-'),)
+            trashname = find_unused_filename(trashname, dir=self.app.trash_dir)
+            trashpath = os.path.join(self.app.trash_dir, trashname)
+            outfl = open(trashpath, 'w', encoding='utf-8')
+            outfl.write(indextext)
+            outfl.close()
+            # Now write out the updated Index
             ient.filename = newname
-            ### save old Index
             indexdir.write()
         
         req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))

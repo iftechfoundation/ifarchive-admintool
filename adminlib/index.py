@@ -199,6 +199,14 @@ class IndexDir:
         self.files.append(file)
         return
 
+    def gettext(self):
+        """Return the original Index file as raw text.
+        """
+        infl = open(self.indexpath, encoding='utf-8')
+        dat = infl.read()
+        infl.close()
+        return dat
+
     def write(self):
         """Write the contents back out to the Index file.
         """

@@ -453,6 +453,8 @@ class base_DirectoryPage(AdminHandler):
                                formerror='Operation not implemented: %s' % (op,))
 
     def do_post_delete(self, req, dirpath, filename):
+        """Handle a delete operation (which is really "move to trash").
+        """
         op = 'delete'
         if dirpath == self.app.trash_dir:
             raise Exception('delete op cannot be used in the trash')
@@ -465,6 +467,9 @@ class base_DirectoryPage(AdminHandler):
                            diddelete=filename, didnewname=newname)
         
     def do_post_move(self, req, dirpath, filename):
+        """Handle a move operation. This checks the radio buttons and
+        input field to see where you want to move the file.
+        """
         op = 'move'
         destopt = req.get_input_field('destopt')
         destdir = req.get_input_field('destination')
@@ -535,6 +540,9 @@ class base_DirectoryPage(AdminHandler):
                                didmove=filename, didnewdir=newdir)
         
     def do_post_rename(self, req, dirpath, filename):
+        """Handle a rename operation. This checks the input field to see
+        what you want to rename the file to.
+        """
         op = 'rename'
         newname = req.get_input_field('newname')
         if newname is not None:
@@ -583,6 +591,8 @@ class base_DirectoryPage(AdminHandler):
                            didrename=filename, didnewname=newname, didindextoo=bool(ient))
         
     def do_post_zip(self, req, dirpath, filename):
+        """Handle a zip-up-file operation.
+        """
         op = 'zip'
         newname = filename+'.zip'
         origpath = os.path.join(dirpath, filename)

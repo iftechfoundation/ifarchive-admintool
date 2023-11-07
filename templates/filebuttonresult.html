@@ -8,6 +8,7 @@
 {% if didrename %}
 <p>
   Renamed <code>{{ didrename }}</code> to <code>{{ didnewname }}</code>.
+  {% if didindextoo %}(Also updated the Index file.){% endif %}
 </p>
 {% endif %}
 

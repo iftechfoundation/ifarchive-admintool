@@ -557,10 +557,20 @@ class base_DirectoryPage(AdminHandler):
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='Filename already in use: "%s"' % (newname,))
+        
         os.rename(origpath, newpath)
+
+        # See if we need to rename an Index entry.
+        indexdir = IndexDir(self.get_dirname(req), rootdir=self.app.archive_dir, orblank=True)
+        ient = indexdir.getmap().get(filename)
+        if ient:
+            ient.filename = newname
+            ### save old Index
+            indexdir.write()
+        
         req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,
-                           didrename=filename, didnewname=newname)
+                           didrename=filename, didnewname=newname, didindextoo=bool(ient))
         
     def do_post_zip(self, req, dirpath, filename):
         op = 'zip'

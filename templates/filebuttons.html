@@ -87,12 +87,14 @@
     <label for="destopt_unp">if-archive/unprocessed</label>
   </div>
   {% endif %}
+  {% if 'filing' in user.roles %}
   <div>
     <input id="destopt_other" type="radio" name="destopt" value="other">
     <label for="destopt_other">if-archive/</label>
     <input class="FormInput" autocomplete="disabled"
       id="dest_field" name="destination" type="input" placeholder="Directory">
   </div>
+  {% endif %}
   <input class="FormButton HotButton" name="confirm" type="submit" value="Move">
   <input class="FormButton" name="cancel" type="submit" value="Cancel">
   </form>

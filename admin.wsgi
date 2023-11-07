@@ -521,7 +521,6 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='You are already in %s!' % (newdir,))
 
-
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(self.app.archive_dir, newdir, filename)
 
@@ -530,9 +529,10 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='A file named %s already exists in %s.' % (filename, newdir,))
             
+        os.rename(origpath, newpath)
+        req.loginfo('Moved "%s" from /%s to /%s', filename, self.get_dirname(req), newdir)
         return self.render(self.template, req,
-                           op=op, opfile=filename,
-                           selecterror='### working... mv %s to %s' % (origpath, newpath,))
+                               didmove=filename, didnewdir=newdir)
         
     def do_post_moveu(self, req, dirpath, filename):
         op = 'moveu'

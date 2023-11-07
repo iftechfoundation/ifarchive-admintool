@@ -11,15 +11,9 @@
 </p>
 {% endif %}
 
-{% if didmoveu %}
+{% if didmove %}
 <p>
-  Moved <code>{{ didmoveu }}</code> to <code>/unprocessed</code>.
-</p>
-{% endif %}
-
-{% if didmovei %}
-<p>
-  Moved <code>{{ didmovei }}</code> to <code>/incoming</code>.
+  Moved <code>{{ didmove }}</code> to <code>{{ didnewdir }}</code>.
 </p>
 {% endif %}
 

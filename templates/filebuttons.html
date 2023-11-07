@@ -75,7 +75,7 @@
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ opfile }}"/>
   <input type="hidden" name="op" value="{{ op }}"/>
-  {% if dirname != 'incoming' %}
+  {% if dirname != 'incoming' and 'incoming' in user.roles %}
   <div>
     <input id="destopt_inc" type="radio" name="destopt" value="inc">
     <label for="destopt_inc">/incoming</label>

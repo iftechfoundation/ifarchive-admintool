@@ -33,8 +33,11 @@ class User:
             except:
                 pass
 
-    def has_role(self, val):
-        return val in self.roles
+    def has_role(self, *roles):
+        for role in roles:
+            if role in self.roles:
+                return True
+        return False
 
 class Session:
     """Represents one login session for the admintool.

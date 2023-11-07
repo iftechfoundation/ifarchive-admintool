@@ -615,7 +615,7 @@ class han_Unprocessed(base_DirectoryPage):
         return map
 
     def get_fileops(self, req):
-        if req._user.has_role('incoming'):
+        if req._user.has_role('incoming', 'filing'):
             return ['delete', 'move', 'rename']
 
     def get_dirname(self, req):

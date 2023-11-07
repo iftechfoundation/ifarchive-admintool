@@ -482,10 +482,18 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='You selected both /unprocessed and %s; which is it?' % (destdir,))
 
+        if destopt == 'inc':
+            # This isn't in the Archive tree, so handle it as a special case.
+            newname = find_unused_filename(filename, self.app.incoming_dir)
+            origpath = os.path.join(dirpath, filename)
+            newpath = os.path.join(self.app.incoming_dir, newname)
+            os.rename(origpath, newpath)
+            req.loginfo('Moved "%s" from /%s to /incoming', filename, self.get_dirname(req))
+            return self.render(self.template, req,
+                               didmove=filename, didnewdir='incoming', didnewname=newname)
+        
         if destopt == 'unp':
             newdir = 'unprocessed'
-        elif destopt == 'inc':
-            newdir = 'incoming'
         else:
             newdir = destdir
             if newdir.startswith('/'):
@@ -510,11 +518,14 @@ class base_DirectoryPage(AdminHandler):
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='You are already in %s!' % (newdir,))
-            
+
+
+        origpath = os.path.join(dirpath, filename)
+        newpath = os.path.join(self.app.archive_dir, newdir, filename)
             
         return self.render(self.template, req,
                            op=op, opfile=filename,
-                           selecterror='### working... "%s"' % (newdir,))
+                           selecterror='### working... mv %s to %s' % (origpath, newpath,))
         
     def do_post_moveu(self, req, dirpath, filename):
         op = 'moveu'

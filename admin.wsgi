@@ -473,18 +473,48 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='You must select a destination.')
 
-        if destopt and destopt == 'inc' and destdir:
+        if destopt == 'inc' and destdir:
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='You selected both /incoming and %s; which is it?' % (destdir,))
-        if destopt and destopt == 'unp' and destdir:
+        if destopt == 'unp' and destdir:
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='You selected both /unprocessed and %s; which is it?' % (destdir,))
+
+        if destopt == 'unp':
+            realdir = 'unprocessed'
+        elif destopt == 'inc':
+            realdir = 'incoming'
+        else:
+            realdir = destdir
+            if realdir.startswith('/'):
+                realdir = realdir[ 1 : ]
+            if realdir.startswith('if-archive/'):
+                realdir = realdir[ 11 : ]
+            try:
+                realdir = canon_archivedir(realdir, archivedir=req.app.archive_dir)
+            except FileConsistency as ex:
+                return self.render(self.template, req,
+                                   op=op, opfile=filename,
+                                   selecterror='Not an Archive directory: %s' % (realdir,))
+            
+        if not realdir:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You cannot move files to the Archive root.')
+
+        dirname = self.get_dirname(req)
+        
+        if realdir == dirname:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You are already in %s!' % (realdir,))
+            
             
         return self.render(self.template, req,
                            op=op, opfile=filename,
-                           selecterror='### working... "%s" "%s"' % (destopt, destdir,))
+                           selecterror='### working... "%s"' % (realdir,))
         
     def do_post_moveu(self, req, dirpath, filename):
         op = 'moveu'

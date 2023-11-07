@@ -483,38 +483,38 @@ class base_DirectoryPage(AdminHandler):
                                selecterror='You selected both /unprocessed and %s; which is it?' % (destdir,))
 
         if destopt == 'unp':
-            realdir = 'unprocessed'
+            newdir = 'unprocessed'
         elif destopt == 'inc':
-            realdir = 'incoming'
+            newdir = 'incoming'
         else:
-            realdir = destdir
-            if realdir.startswith('/'):
-                realdir = realdir[ 1 : ]
-            if realdir.startswith('if-archive/'):
-                realdir = realdir[ 11 : ]
+            newdir = destdir
+            if newdir.startswith('/'):
+                newdir = newdir[ 1 : ]
+            if newdir.startswith('if-archive/'):
+                newdir = newdir[ 11 : ]
             try:
-                realdir = canon_archivedir(realdir, archivedir=req.app.archive_dir)
+                newdir = canon_archivedir(newdir, archivedir=req.app.archive_dir)
             except FileConsistency as ex:
                 return self.render(self.template, req,
                                    op=op, opfile=filename,
-                                   selecterror='Not an Archive directory: %s' % (realdir,))
+                                   selecterror='Not an Archive directory: %s' % (newdir,))
             
-        if not realdir:
+        if not newdir:
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='You cannot move files to the Archive root.')
 
         dirname = self.get_dirname(req)
         
-        if realdir == dirname:
+        if newdir == dirname:
             return self.render(self.template, req,
                                op=op, opfile=filename,
-                               selecterror='You are already in %s!' % (realdir,))
+                               selecterror='You are already in %s!' % (newdir,))
             
             
         return self.render(self.template, req,
                            op=op, opfile=filename,
-                           selecterror='### working... "%s"' % (realdir,))
+                           selecterror='### working... "%s"' % (newdir,))
         
     def do_post_moveu(self, req, dirpath, filename):
         op = 'moveu'

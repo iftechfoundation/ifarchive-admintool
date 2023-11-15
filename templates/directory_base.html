@@ -22,12 +22,13 @@
   <dl class="FileList">
     {% for dir in subdirs %}
     
-      <dt id="list_{{ dir.name |urlencode }}"><span class="Details">Subdir:</span>
+      <dt id="list_{{ dir.name |urlencode }}">
       {% if not dir.islink %}
         <code><a href="{{ approot }}/{{ uribase|urlencode }}/{{ dir.name|urlencode }}">{{ dir.name }}</a></code>
+        <span class="Details">&nbsp; (subdir)</span>
       {% else %}
         <code>{{ dir.name }}</code>
-        <span class="Details">(symlink
+        <span class="Details">&nbsp; (symlink
         {% if dir.broken %}<b>broken</b>{% endif %}
         &#x2192;
         {% if dir.broken %}
@@ -72,20 +73,40 @@
     {% set isselected = (op and opfile == file.name) %}
 
     <dt id="list_{{ file.name |urlencode }}">
+
     {% if not file.islink %}
-      <span class="Details"><span class="Tabular">{{ file.fdate }}</span>
-      {% if file.isspecial or file.isbroken %}
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      {% else %}
-        <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
-      {% endif %}
-      :</span>
       {% if file.isbroken %}
         <code>{{ file.name }}</code>
-        <span class="Details Emph">(file not in this directory)</span>
+        <span class="Details Emph">&nbsp; (file not in this directory)</span>
       {% else %}
         <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
-        <span class="Details">({{ file.size|delimnumber }} bytes)</span>
+        <span class="Details">&nbsp; ({{ file.size|delimnumber }} bytes)</span>
+      {% endif %}
+    {% else %}
+      <code>{{ file.name }}</code>
+      <span class="Details">(symlink
+      {% if file.broken %}<b>broken</b>{% endif %}
+      &#x2192;
+      {% if file.broken %}
+        <code>{{ file.target }}</code>
+      {%- else -%}
+        <code><a href="{{ approot }}/{{ file.realuri|urlencode }}">{{ file.target }}</a></code>
+      {%- endif -%}
+      )</span>
+    {% endif %}
+    <br>
+
+    {% if not file.islink %}
+      <dd class="FileInfoLine">
+      <span class="Tabular">{{ file.fdate }}</span>
+      {% if file.isspecial or file.isbroken %}
+      {% else %}
+        &nbsp;
+	<a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
+      {% endif %}
+      {% if dirname != 'incoming' %}
+        &nbsp;
+	<a href="###">(play)</a>
       {% endif %}
 
       {% if file.indexdesc or file.indexmeta %}
@@ -103,19 +124,8 @@
       {% endif %}
 
     {% else %}
-      <span class="Details"><span class="Tabular">{{ file.fdate }}</span>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      :</span>
-      <code>{{ file.name }}</code>
-      <span class="Details">(symlink
-      {% if file.broken %}<b>broken</b>{% endif %}
-      &#x2192;
-      {% if file.broken %}
-        <code>{{ file.target }}</code>
-      {%- else -%}
-        <code><a href="{{ approot }}/{{ file.realuri|urlencode }}">{{ file.target }}</a></code>
-      {%- endif -%}
-      )</span>
+      <dd class="FileInfoLine">
+      <span class="Tabular">{{ file.fdate }}</span>
     {% endif %}
       
     {% if fileops and not file.isspecial %}

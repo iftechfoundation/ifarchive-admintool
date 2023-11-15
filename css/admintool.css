@@ -191,6 +191,12 @@ ul.UserInfoList li {
     padding-left: 0px;
 }
 
+.FileList dd.FileInfoLine {
+    font-size: 85%;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
 .FileList dd.FileButtons {
     margin-left: 0px;
     padding-left: 40px;

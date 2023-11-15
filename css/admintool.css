@@ -241,6 +241,11 @@ ul.UserInfoList li {
     font-family: "Menlo", "Consolas", monospace;
 }
 
+.ResultNote {
+    background: #FFA;
+    padding: 4px 8px;
+}
+
 @media screen and (max-width: 480px) {
     #header h1 {
         font-size: 120%;

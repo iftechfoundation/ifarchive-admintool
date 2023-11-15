@@ -1,25 +1,25 @@
 
 {% if diddelete %}
-<p>
+<p class="ResultNote">
   Deleted <code>{{ diddelete }}</code> from <code>/{{ dirname }}</code>.
 </p>
 {% endif %}
 
 {% if didrename %}
-<p>
+<p class="ResultNote">
   Renamed <code>{{ didrename }}</code> to <code>{{ didnewname }}</code>.
   {% if didindextoo %}(Also updated the Index file.){% endif %}
 </p>
 {% endif %}
 
 {% if didmove %}
-<p>
+<p class="ResultNote">
   Moved <code>{{ didmove }}</code> to <code>{{ didnewdir }}</code>.
 </p>
 {% endif %}
 
 {% if didzip %}
-<p>
+<p class="ResultNote">
   Zipped <code>{{ didzip }}</code> to <code>{{ didnewname }}</code>.
 </p>
 {% endif %}

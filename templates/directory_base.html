@@ -104,7 +104,7 @@
         &nbsp;
 	<a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
       {% endif %}
-      {% if dirname != 'incoming' %}
+      {% if dirname != 'incoming' and file.isiplay and not file.isspecial %}
         &nbsp;
 	<a href="###">(play)</a>
       {% endif %}

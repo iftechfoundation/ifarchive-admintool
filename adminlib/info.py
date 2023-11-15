@@ -58,6 +58,10 @@ class FileEntry(ListEntry):
         '.listing',
     ])
 
+    # Some files can be sent to iplayif.com for web play.
+    # Most files, really; so many that this pattern is the converse.
+    pat_noiplay = re.compile('[.](zip|txt|text|jpg|jpeg|png|gif|pdf|htm|html|svg)$', re.IGNORECASE)
+
     # Some files should be zipped because they potentially contain
     # scripting. (HTML and also SVG.)
     pat_html = re.compile('[.](htm|html|svg)$', re.IGNORECASE)
@@ -71,6 +75,7 @@ class FileEntry(ListEntry):
         self.size = stat.st_size
         self.isspecial = (filename in self.specialnames)
         self.ishtml = bool(self.pat_html.search(filename))
+        self.isiplay = not bool(self.pat_noiplay.search(filename))
         self.isfile = True
         
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)

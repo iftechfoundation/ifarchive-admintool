@@ -5,6 +5,7 @@
 {% block postfilelist %}
 
 {% if trashcount %}
+<hr>
 <p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
   {{ trashcount|plural('file is', 'files are') }} in
   <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>

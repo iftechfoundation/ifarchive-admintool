@@ -106,7 +106,8 @@
       {% endif %}
       {% if dirname != 'incoming' and file.isiplay and not file.isspecial %}
         &nbsp;
-	<a href="###">(play)</a>
+	{% set archivepath = "https://ifarchive.org/if-archive/" ~ dirname ~ "/" ~ file.name %}
+	<a target="_blank" href="https://iplayif.com/?story={{ archivepath|urlencode }}">(play)</a>
       {% endif %}
 
       {% if file.indexdesc or file.indexmeta %}

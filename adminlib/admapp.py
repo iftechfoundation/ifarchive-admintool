@@ -17,11 +17,16 @@ class AdminApp(TinyApp):
     """
     
     def __init__(self, config, hanclasses):
+        # The SecureSite flag comes from the config file. We'll need this
+        # for the TinyApp constructor step.
+        secureflag = config['DEFAULT'].getboolean('SecureSite')
+        cookieprefix = '__Host-' if secureflag else ''
+        
         TinyApp.__init__(self, hanclasses, wrapall=[
-            tinyapp.auth.xsrf_cookie('_xsrf'),
-            tinyapp.auth.xsrf_check_post,
+            tinyapp.auth.xsrf_cookie(cookieprefix+'_xsrf'),
+            tinyapp.auth.xsrf_check_post(cookieprefix+'_xsrf'),
             find_user,
-        ], secure_site=config['DEFAULT'].getboolean('SecureSite'))
+        ], secure_site=secureflag)
         
         # We apply three request filters to every incoming request:
         # - create an XSRF cookie;
@@ -29,6 +34,8 @@ class AdminApp(TinyApp):
         # - see what user is authenticated based on the session cookie.
         # The secure_site flag gets us more secure cookies.
 
+        self.cookieprefix = cookieprefix
+        
         # Pull some (more) settings out of the config file.
         
         self.approot = config['AdminTool']['AppRoot']

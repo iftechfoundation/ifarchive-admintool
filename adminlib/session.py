@@ -76,8 +76,9 @@ def find_user(req, han):
     (Note that this doesn't complain about unauthenticated requests. Use
     require_user() for that.)
     """
-    if 'sessionid' in req.cookies:
-        sessionid = req.cookies['sessionid'].value
+    cookiename = req.app.cookieprefix+'sessionid'
+    if cookiename in req.cookies:
+        sessionid = req.cookies[cookiename].value
         curs = req.app.getdb().cursor()
         ### also restrict by refreshtime?
         res = curs.execute('SELECT name FROM sessions WHERE sessionid = ?', (sessionid,))

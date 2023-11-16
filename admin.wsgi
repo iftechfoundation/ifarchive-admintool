@@ -103,7 +103,7 @@ class han_Home(AdminHandler):
                                    formerror='The name and password do not match.')
 
         sessionid = random_bytes(20)
-        req.set_cookie('sessionid', sessionid, maxage=self.app.max_session_age, httponly=True)
+        req.set_cookie(self.app.cookieprefix+'sessionid', sessionid, maxage=self.app.max_session_age, httponly=True)
         now = time_now()
         ipaddr = req.env.get('REMOTE_ADDR', '?')
         

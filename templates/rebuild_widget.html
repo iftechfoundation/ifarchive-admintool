@@ -15,3 +15,8 @@
     <a href="{{ approot }}/rebuild">Reload page</a> to see if it's finished.
   </p>
 {% endif %}
+
+{% if buildtime %}
+  <p>Last build: {{ buildtime }}</p>
+  <div class="FileComments">{{ builddesc }}</div>
+{% endif %}

@@ -72,9 +72,12 @@ class han_Home(AdminHandler):
         unproccount = len([ ent for ent in os.scandir(self.app.unprocessed_dir) if ent.is_file() and ent.name != '.listing' ])
 
         locktime = self.app.get_locktime()
+        buildtime, builddesc = self.app.get_buildinfo()
 
         return self.render('front.html', req,
-                           incount=incount, unproccount=unproccount, locktime=locktime)
+                           incount=incount, unproccount=unproccount,
+                           locktime=locktime,
+                           buildtime=buildtime, builddesc=builddesc)
 
     def do_post(self, req):
         formname = req.get_input_field('name')
@@ -1087,15 +1090,19 @@ class han_RebuildIndexes(AdminHandler):
 
     def do_get(self, req):
         locktime = self.app.get_locktime()
+        buildtime, builddesc = self.app.get_buildinfo()
         return self.render('rebuild.html', req,
-                           locktime=locktime)
+                           locktime=locktime,
+                           buildtime=buildtime, builddesc=builddesc)
 
     def do_post(self, req):
         locktime = self.app.get_locktime()
+        buildtime, builddesc = self.app.get_buildinfo()
         val = req.get_input_field('commit')
         if not val:
             return self.render('rebuild.html', req,
                                locktime=locktime,
+                               buildtime=buildtime, builddesc=builddesc,
                                formerror='Button not pressed')
 
         try:

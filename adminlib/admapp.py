@@ -50,6 +50,7 @@ class AdminApp(TinyApp):
         self.db_path = config['DEFAULT']['DBFile']
         self.build_script_path = config['AdminTool']['BuildScriptFile']
         self.build_lock_path = config['AdminTool']['BuildLockFile']
+        self.build_output_path = config['AdminTool']['BuildOutputFile']
         self.template_path = config['AdminTool']['TemplateDir']
         self.app_css_uri = config['AdminTool']['AppCSSURI']
 
@@ -125,6 +126,16 @@ class AdminApp(TinyApp):
             return locktime
         except:
             return None
+        
+    def get_buildinfo(self):
+        """Check whether the rebuild-index output file exists.
+        If it does, return its timestamp and contents. If not,
+        return (None, None).
+        (Probably this should be combined with get_locktime(), since it's
+        used by exactly the same handlers.)
+        """
+        return (None, None)
+
 
 class AdminRequest(TinyRequest):
     """Our app-specific subclass of TinyRequest. This just has a spot

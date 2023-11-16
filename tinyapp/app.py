@@ -326,5 +326,6 @@ class TinyRequest:
             self.newcookies[key]['max-age'] = maxage
         # Set this flag on HTTPS-only sites.
         if self.app.secure_site:
+            self.newcookies[key]['samesite'] = 'Strict'
             self.newcookies[key]['secure'] = True
 

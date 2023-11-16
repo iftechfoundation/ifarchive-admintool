@@ -1,18 +1,20 @@
 from tinyapp.util import random_bytes
 from tinyapp.excepts import HTTPError
 
-def xsrf_cookie(req, han):
+def xsrf_cookie(cookiename='_xsrf'):
     """Request filter which sets an XSRF cookie on any request. This cookie
     can be used with web forms to prevent cross-site scripting attacks.
     Add a hidden form field with name '_xsrf' and then check it in
     the POST response using the filter below.
     """
-    if '_xsrf' in req.cookies:
-        req._xsrf = req.cookies['_xsrf'].value
-    else:
-        req._xsrf = random_bytes(16)
-        req.set_cookie('_xsrf', req._xsrf, httponly=True)
-    return han(req)
+    def func(req, han):
+        if cookiename in req.cookies:
+            req._xsrf = req.cookies[cookiename].value
+        else:
+            req._xsrf = random_bytes(16)
+            req.set_cookie(cookiename, req._xsrf, httponly=True)
+        return han(req)
+    return func
 
 
 def xsrf_check_post(req, han):

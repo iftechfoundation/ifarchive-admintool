@@ -18,7 +18,7 @@ class AdminApp(TinyApp):
     
     def __init__(self, config, hanclasses):
         TinyApp.__init__(self, hanclasses, wrapall=[
-            tinyapp.auth.xsrf_cookie,
+            tinyapp.auth.xsrf_cookie('_xsrf'),
             tinyapp.auth.xsrf_check_post,
             find_user,
         ], secure_site=config['DEFAULT'].getboolean('SecureSite'))

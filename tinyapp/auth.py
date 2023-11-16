@@ -17,15 +17,18 @@ def xsrf_cookie(cookiename='_xsrf'):
     return func
 
 
-def xsrf_check_post(cookiename='_xsrf'):
+def xsrf_check_post(fieldname='_xsrf'):
     """Request filter which checks the XSRF field of a POST response against
     the user's XSRF cookie. (Has no effect on GET.)
+    Note that the fieldname does not have to match the cookiename used
+    by xsrf_cookie(). That's a HTTP cookie name; this is an HTML form
+    field name.
     """
     def func(req, han):
         if req.request_method == 'POST':
-            if (cookiename not in req.input
-                or not req.input[cookiename]
-                or req.input[cookiename][0] != req._xsrf):
+            if (fieldname not in req.input
+                or not req.input[fieldname]
+                or req.input[fieldname][0] != req._xsrf):
                 raise HTTPError('400 Bad Request', 'XSRF mismatch')
         return han(req)
     return func

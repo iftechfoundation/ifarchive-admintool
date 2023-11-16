@@ -10,6 +10,7 @@ from tinyapp.handler import ReqHandler
 import tinyapp.auth
 
 from adminlib.session import find_user
+from adminlib.info import formatdate
 from adminlib.jenv import DelimNumber, Pluralize, SplitURI
 
 class AdminApp(TinyApp):
@@ -127,14 +128,23 @@ class AdminApp(TinyApp):
         except:
             return None
         
-    def get_buildinfo(self):
+    def get_buildinfo(self, user=None):
         """Check whether the rebuild-index output file exists.
         If it does, return its timestamp and contents. If not,
         return (None, None).
         (Probably this should be combined with get_locktime(), since it's
         used by exactly the same handlers.)
         """
-        return (None, None)
+        try:
+            stat = os.stat(self.build_output_path)
+            mtime = stat.st_mtime
+            time = formatdate(mtime, user=user, shortdate=True)
+            fl = open(self.build_output_path)
+            dat = fl.read()
+            fl.close()
+            return (time, dat)
+        except:
+            return (None, None)
 
 
 class AdminRequest(TinyRequest):

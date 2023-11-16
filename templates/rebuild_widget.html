@@ -12,7 +12,7 @@
 {% else %}
   <p>
     Index rebuild is currently running (for {{ locktime }} {{ locktime|plural('second', 'seconds') }}).
-    <a href="{{ approot }}/rebuild">Reload page</a> to see if it's finished.
+    <a href="{{ requri }}">Reload page</a> to see if it's finished.
   </p>
 {% endif %}
 

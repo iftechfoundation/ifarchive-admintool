@@ -11,8 +11,7 @@ def xsrf_cookie(req, han):
         req._xsrf = req.cookies['_xsrf'].value
     else:
         req._xsrf = random_bytes(16)
-        ### Peeking at app.secure_site is a layer violation. Would be better to have separate xsrf_cookie(), xsrf_cookie_secure() wrappers.
-        req.set_cookie('_xsrf', req._xsrf, httponly=True, secure=req.app.secure_site)
+        req.set_cookie('_xsrf', req._xsrf, httponly=True)
     return han(req)
 
 

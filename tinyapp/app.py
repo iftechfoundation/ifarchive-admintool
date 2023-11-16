@@ -45,8 +45,10 @@ class TinyApp:
     Initialize this with the list of URL handlers (RequestHandler classes).
     The wrapall argument, if supplied, should be a list of request filters
     to apply to every handler in the app.
+    Pass secure_site=True if you know the app will only be used on HTTPS.
+    This gets you more secure cookie settings.
     """
-    def __init__(self, hanclasses, wrapall=None):
+    def __init__(self, hanclasses, wrapall=None, secure_site=False):
         self.handlers = []
         for pat, cla in hanclasses:
             han = cla(self, pat)
@@ -54,6 +56,8 @@ class TinyApp:
                 for wrapper in reversed(wrapall):
                     han = WrappedHandler(han, wrapper)
             self.handlers.append(han)
+
+        self.secure_site = secure_site
 
     def application(self, environ, start_response):
         """The WSGI application handler. This conforms to the WSGI
@@ -312,14 +316,15 @@ class TinyRequest:
         """
         self.headers.append( (key, val) )
 
-    def set_cookie(self, key, val, httponly=False, secure=False, maxage=None):
+    def set_cookie(self, key, val, httponly=False, maxage=None):
         """Add a response HTTP cookie.
         """
         self.newcookies[key] = val
         if httponly:
             self.newcookies[key]['httponly'] = True
-        if secure:
-            self.newcookies[key]['secure'] = True
         if maxage is not None:
             self.newcookies[key]['max-age'] = maxage
+        # Set this flag on HTTPS-only sites.
+        if self.app.secure_site:
+            self.newcookies[key]['secure'] = True
 

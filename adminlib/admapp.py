@@ -21,13 +21,15 @@ class AdminApp(TinyApp):
             tinyapp.auth.xsrf_cookie,
             tinyapp.auth.xsrf_check_post,
             find_user,
-        ])
+        ], secure_site=config['DEFAULT'].getboolean('SecureSite'))
+        
         # We apply three request filters to every incoming request:
         # - create an XSRF cookie;
         # - check POST requests for the XSRF cookie;
         # - see what user is authenticated based on the session cookie.
+        # The secure_site flag gets us more secure cookies.
 
-        # Pull some settings out of the config file.
+        # Pull some (more) settings out of the config file.
         
         self.approot = config['AdminTool']['AppRoot']
         self.incoming_dir = config['DEFAULT']['IncomingDir']
@@ -35,7 +37,6 @@ class AdminApp(TinyApp):
         self.archive_dir = config['DEFAULT']['ArchiveDir']
         self.unprocessed_dir = os.path.join(self.archive_dir, 'unprocessed')
 
-        self.secure_site = config['DEFAULT'].getboolean('SecureSite')
         self.max_session_age = config['AdminTool'].getint('MaxSessionAge')
         self.max_trash_age = config['AdminTool'].getint('MaxTrashAge')
 

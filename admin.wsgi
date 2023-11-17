@@ -353,12 +353,21 @@ class base_DirectoryPage(AdminHandler):
         except Exception as ex:
             msg = 'Unable to read: %s %s' % (pathname, ex,)
             raise HTTPError('400 Not Readable', msg)
-        
+
         response_headers = [
             ('Content-Type', BINARY),
             ('Content-Length', str(filesize)),
-            ('Content-Disposition', 'attachment; filename="%s"' % (filename.replace('"', '_'),))
         ]
+        # The filename has to be encoded according to RFC 5987. But if
+        # that's no change, we use the plain version. (Note this takes care
+        # of quotes as well as Unicode.)
+        encname = urlencode(filename)
+        if encname == filename:
+            val = 'filename="%s"' % (encname,)
+        else:
+            val = 'filename*="UTF-8\'\'%s"' % (encname,)
+        response_headers.append( ('Content-Disposition', 'attachment; '+val) )
+        
         def resp():
             while True:
                 val = fl.read(8192)

@@ -365,7 +365,8 @@ class base_DirectoryPage(AdminHandler):
         if encname == filename:
             val = 'filename="%s"' % (encname,)
         else:
-            val = 'filename*="UTF-8\'\'%s"' % (encname,)
+            # Note no added quotes for this form.
+            val = 'filename*=UTF-8\'\'%s' % (encname,)
         response_headers.append( ('Content-Disposition', 'attachment; '+val) )
         
         def resp():

@@ -104,7 +104,7 @@
         &nbsp;
 	<a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
       {% endif %}
-      {% if dirname != 'incoming' and dirname != '' and file.isiplay and not file.isspecial %}
+      {% if dirname != 'incoming' and dirname != 'trash' and dirname != '' and file.isiplay and not file.isspecial %}
         &nbsp;
 	{% set archivepath = "https://ifarchive.org/if-archive/" ~ dirname ~ "/" ~ file.name %}
 	<a target="_blank" href="https://iplayif.com/?story={{ archivepath|urlencode }}">(play)</a>

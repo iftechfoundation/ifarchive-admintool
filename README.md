@@ -4,13 +4,29 @@
 - Distributed under the MIT license
 - Created by Andrew Plotkin <erkyrath@eblong.com>
 
-This is the web interface that allows administrators and volunteers to move files around the IF Archive and edit the Index files that describe them.
+This is the web interface that allows administrators and volunteers to move files around the IF Archive and edit the `Index` files that describe them.
 
 The web service maintains a list of users (including administrators). This uses a traditional web login process with authentication cookies. However, accounts are *not* self-service; each account must be created by an admin with command-line access.
 
 (We assume that admins have login accounts on the Archive server. Other volunteers do not; they can only log in through the web service.)
 
 The service is built on Python, server-side WSGI, and a whole lot of extremely Web-1.0 HTML forms. At present there is no Javascript at all.
+
+## Principles
+
+We separate the work into roles as much as possible. A user can have any number of roles. The current roles are:
+
+- "incoming": Move files from /incoming to /unprocessed.
+- "filing": Move files from /unprocessed to other archive directories.
+- "index": Edit `Index` files.
+- "rebuild": Run `build-indexes` to regenerate the Archive's public index pages.
+- "admin": Do everything.
+
+It should not be possible to destroy or overwrite files from the web service. Mistakes should always be recoverable, although it might take an admin to untangle serious problems.
+
+Thus, "deleting" a file moves it to the /trash directory, where it will live for at least 30 days. Similarly, whenever you edit an `Index` file, the previous version is copied to /trash.
+
+All activity is logged. (The log is not viewable from the web service; you need command-line access to see it.)
 
 ## Contents
 

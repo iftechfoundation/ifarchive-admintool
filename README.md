@@ -8,7 +8,7 @@ This is the web interface that allows administrators and volunteers to move file
 
 The web service maintains a list of users (including administrators). This uses a traditional web login process with authentication cookies. However, accounts are *not* self-service; each account must be created by an admin with command-line access.
 
-(We assume that admins have login accounts on the Archive server. Other volunteers do not; they can only log in through the web service.)
+(We assume that admins have login accounts on the Archive server. Other volunteers do not; their only access is through the web service.)
 
 The service is built on Python, server-side WSGI, and a whole lot of extremely Web-1.0 HTML forms. At present there is no Javascript at all.
 
@@ -37,13 +37,13 @@ All activity is logged. (The log is not viewable from the web service; you need 
 - `sample.config`: Config file. Lives in /var/ifarchive/lib/ifarch.config. Note that the version in this repository is an incomplete sample. The real ifarch.config has settings for other tools (upload, ifmap).
 - `css/admintool.css`: Stylesheet. Lives in /var/ifarchive/htdocs/misc.
 
-The tool also makes use of the SQLite database in /var/ifarchive/lib/sql. This 
+The tool also makes use of the SQLite database in /var/ifarchive/lib/sql. This must be writable by both Apache and the admins.
 
 ## Command-line use
 
     python3 /var/ifarchive/wsgi-bin/admin.wsgi
 
-This will show you a list of command-line commands.
+This will display a list of command-line commands.
 
 ## Testing
 

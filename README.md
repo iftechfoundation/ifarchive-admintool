@@ -4,11 +4,15 @@
 - Distributed under the MIT license
 - Created by Andrew Plotkin <erkyrath@eblong.com>
 
-This is the web interface that allows administrators and volunteers to move files around the IF Archive and edit the Index files that describe them. It is *not* meant for completely public access; volunteers must be given accounts. Certain admin tasks require command-line access on the Archive server.
+This is the web interface that allows administrators and volunteers to move files around the IF Archive and edit the Index files that describe them.
+
+The web service maintains a list of users (including administrators). This uses a traditional web login process with authentication cookies. However, accounts are *not* self-service; each account must be created by an admin with command-line access.
+
+(We assume that admins have login accounts on the Archive server. Other volunteers do not; they can only log in through the web service.)
 
 The service is built on Python, server-side WSGI, and a whole lot of extremely Web-1.0 HTML forms. At present there is no Javascript at all.
 
-An overview of the contents:
+## Contents
 
 - `admin.wsgi`: A Python script that handles the main web interface. This lives in /var/ifarchive/wsgi-bin.
 - `tinyapp`: A general web-app framework for WSGI apps. Used by `admin.wsgi`. Lives in /var/ifarchive/wsgi-bin/lib.
@@ -17,3 +21,14 @@ An overview of the contents:
 - `sample.config`: Config file. Lives in /var/ifarchive/lib/ifarch.config. Note that the version in this repository is an incomplete sample. The real ifarch.config has settings for other tools (upload, ifmap).
 - `css/admintool.css`: Stylesheet. Lives in /var/ifarchive/htdocs/misc.
 
+The tool also makes use of the SQLite database in /var/ifarchive/lib/sql. This 
+
+## Command-line use
+
+    python3 /var/ifarchive/wsgi-bin/admin.wsgi
+
+This will show you a list of command-line commands.
+
+## Testing
+
+It is possible to test the admin interface on a local Apache server. I have not yet written up the procedure; apologies.

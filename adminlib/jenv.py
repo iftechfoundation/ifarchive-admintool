@@ -2,13 +2,13 @@ import re
 
 import jinja2.ext
 
-# Jinja extensions. See:
-# https://jinja.palletsprojects.com/en/3.1.x/extensions/
+# Jinja extensions. These must be registered in the getjenv() method
+# of AdminApp.
+# See: https://jinja.palletsprojects.com/en/3.1.x/extensions/
     
 class DelimNumber(jinja2.ext.Extension):
-    """Jinja extension: Display a number with place separators.
-    E.g "12,345,678". If the value is not an integer or str(int),
-    return it unchanged.
+    """Display a number with place separators. E.g "12,345,678".
+    If the value is not an integer or str(int), return it unchanged.
     """
     pat_alldigits = re.compile('^[0-9]+$')
 
@@ -32,8 +32,7 @@ class DelimNumber(jinja2.ext.Extension):
         return ','.join(ls)
         
 class Pluralize(jinja2.ext.Extension):
-    """Jinja extension: Display "" or "s", depending on whether the
-    value is 1.
+    """Display "" or "s", depending on whether the value is 1.
     """
     def __init__(self, env):
         env.filters['plural'] = self.pluralize

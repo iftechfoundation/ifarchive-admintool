@@ -2,6 +2,8 @@ import re
 
 import jinja2.ext
 
+# Jinja extensions. See:
+# https://jinja.palletsprojects.com/en/3.1.x/extensions/
     
 class DelimNumber(jinja2.ext.Extension):
     """Jinja extension: Display a number with place separators.
@@ -45,6 +47,12 @@ class Pluralize(jinja2.ext.Extension):
             
         
 class SplitURI(jinja2.ext.Extension):
+    """Convert an admin tool URI ('arch/books/small') into a list of
+    (label, URI) pairs, one pair for each component:
+      [ ('Archive', 'arch'), ('books', 'arch/books'), ('small', 'arch/books/small')]
+    You can use this to create a slash-separated list of links to
+    admin directory pages.
+    """
     def __init__(self, env):
         env.filters['splituri'] = self.splituri
 

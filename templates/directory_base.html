@@ -99,6 +99,9 @@
     {% if not file.islink %}
       <dd class="FileInfoLine">
       <span class="Tabular">{{ file.fdate }}</span>
+      {% if not file.name|alllatin1 %}
+        <span class="Emph">&nbsp; (name has Unicode)</span>
+      {% endif %}
       {% if file.isspecial or file.isbroken %}
       {% else %}
         &nbsp;

@@ -2,6 +2,7 @@ import re
 import os, os.path
 
 from adminlib.util import in_user_time
+from adminlib.util import canon_archivedir, FileConsistency
 
 def formatdate(date, user=None, shortdate=False):
     """Format a timestamp into human-readable form. If user is provided,
@@ -158,4 +159,23 @@ class UploadEntry:
         self.about = about
 
         self.fdate = formatdate(uploadtime, user=user, shortdate=True)
-        
+        self.suggestdirchecked = False
+
+    def checksuggested(self, app):
+        """Check whether the suggested directory exists.
+        """
+        if self.suggestdir:
+            self.suggestdirchecked = True
+            val = self.suggestdir
+            if val.startswith('/'):
+                val = val[ 1 : ]
+            if val.startswith('if-archive/'):
+                val = val[ 11 : ]
+            try:
+                val = canon_archivedir(val, archivedir=app.archive_dir)
+                if not val:
+                    self.suggestdiruri = 'arch'
+                else:
+                    self.suggestdiruri = 'arch/'+val
+            except FileConsistency as ex:
+                self.suggestdiruri = None

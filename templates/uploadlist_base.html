@@ -27,6 +27,13 @@
   {% if ent.suggestdir %}
     <li><span class="ItemName">Suggested dir:</span>
       <code>if-archive/{{ ent.suggestdir }}</code>
+    {% if ent.suggestdirchecked %}
+      {% if ent.suggestdiruri %}
+        <a class="ItemGloss" href="{{ approot }}/{{ ent.suggestdiruri|urlencode }}">(link)</a>
+      {% else %}
+        <span class="ItemGloss">(not an Archive dir)</span>
+      {% endif %}
+    {% endif %}
   {% endif %}
   {% if ent.ifdbid %}
     <li><span class="ItemName">IFDB temp ID:</span>

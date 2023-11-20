@@ -405,6 +405,9 @@ class base_DirectoryPage(AdminHandler):
             curs = self.app.getdb().cursor()
             res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', (hashval,))
             uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
+
+        for obj in uploads:
+            obj.checksuggested(self.app)
             
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
 

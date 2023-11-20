@@ -43,7 +43,7 @@
   {% if op == 'delete' %}
   
   <div class="FormAction">Really delete <code>{{ opfile }}</code>?</div>
-  <form method="post" action="{{ requri }}">
+  <form method="post" action="{{ requri }}#list_{{ ent.name |urlencode }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ opfile }}"/>
   <input type="hidden" name="op" value="{{ op }}"/>
@@ -54,7 +54,7 @@
   {% elif op == 'rename' %}
 
   <div class="FormAction">Rename <code>{{ opfile }}</code> to...</div>
-  <form method="post" action="{{ requri }}">
+  <form method="post" action="{{ requri }}#list_{{ ent.name |urlencode }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ opfile }}"/>
   <input type="hidden" name="op" value="{{ op }}"/>
@@ -71,7 +71,7 @@
   {% elif op == 'move' %}
   
   <div class="FormAction">Move <code>{{ opfile }}</code> to...</div>
-  <form method="post" action="{{ requri }}">
+  <form method="post" action="{{ requri }}#list_{{ ent.name |urlencode }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ opfile }}"/>
   <input type="hidden" name="op" value="{{ op }}"/>
@@ -102,7 +102,7 @@
   {% elif op == 'zip' %}
   
   <div class="FormAction">Really zip up <code>{{ opfile }}</code>?</div>
-  <form method="post" action="{{ requri }}">
+  <form method="post" action="{{ requri }}#list_{{ ent.name |urlencode }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ opfile }}"/>
   <input type="hidden" name="op" value="{{ op }}"/>

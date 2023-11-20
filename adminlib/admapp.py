@@ -11,7 +11,7 @@ import tinyapp.auth
 
 from adminlib.session import find_user
 from adminlib.info import formatdate
-from adminlib.jenv import DelimNumber, Pluralize, SplitURI
+from adminlib.jenv import DelimNumber, Pluralize, SplitURI, AllLatin1
 
 class AdminApp(TinyApp):
     """AdminApp: The TinyApp class.
@@ -84,6 +84,7 @@ class AdminApp(TinyApp):
                     DelimNumber,
                     Pluralize,
                     SplitURI,
+                    AllLatin1,
                 ],
                 autoescape = select_autoescape(),
                 keep_trailing_newline = True,

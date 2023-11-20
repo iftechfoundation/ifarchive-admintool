@@ -68,3 +68,19 @@ class SplitURI(jinja2.ext.Extension):
         return [ (val, val) ]
     
             
+class AllLatin1(jinja2.ext.Extension):
+    """Return True if the input string is all Latin-1 characters. If there's
+    higher Unicode, or control characters, return False.
+    (Control characters are Latin-1 but they count as "funny-looking",
+    which is the real question.)
+    """
+    pat_alllatin1 = re.compile('^[ -~\xA0-\xFF]*$')
+        
+    def __init__(self, env):
+        env.filters['alllatin1'] = self.alllatin1
+
+    @staticmethod
+    def alllatin1(val):
+        match = AllLatin1.pat_alllatin1.match(val)
+        return bool(match)
+    

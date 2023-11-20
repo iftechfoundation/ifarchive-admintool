@@ -1095,6 +1095,8 @@ class han_UploadLog(AdminHandler):
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT * FROM uploads ORDER BY uploadtime DESC LIMIT ? OFFSET ?', (self.PAGE_LIMIT, start,))
         uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
+        for obj in uploads:
+            obj.checksuggested(self.app)
         return self.render('uploadlog.html', req, uploads=uploads, start=start, limit=self.PAGE_LIMIT, prevstart=max(0, start-self.PAGE_LIMIT), nextstart=start+self.PAGE_LIMIT)
     
         

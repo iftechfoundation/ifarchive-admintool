@@ -14,7 +14,12 @@
 
 {% if didmove %}
 <p class="ResultNote">
-  Moved <code>{{ didmove }}</code> to <code>{{ didnewdir }}</code>.
+  Moved <code>{{ didmove }}</code> to
+  {% if didnewuri %}
+    <a href="{{ approot }}/{{ didnewuri|urlencode }}"><code>{{ didnewdir }}</code></a>.
+  {% else %}
+    <code>{{ didnewdir }}</code>.
+  {% endif %}
 </p>
 {% endif %}
 

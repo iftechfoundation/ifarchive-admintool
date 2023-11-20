@@ -511,7 +511,7 @@ class base_DirectoryPage(AdminHandler):
             os.rename(origpath, newpath)
             req.loginfo('Moved "%s" from /%s to /incoming', filename, self.get_dirname(req))
             return self.render(self.template, req,
-                               didmove=filename, didnewdir='incoming', didnewname=newname)
+                               didmove=filename, didnewdir='incoming', didnewuri='incoming', didnewname=newname)
         
         if destopt == 'unp':
             newdir = 'unprocessed'
@@ -551,7 +551,7 @@ class base_DirectoryPage(AdminHandler):
         os.rename(origpath, newpath)
         req.loginfo('Moved "%s" from /%s to /%s', filename, self.get_dirname(req), newdir)
         return self.render(self.template, req,
-                               didmove=filename, didnewdir=newdir)
+                               didmove=filename, didnewdir=newdir, didnewuri='arch/'+newdir)
         
     def do_post_rename(self, req, dirpath, filename):
         """Handle a rename operation. This checks the input field to see

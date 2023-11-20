@@ -105,6 +105,7 @@ class AdminApp(TinyApp):
         per-request template parameters.
         """
         tem = self.getjenv().get_template(template)
+        # The requri is the absolute URI, excluding domain and #fragment.
         # The requri is de-escaped, which is what we want -- it will be
         # used for <form action="requri">.
         map = {

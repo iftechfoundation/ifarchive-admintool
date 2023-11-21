@@ -448,8 +448,33 @@ class base_DirectoryPage(AdminHandler):
         # field, etc.) Render the template with those controls showing.
         # "opfile" will be the highlighted file.
         if not req.get_input_field('confirm'):
+            # These args are only meaningful for the "move" op.
+            movedestgood = None
+            movedestbad = None
+            if op == 'move' and self.get_dirname(req) == 'unprocessed':
+                # This is messy, but the plan is to look up the
+                # "suggested" dir for this file and then check whether
+                # it's a valid Archive dir. Set movedestgood or movedestbad,
+                # as appropriate.
+                try:
+                    origpath = os.path.join(dirpath, filename)
+                    origmd5 = read_md5(origpath)
+                    curs = self.app.getdb().cursor()
+                    res = curs.execute('SELECT * FROM uploads where md5 = ?', (origmd5,))
+                    tup = res.fetchone()
+                    if tup:
+                        ent = UploadEntry(tup)
+                        ent.checksuggested(self.app)
+                        if ent.suggestdiruri:
+                            movedestgood = ent.suggestdiruri
+                        else:
+                            movedestbad = ent.suggestdir
+                except:
+                    pass
             return self.render(self.template, req,
-                               op=op, opfile=filename)
+                               op=op, opfile=filename,
+                               movedestgood=movedestgood,
+                               movedestbad=movedestbad)
 
         # The "confirm" button was pressed, so it's time to perform the
         # action.

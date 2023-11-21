@@ -88,12 +88,18 @@
   </div>
   {% endif %}
   {% if 'filing' in user.roles %}
-  <div>
-    <input id="destopt_other" type="radio" name="destopt" value="other">
-    <label for="destopt_other">if-archive/</label>
-    <input class="FormInput" autocomplete="disabled"
-      id="dest_field" name="destination" type="input" placeholder="Directory">
-  </div>
+    <div>
+      <input id="destopt_other" type="radio" name="destopt" value="other">
+      <label for="destopt_other">if-archive/</label>
+      <input class="FormInput" autocomplete="disabled"
+        id="dest_field" name="destination" type="input" {% if movedestgood %} value="{{ movedestgood }}" {% endif %} placeholder="Directory">
+    </div>
+    {% if movedestgood %}
+    <div class="FormBadLabel">Suggested: <code>{{ movedestgood }}</code></div>
+    {% endif %}
+    {% if movedestbad %}
+    <div class="FormBadLabel">Suggested: <code>{{ movedestbad }}</code> <span class="Emph">(invalid dir)</span></div>
+    {% endif %}
   {% endif %}
   <input class="FormButton HotButton" name="confirm" type="submit" value="Move">
   <input class="FormButton" name="cancel" type="submit" value="Cancel">

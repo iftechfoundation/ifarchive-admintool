@@ -122,6 +122,11 @@ body {
     font-style: italic;
 }
 
+.FormBadLabel {
+    font-size: 85%;
+    margin-left: 20px;
+}
+
 a {
     color: #B50000;
 }

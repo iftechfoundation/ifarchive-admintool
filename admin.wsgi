@@ -644,6 +644,12 @@ class base_DirectoryPage(AdminHandler):
         origmd5 = read_md5(origpath)
         zip_compress(origpath, newpath)
 
+        # Now move the original to the trash.
+        if dirpath != 'trash':
+            trashname = find_unused_filename(filename, self.app.trash_dir)
+            trashpath = os.path.join(self.app.trash_dir, trashname)
+            os.rename(origpath, trashpath)
+
         # Now create a new upload entry with the new md5.
         newsize = read_size(newpath)
         newmd5 = read_md5(newpath)

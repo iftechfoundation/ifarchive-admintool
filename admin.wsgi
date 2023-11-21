@@ -633,7 +633,8 @@ class base_DirectoryPage(AdminHandler):
         """Handle a zip-up-file operation.
         """
         op = 'zip'
-        newname = filename+'.zip'
+        newname, newsuffix = os.path.splitext(filename)
+        newname += '.zip'
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(dirpath, newname)
         if os.path.exists(newpath):

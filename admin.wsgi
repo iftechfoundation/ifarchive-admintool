@@ -454,8 +454,9 @@ class base_DirectoryPage(AdminHandler):
             if op == 'move' and self.get_dirname(req) == 'unprocessed':
                 # This is messy, but the plan is to look up the
                 # "suggested" dir for this file and then check whether
-                # it's a valid Archive dir. Set movedestgood or movedestbad,
-                # as appropriate.
+                # it's a valid Archive dir. Set movedestorig to the suggested
+                # value; set movedestgood to the fill value (minus "arch")
+                # if it's valid.
                 try:
                     origpath = os.path.join(dirpath, filename)
                     origmd5 = read_md5(origpath)

@@ -97,9 +97,9 @@
     {% if movedestorig %}
     <div class="FormButtonLabel">Suggested: <code>{{ movedestorig }}</code>
       {% if movedestgood %}
-        <a href="{{ approot }}/arch/{{ movedestgood|urlencode }}">(link)</a>
+        &nbsp; <a href="{{ approot }}/arch/{{ movedestgood|urlencode }}">(link)</a>
       {% else %}
-        <span class="Emph">(invalid dir)</span>
+        &nbsp; <span class="Emph">(invalid dir)</span>
       {% endif %}
       </div>
     {% endif %}

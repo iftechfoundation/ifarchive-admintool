@@ -449,8 +449,8 @@ class base_DirectoryPage(AdminHandler):
         # "opfile" will be the highlighted file.
         if not req.get_input_field('confirm'):
             # These args are only meaningful for the "move" op.
+            movedestorig = None
             movedestgood = None
-            movedestbad = None
             if op == 'move' and self.get_dirname(req) == 'unprocessed':
                 # This is messy, but the plan is to look up the
                 # "suggested" dir for this file and then check whether
@@ -464,17 +464,16 @@ class base_DirectoryPage(AdminHandler):
                     tup = res.fetchone()
                     if tup:
                         ent = UploadEntry(tup)
+                        movedestorig = ent.suggestdir
                         ent.checksuggested(self.app)
-                        if ent.suggestdiruri:
-                            movedestgood = ent.suggestdiruri
-                        else:
-                            movedestbad = ent.suggestdir
+                        if ent.suggestdiruri and ent.suggestdiruri.startswith('arch/'):
+                            movedestgood = ent.suggestdiruri[5:]
                 except:
                     pass
             return self.render(self.template, req,
                                op=op, opfile=filename,
-                               movedestgood=movedestgood,
-                               movedestbad=movedestbad)
+                               movedestorig=movedestorig,
+                               movedestgood=movedestgood)
 
         # The "confirm" button was pressed, so it's time to perform the
         # action.

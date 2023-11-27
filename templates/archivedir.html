@@ -18,7 +18,7 @@
   {% endif %}
 </p>
 
-{% if dirname %}
+{% if dirname and fileops and 'eindex' in fileops %}
 <div>
 <form method="post" action="{{ approot }}/editindex">
 <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>

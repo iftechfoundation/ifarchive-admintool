@@ -151,6 +151,11 @@ code {
     padding: 1px 2px;
 }
 
+pre {
+    background: #ECE0B0;
+    padding: 8px 16px;
+}
+
 .Tabular {
     font-family: "Menlo", "Consolas", monospace;
 }
@@ -178,6 +183,11 @@ ul.InfoList li {
 ul.UserInfoList li {
     margin-top: 4px;
     margin-bottom: 4px;
+}
+
+.StaticDocs ul li {
+    margin-left: 20px;
+    text-indent: -20px;
 }
 
 .DirButtons {

@@ -835,8 +835,12 @@ class han_ArchiveDir(base_DirectoryPage):
         return map
 
     def get_fileops(self, req):
+        ls = []
         if req._user.has_role('filing'):
-            return ['rename', 'delete', 'move', 'eindex']
+            ls = ['rename', 'delete', 'move']
+        if req._user.has_role('index'):
+            ls.append('eindex')
+        return ls
 
     def get_dirname(self, req):
         if not req._dirname:

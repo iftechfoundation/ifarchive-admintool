@@ -21,7 +21,9 @@ class AdminApp(TinyApp):
         # The SecureSite flag comes from the config file. We'll need this
         # for the TinyApp constructor step.
         secureflag = config['DEFAULT'].getboolean('SecureSite')
-        cookieprefix = '__Host-' if secureflag else ''
+        # The "__Host-" cookie prefix isn't working in Chrome. Not sure why.
+        cookieprefix = ''
+        #cookieprefix = '__Host-' if secureflag else ''
         
         TinyApp.__init__(self, hanclasses, wrapall=[
             tinyapp.auth.xsrf_cookie(cookieprefix+'_xsrf'),

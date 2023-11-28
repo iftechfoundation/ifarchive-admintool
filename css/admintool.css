@@ -75,6 +75,7 @@ body {
     font-size: 100%;
     margin: 4px;
     min-width: 50%;
+    padding: 2px 4px;
 }
 
 .FormTextArea {

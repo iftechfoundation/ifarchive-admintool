@@ -316,10 +316,12 @@ class TinyRequest:
         """
         self.headers.append( (key, val) )
 
-    def set_cookie(self, key, val, httponly=False, maxage=None):
+    def set_cookie(self, key, val, path='/', httponly=False, maxage=None):
         """Add a response HTTP cookie.
         """
         self.newcookies[key] = val
+        if path:
+            self.newcookies[key]['path'] = path
         if httponly:
             self.newcookies[key]['httponly'] = True
         if maxage is not None:

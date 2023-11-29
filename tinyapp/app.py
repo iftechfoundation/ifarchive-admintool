@@ -318,6 +318,10 @@ class TinyRequest:
 
     def set_cookie(self, key, val, path='/', httponly=False, maxage=None):
         """Add a response HTTP cookie.
+        Path defaults to "/"; you can set it to None if you really don't
+        want a path attribute. (Turns out the "__Host-" cookie prefix
+        requires an explicit path="/" -- you're not supposed to rely on
+        the default.)
         """
         self.newcookies[key] = val
         if path:

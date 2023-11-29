@@ -47,4 +47,4 @@ This will display a list of command-line commands.
 
 ## Testing
 
-It is possible to test the admin interface on a local Apache server. I have not yet written up the procedure; apologies.
+It is possible to test the admin interface on a local Apache server. See [TESTING.md](TESTING.md).

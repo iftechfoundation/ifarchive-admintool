@@ -1,6 +1,6 @@
 # Creating a test environment
 
-A note on Python versions: This software requires Python 3.7 or later. I have tested on 3.11.
+A note on Python versions: This software requires Python 3.7 or later. I have tested on 3.7 and 3.11.
 
 3.7 is rather archaic, but it's what the Archive server has available. Some of the code could be simplified a bit if I installed a later version, and I will do that someday, but right now everything needs to be compatible with 3.7.
 

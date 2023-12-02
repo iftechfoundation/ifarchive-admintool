@@ -818,7 +818,7 @@ class han_ArchiveDir(base_DirectoryPage):
 
             if ifnames:
                 ifnames = list(ifnames)
-                ifnames.sort()
+                ifnames.sort(key=lambda val:val.lower())
                 for name in ifnames:
                     ifile = ifmap[name]
                     ent = IndexOnlyEntry(ifile.filename, date=indexdir.date, user=req._user)

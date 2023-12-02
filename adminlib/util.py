@@ -142,3 +142,14 @@ def clean_newlines(val, prestrip=False):
         val += '\n'
     return val
 
+def sortcanon(val):
+    """Lowercase a string for sensible sorting. This is not true
+    case-insensitive Unicode sorting, but it covers the common cases.
+    We special-case "Index" and ".listing" -- those should always be
+    sorted at the top.
+    """
+    if val == 'Index':
+        return '..Index'
+    if val == '.listing':
+        return '..listing'
+    return val.lower()

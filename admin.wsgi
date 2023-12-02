@@ -54,6 +54,7 @@ from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
 from adminlib.util import urlencode
 from adminlib.util import canon_archivedir, FileConsistency
+from adminlib.util import sortcanon
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
 from adminlib.index import IndexDir
     
@@ -307,7 +308,7 @@ class base_DirectoryPage(AdminHandler):
         if sort == 'date':
             filelist.sort(key=lambda file:file.date)
         elif sort == 'name':
-            filelist.sort(key=lambda file:file.name.lower())
+            filelist.sort(key=lambda file:sortcanon(file.name))
         return filelist
 
     def do_get(self, req):
@@ -818,7 +819,7 @@ class han_ArchiveDir(base_DirectoryPage):
 
             if ifnames:
                 ifnames = list(ifnames)
-                ifnames.sort(key=lambda val:val.lower())
+                ifnames.sort(key=lambda val:sortcanon(val))
                 for name in ifnames:
                     ifile = ifmap[name]
                     ent = IndexOnlyEntry(ifile.filename, date=indexdir.date, user=req._user)
@@ -829,7 +830,7 @@ class han_ArchiveDir(base_DirectoryPage):
 
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
-        dirls.sort(key=lambda ent:ent.name.lower())
+        dirls.sort(key=lambda ent:sortcanon(ent.name))
         map['subdirs'] = dirls
             
         return map
@@ -871,7 +872,7 @@ class han_ArchiveRoot(base_DirectoryPage):
         ls = self.get_filelist(req, dirs=True, sort='name')
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
-        dirls.sort(key=lambda ent:ent.name.lower())
+        dirls.sort(key=lambda ent:sortcanon(ent.name))
         map['subdirs'] = dirls
         return map
 

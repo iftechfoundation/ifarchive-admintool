@@ -307,7 +307,7 @@ class base_DirectoryPage(AdminHandler):
         if sort == 'date':
             filelist.sort(key=lambda file:file.date)
         elif sort == 'name':
-            filelist.sort(key=lambda file:file.name)
+            filelist.sort(key=lambda file:file.name.lower())
         return filelist
 
     def do_get(self, req):
@@ -829,7 +829,7 @@ class han_ArchiveDir(base_DirectoryPage):
 
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
-        dirls.sort(key=lambda ent:ent.name)
+        dirls.sort(key=lambda ent:ent.name.lower())
         map['subdirs'] = dirls
             
         return map
@@ -871,7 +871,7 @@ class han_ArchiveRoot(base_DirectoryPage):
         ls = self.get_filelist(req, dirs=True, sort='name')
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
-        dirls.sort(key=lambda ent:ent.name)
+        dirls.sort(key=lambda ent:ent.name.lower())
         map['subdirs'] = dirls
         return map
 

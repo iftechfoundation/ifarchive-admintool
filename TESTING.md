@@ -159,6 +159,19 @@ Create a directory `/var/ifarchive` to store all Archive data. For testing purpo
 
 Clone the repo into `/var/ifarchive/ifarchive-admintool`.
 
+Copy the files into position:
+
+```
+% cp -r ifarchive-admintool/tinyapp wsgi-bin/lib
+% cp -r ifarchive-admintool/adminlib wsgi-bin/lib
+% cp -r ifarchive-admintool/templates lib/admintool
+% cp ifarchive-admintool/admin.wsgi wsgi-bin
+% cp ifarchive-admintool/css/admintool.css htdocs/misc
+% cp ifarchive-admintool/sample.config lib/ifarch.config
+```
+
+In `lib/ifarch.config`, change the `SecureSite` entry to `false`. (This must be false if your test server is on `http:`.)
+
 Install `apache2`, `python3`, and `libapache2-mod-wsgi-py3` via your package manager.
 
 Install the Python modules `mod-wsgi` and `Jinja2`.

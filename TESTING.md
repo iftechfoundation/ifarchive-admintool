@@ -16,9 +16,9 @@ Homebrew installs into `/usr/local/bin/` (Intel Macs) or `/opt/homebrew/bin` (AR
 
 This installation of `httpd` will be available at `http://localhost:8080/`. We will set up the admintool at `http://localhost:8080/admintest`.
 
-Install the Python modules `mod-wsgi`, `Markdown`, `Jinja2`.
+Install the Python modules `mod-wsgi` and `Jinja2`.
 
-    pip3 install mod-wsgi Markdown Jinja2
+    pip3 install mod-wsgi Jinja2
 
 Update `/usr/local/etc/httpd/httpd.conf` or `/opt/homebrew/etc/httpd/httpd.conf` to include WSGI support and the admintool script, as follows.
 
@@ -144,8 +144,50 @@ If the login page does not appear, or logging in fails, check both the Apache er
 
 ## On Linux
 
-(have not yet written this one yet)
+We will set up the environment as closely as possible to the real IF Archive.
 
+Create a directory `/var/ifarchive` to store all Archive data. For testing purposes, we will make it world-writable.
+
+```
+% sudo mkdir /var/ifarchive
+% sudo chmod 777 /var/ifarchive
+% cd /var/ifarchive
+% mkdir lib lib/sql lib/admintool
+% mkdir incoming trash wsgi-bin wsgi-bin/lib
+% mkdir htdocs htdocs/misc htdocs/if-archive htdocs/if-archive/unprocessed
+```
+
+Clone the repo into `/var/ifarchive/ifarchive-admintool`.
+
+Install `apache2`, `python3`, and `libapache2-mod-wsgi-py3` via your package manager.
+
+Install the Python modules `mod-wsgi` and `Jinja2`.
+
+    pip3 install mod-wsgi Jinja2
+
+Enable the Apache WSGI module:
+
+```
+sudo a2enmod wsgi
+```
+
+Update `/etc/apache2/sites-available/000-default.conf` to include WSGI support and the admintool script, as follows.
+
+Inside the `<VirtualHost>` section, add the lines:
+
+```
+WSGIScriptAlias /admin /var/ifarchive/wsgi-bin/admin.wsgi
+
+<Directory "/var/ifarchive/wsgi-bin/">
+	Require all granted
+	SetEnv LANG en_US.UTF-8
+</Directory>
+```
+*After* the `<VirtualHost>` section, add the line:
+
+```
+WSGIPythonPath /var/ifarchive/wsgi-bin/lib
+```
 
 ## Development notes
 

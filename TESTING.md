@@ -173,21 +173,43 @@ sudo a2enmod wsgi
 
 Update `/etc/apache2/sites-available/000-default.conf` to include WSGI support and the admintool script, as follows.
 
+Inside the `<VirtualHost>` section, change the `DocumentRoot` line to:
+
+```
+DocumentRoot /var/ifarchive/htdocs/
+```
+
 Inside the `<VirtualHost>` section, add the lines:
 
 ```
 WSGIScriptAlias /admin /var/ifarchive/wsgi-bin/admin.wsgi
+
+<Directory "/var/ifarchive/htdocs/">
+   Order allow,deny
+   Allow from all
+   Require all granted
+</Directory>
 
 <Directory "/var/ifarchive/wsgi-bin/">
 	Require all granted
 	SetEnv LANG en_US.UTF-8
 </Directory>
 ```
+
 *After* the `<VirtualHost>` section, add the line:
 
 ```
 WSGIPythonPath /var/ifarchive/wsgi-bin/lib
 ```
+
+At this point you need to restart httpd to pick up the config changes:
+
+```
+% sudo apachectl restart
+```
+
+
+!###...
 
 ## Development notes
 

@@ -144,7 +144,7 @@ If the login page does not appear, or logging in fails, check both the Apache er
 
 ## On Linux
 
-We will set up the environment as closely as possible to the real IF Archive.
+We will set up the environment as closely as possible to the real IF Archive. The admintool will be at `http://localhost/admin`.
 
 Create a directory `/var/ifarchive` to store all Archive data. For testing purposes, we will make it world-writable.
 
@@ -153,7 +153,7 @@ Create a directory `/var/ifarchive` to store all Archive data. For testing purpo
 % sudo chmod 777 /var/ifarchive
 % cd /var/ifarchive
 % mkdir lib lib/sql lib/admintool
-% mkdir incoming trash wsgi-bin wsgi-bin/lib
+% mkdir incoming trash logs wsgi-bin wsgi-bin/lib
 % mkdir htdocs htdocs/misc htdocs/if-archive htdocs/if-archive/unprocessed
 ```
 
@@ -171,6 +171,14 @@ Copy the files into position:
 ```
 
 In `lib/ifarch.config`, change the `SecureSite` entry to `false`. (This must be false if your test server is on `http:`.)
+
+You must also change the `configpath` line in `admin.wsgi` to refer to the `ifarch.config` file:
+
+```
+configpath = '/var/ifarchive/lib/ifarch.config'
+```
+
+(Yes, this is awfully awkward. I should be using an environment variable or something.)
 
 Install `apache2`, `python3`, and `libapache2-mod-wsgi-py3` via your package manager.
 
@@ -221,8 +229,17 @@ At this point you need to restart httpd to pick up the config changes:
 % sudo apachectl restart
 ```
 
+Create the SQLite database (which, as configured above, will be in `/var/ifarchive/lib/sql/admin.db`). Then create an admin user for yourself:
 
-!###...
+```
+% python3 wsgi-bin/admin.wsgi createdb
+% python3 wsgi-bin/admin.wsgi adduser zarf zarf@zarfhome.com password --roles admin
+```
+
+You should now be able to visit `http://localhost/admin` and log in (`zarf` / `password`, as set up above).
+
+If the login page does not appear, or logging in fails, check both the Apache error log (`/var/log/apache2/error_log`) and the admintool log (`/var/ifarchive/logs/admintool.log`).
+
 
 ## Development notes
 

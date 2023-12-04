@@ -422,10 +422,13 @@ class base_DirectoryPage(AdminHandler):
         dirpath = self.get_dirpath(req)
         
         filename = req.get_input_field('filename')
-        ent = self.get_file(filename, req)
-        if not ent:
-            return self.render(self.template, req,
-                               formerror='File not found: "%s"' % (filename,))
+        if filename == '.':
+            ent = None   # directory operation
+        else:
+            ent = self.get_file(filename, req)
+            if not ent:
+                return self.render(self.template, req,
+                                   formerror='File not found: "%s"' % (filename,))
 
         # On any Cancel button, we redirect back to the GET for this page.
         if req.get_input_field('cancel'):

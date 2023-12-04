@@ -191,6 +191,13 @@ ul.UserInfoList li {
     text-indent: -20px;
 }
 
+.StaticDocs ul.Bulleted li::before {
+    position: relative;
+    content: "\25A0";
+    left: -22px;
+    color: #E0C090;
+}
+
 .DirButtons {
     margin-left: 0px;
     padding-left: 40px;

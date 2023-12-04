@@ -690,10 +690,17 @@ class base_DirectoryPage(AdminHandler):
             return self.render(self.template, req,
                                op=op, opfile='.',
                                selecterror='Cannot use reserved filename: "%s"' % (newname,))
+        newpath = os.path.join(dirpath, newname)
+        if os.path.exists(newpath):
+            return self.render(self.template, req,
+                               op=op, opfile='.',
+                               selecterror='Filename already in use: "%s"' % (newname,))
+
+        os.mkdir(newpath)
         
+        req.loginfo('Created subdirectory "%s" in /%s', newname, self.get_dirname(req))
         return self.render(self.template, req,
-                           op=op, opfile='.',
-                           selecterror='### csubdir stage 2')
+                           didcsubdir='.', didnewname=newname)
         
 
 @beforeall(require_role('incoming'))

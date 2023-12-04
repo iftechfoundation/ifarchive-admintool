@@ -70,7 +70,7 @@
 
 <dl class="FileList">
   {% for file in files %}
-    {% set isselected = (op and opfile == file.name) %}
+    {% set isselected = (op and opfile != '.' and opfile == file.name) %}
 
     <dt id="list_{{ file.name |urlencode }}">
 

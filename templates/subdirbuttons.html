@@ -1,8 +1,39 @@
 <div id="list_." {% if isdirselected %}class="SubdirButtons Selected"{% else %}class="SubdirButtons"{% endif %}>
-<form method="post" action="{{ requri }}">
-<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
-<input type="hidden" name="filedir" value="{{ dirname }}"/>
-<input type="hidden" name="filename" value="."/>
-<input class="FormButton" name="csubdir" type="submit" value="Create Subdirectory">
-</form>
+
+{% if not isdirselected %}
+
+  <form method="post" action="{{ requri }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filedir" value="{{ dirname }}"/>
+  <input type="hidden" name="filename" value="."/>
+  <input class="FormButton" name="csubdir" type="submit" value="Create Subdirectory">
+  </form>
+
+{% else %}
+
+  {% if op == 'csubdir' %}
+
+  <div class="FormAction">Create subdir named...</div>
+  <form method="post" action="{{ requri }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="."/>
+  <input type="hidden" name="op" value="{{ op }}"/>
+  <div>
+    <input class="FormInput" autocomplete="disabled"
+      id="newname_field" name="newname" type="input" value="" placeholder="Directory name">
+  </div>
+  <div>
+    <input class="FormButton HotButton" name="confirm" type="submit" value="Create">
+    <input class="FormButton" name="cancel" type="submit" value="Cancel">
+  </div>
+  </form>
+
+  {% else %}
+  
+  <div class="FormAction">Action not implemented: {{ op }}</div>
+
+  {% endif %}
+
+{% endif %}
+
 </div>

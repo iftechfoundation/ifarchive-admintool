@@ -675,6 +675,22 @@ class base_DirectoryPage(AdminHandler):
         """
         op = 'csubdir'
 
+        newname = req.get_input_field('newname')
+        if newname is not None:
+            newname = newname.strip()
+        if not newname:
+            return self.render(self.template, req,
+                               op=op, opfile='.',
+                               selecterror='You must supply a directory name.')
+        if bad_filename(newname):
+            return self.render(self.template, req,
+                               op=op, opfile='.',
+                               selecterror='Invalid dirname: "%s"' % (newname,))
+        if newname in FileEntry.specialnames:
+            return self.render(self.template, req,
+                               op=op, opfile='.',
+                               selecterror='Cannot use reserved filename: "%s"' % (newname,))
+        
         return self.render(self.template, req,
                            op=op, opfile='.',
                            selecterror='### csubdir stage 2')

@@ -492,6 +492,8 @@ class base_DirectoryPage(AdminHandler):
             return self.do_post_rename(req, dirpath, filename)
         elif op == 'zip':
             return self.do_post_zip(req, dirpath, filename)
+        elif op == 'csubdir':
+            return self.do_post_csubdir(req, dirpath)
         else:
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))
@@ -668,6 +670,15 @@ class base_DirectoryPage(AdminHandler):
         return self.render(self.template, req,
                            didzip=filename, didnewname=newname)
 
+    def do_post_csubdir(self, req, dirpath):
+        """Handle a create-subdir operation.
+        """
+        op = 'csubdir'
+
+        return self.render(self.template, req,
+                           op=op, opfile='.',
+                           selecterror='### csubdir stage 2')
+        
 
 @beforeall(require_role('incoming'))
 class han_Incoming(base_DirectoryPage):

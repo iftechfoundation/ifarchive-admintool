@@ -243,6 +243,7 @@ class base_DirectoryPage(AdminHandler):
     def check_fileops(self, req):
         """Add a req._fileops field, containing file operations valid for
         the current user in this directory.
+        Subclasses should customize get_fileops(), not this method.
         """
         req._fileops = set()
         if req._user:
@@ -838,7 +839,7 @@ class han_ArchiveDir(base_DirectoryPage):
     def get_fileops(self, req):
         ls = []
         if req._user.has_role('filing'):
-            ls = ['rename', 'delete', 'move']
+            ls = ['rename', 'delete', 'move', 'csubdir']
         if req._user.has_role('index'):
             ls.append('eindex')
         return ls

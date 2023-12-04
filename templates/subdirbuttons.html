@@ -1,0 +1,8 @@
+<div id="list_." {% if isdirselected %}class="SubdirButtons Selected"{% else %}class="SubdirButtons"{% endif %}>
+<form method="post" action="{{ requri }}">
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+<input type="hidden" name="filedir" value="{{ dirname }}"/>
+<input type="hidden" name="filename" value="."/>
+<input class="FormButton" name="csubdir" type="submit" value="Create Subdirectory">
+</form>
+</div>

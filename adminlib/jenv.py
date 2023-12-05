@@ -33,6 +33,7 @@ class DelimNumber(jinja2.ext.Extension):
         
 class Pluralize(jinja2.ext.Extension):
     """Display "" or "s", depending on whether the value is 1.
+    Or you can pass any two strings to display one of.
     """
     def __init__(self, env):
         env.filters['plural'] = self.pluralize

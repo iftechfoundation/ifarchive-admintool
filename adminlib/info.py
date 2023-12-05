@@ -43,6 +43,8 @@ def get_dir_entries(dirpath, archivedir, dirs=False, user=None, shortdate=False)
                     dir = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=user, shortdate=shortdate)
                     filelist.append(dir)
             else:
+                # Gotta use the link's own stat
+                stat = os.lstat(ent.path)
                 file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=user, shortdate=shortdate)
                 filelist.append(file)
         elif ent.is_file():
@@ -146,6 +148,8 @@ class DirEntry(ListEntry):
 
 class SymlinkEntry(ListEntry):
     """Represents one symlink in a directory.
+    The stat argument is the target file, unless the link is broken,
+    in which case it's the link itself.
     """
     def __init__(self, filename, target, stat, broken=False, isdir=False, realpath=None, user=None, shortdate=False):
         ListEntry.__init__(self, filename)

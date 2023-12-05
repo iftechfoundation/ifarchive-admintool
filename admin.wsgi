@@ -458,6 +458,8 @@ class base_DirectoryPage(AdminHandler):
             # These args are only meaningful for the "move" op.
             movedestorig = None
             movedestgood = None
+            delparentdir = None
+            delchilddir = None
             if op == 'move' and self.get_dirname(req) == 'unprocessed':
                 # This is messy, but the plan is to look up the
                 # "suggested" dir for this file and then check whether
@@ -478,10 +480,19 @@ class base_DirectoryPage(AdminHandler):
                             movedestgood = ent.suggestdiruri[5:]
                 except:
                     pass
+            if op == 'deldir':
+                # More mess; we need to split the dirname into parent
+                # and child. This should always we possible, as we only
+                # permit deletion of dirs second-level and deeper.
+                val = self.get_dirname(req)
+                delparentdir, _, delchilddir = val.rpartition('/')
+                req.loginfo('### parent=%r, child=%r', delparentdir, delchilddir)
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                movedestorig=movedestorig,
-                               movedestgood=movedestgood)
+                               movedestgood=movedestgood,
+                               delparentdir=delparentdir,
+                               delchilddir=delchilddir)
 
         # The "confirm" button was pressed, so it's time to perform the
         # action.
@@ -711,6 +722,11 @@ class base_DirectoryPage(AdminHandler):
         """
         op = 'deldir'
 
+        ### bah, we need to do something clever
+        
+        req.loginfo('Deleted directory /%s', self.get_dirname(req))
+        return self.render(self.template, req,
+                           diddeldir='.', didnewname=self.get_dirname(req))
 
 @beforeall(require_role('incoming'))
 class han_Incoming(base_DirectoryPage):

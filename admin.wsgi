@@ -697,17 +697,28 @@ class base_DirectoryPage(AdminHandler):
 
         subdirname = self.get_dirname(req)+'/'+subdir
         subdirpath = os.path.join(self.get_dirpath(req), subdir)
-        req.loginfo('### subdirname=%s, subdirpath=%s', subdirname, subdirpath) ###
 
         # Errors from this point don't use selecterror, because we've jumped to the parent directory.
         if not os.path.isdir(subdirpath):
             return self.render(self.template, req,
                                formerror='Directory does not exist: "%s"' % (subdirname,))
 
-        ls = dir_nonempty_files(subdirpath)
-        if ls:
+        ls = get_dir_entries(subdirpath, self.app.archive_dir, dirs=True)
+        if not dir_is_empty(ls):
+            namels = [ ent.name for ent in ls ]
+            namestr = ', '.join(namels)
             return self.render(self.template, req,
-                               formerror='Directory "%s" is not empty: %s' % (subdirname, ', '.join(ls)))
+                               formerror='Directory "%s" is not empty, must first delete: %s' % (subdirname, namestr))
+
+        # There may be file entries, but they're all zero-length. Delete them.
+        for ent in ls:
+            if isinstance(ent, FileEntry) and ent.size == 0:
+                delpath = os.path.join(subdirpath, ent.name)
+                req.loginfo('Deleted empty file "%s" in /%s', ent.name, subdirname)
+                os.remove(delpath)
+
+        # And the directory itself.
+        os.rmdir(subdirpath)
             
         req.loginfo('Deleted directory /%s', self.get_dirname(req))
         return self.render(self.template, req,

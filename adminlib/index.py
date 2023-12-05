@@ -210,6 +210,21 @@ class IndexDir:
         infl.close()
         return dat
 
+    def hasdata(self):
+        """Check whether there's any data. If false, write() would create
+        an empty file.
+        """
+        if self.description and self.description.strip():
+            return True
+        if self.metadata:
+            return True
+        for file in self.files:
+            if file.description and file.description.strip():
+                return True
+            if file.metadata:
+                return True
+        return False
+
     def write(self):
         """Write the contents back out to the Index file.
         """

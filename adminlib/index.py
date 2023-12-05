@@ -219,9 +219,7 @@ class IndexDir:
         if self.metadata:
             return True
         for file in self.files:
-            if file.description and file.description.strip():
-                return True
-            if file.metadata:
+            if file.hasdata():
                 return True
         return False
 
@@ -244,6 +242,10 @@ class IndexDir:
             lastblank = True
 
         for file in self.files:
+            if not file.hasdata():
+                # Omit empty entries.
+                continue
+            
             if not lastblank:
                 outfl.write('\n')
             outfl.write('# %s\n' % (file.filename,))
@@ -276,3 +278,12 @@ class IndexFile:
     def __repr__(self):
         return '<IndexFile %s>' % (self.filename,)
 
+    def hasdata(self):
+        """Check whether there's any data.
+        """
+        if self.description and self.description.strip():
+            return True
+        if self.metadata:
+            return True
+        return False
+    

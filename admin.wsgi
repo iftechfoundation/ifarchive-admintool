@@ -496,6 +496,8 @@ class base_DirectoryPage(AdminHandler):
             return self.do_post_zip(req, dirpath, filename)
         elif op == 'csubdir':
             return self.do_post_csubdir(req, dirpath)
+        elif op == 'deldir':
+            return self.do_post_deldir(req, dirpath)
         else:
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))
@@ -704,6 +706,11 @@ class base_DirectoryPage(AdminHandler):
         return self.render(self.template, req,
                            didcsubdir='.', didnewname=newname)
         
+    def do_post_deldir(self, req, dirpath):
+        """Handle a delete-directory operation.
+        """
+        op = 'deldir'
+
 
 @beforeall(require_role('incoming'))
 class han_Incoming(base_DirectoryPage):
@@ -879,7 +886,7 @@ class han_ArchiveDir(base_DirectoryPage):
     def get_fileops(self, req):
         ls = []
         if req._user.has_role('filing'):
-            ls = ['rename', 'delete', 'move', 'csubdir', 'dsubdir']
+            ls = ['rename', 'delete', 'move', 'csubdir', 'deldir']
         if req._user.has_role('index'):
             ls.append('eindex')
         return ls

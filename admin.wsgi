@@ -1149,10 +1149,18 @@ class han_EditIndexFile(AdminHandler):
             outfl.write(oldtext)
             outfl.close()
 
-        # Write out the new Index file.
         indexdir.update(filename, newdesc, newmetalines)
-        indexdir.write()
-        req.loginfo('Updated Index entry for "%s" in /%s' % (filename, dirname,))
+
+        if not indexdir.hasdata():
+            # Delete the Index file entirely.
+            newpath = os.path.join(self.app.archive_dir, dirname, 'Index')
+            if os.path.exists(newpath):
+                os.remove(newpath)
+                req.loginfo('Deleted Index in /%s' % (dirname,))
+        else:
+            # Write out the new Index file.
+            indexdir.write()
+            req.loginfo('Updated Index entry for "%s" in /%s' % (filename, dirname,))
         
         raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
 

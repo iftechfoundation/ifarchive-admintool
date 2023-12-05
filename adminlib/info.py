@@ -61,7 +61,7 @@ class FileEntry(ListEntry):
 
     # Some files can be sent to iplayif.com for web play.
     # Most files, really; so many that this pattern is the converse.
-    pat_noiplay = re.compile('[.](zip|gz|txt|text|jpg|jpeg|png|gif|pdf|htm|html|svg)$', re.IGNORECASE)
+    pat_noiplay = re.compile('[.](zip|gz|tgz|txt|text|jpg|jpeg|png|gif|pdf|htm|html|svg)$', re.IGNORECASE)
 
     # Some files should be zipped because they potentially contain
     # scripting. (HTML and also SVG.)

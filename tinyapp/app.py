@@ -78,6 +78,8 @@ class TinyApp:
             req = self.create_request(environ)
             # Process it and call a handler...
             ls = self.process(req)
+            if ls is None:
+                raise Exception('handler returned None')
             # Run through the handler's output. Note that "ls" isn't
             # necessarily an array; it could be any iterator.
             output = ''.join(ls)  # Gotta do this before looking at req

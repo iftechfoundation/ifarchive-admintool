@@ -13,7 +13,8 @@
     </div>
   {% endif %}
 
-  {% if emptydir and 'deldir' in fileops %}
+  {% if emptydir and '/' in dirname and 'deldir' in fileops %}
+    {# Note that we can't delete root *or* direct children of root. #}
     <div>
     <form method="post" action="{{ requri }}">
     <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>

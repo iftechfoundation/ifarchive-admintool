@@ -292,7 +292,8 @@ class base_DirectoryPage(AdminHandler):
                         stat = os.stat(path)
                         file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=False, user=req._user, shortdate=shortdate)
                         filelist.append(file)
-                    elif dirs:
+                    elif dirs and os.path.isdir(path):
+                        stat = os.stat(path)
                         dir = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=req._user, shortdate=shortdate)
                         filelist.append(dir)
                 else:

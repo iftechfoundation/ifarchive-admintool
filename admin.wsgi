@@ -508,7 +508,8 @@ class base_DirectoryPage(AdminHandler):
         elif op == 'csubdir':
             return self.do_post_csubdir(req, dirpath)
         elif op == 'deldir':
-            return self.do_post_deldir(req, dirpath)
+            subdirname = req.get_input_field('subdirname')
+            return self.do_post_deldir(req, dirpath, subdirname)
         else:
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))
@@ -717,16 +718,18 @@ class base_DirectoryPage(AdminHandler):
         return self.render(self.template, req,
                            didcsubdir='.', didnewname=newname)
         
-    def do_post_deldir(self, req, dirpath):
+    def do_post_deldir(self, req, dirpath, subdir):
         """Handle a delete-directory operation.
         """
         op = 'deldir'
 
-        ### bah, we need to do something clever
+        subdirname = self.get_dirname(req)+'/'+subdir
+        subdirpath = os.path.join(self.get_dirpath(req), subdir)
+        req.loginfo('### subdirname=%s, subdirpath=%s', subdirname, subdirpath)
         
         req.loginfo('Deleted directory /%s', self.get_dirname(req))
         return self.render(self.template, req,
-                           diddeldir='.', didnewname=self.get_dirname(req))
+                           diddeldir='.', didnewname=subdirname)
 
 @beforeall(require_role('incoming'))
 class han_Incoming(base_DirectoryPage):

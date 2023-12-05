@@ -23,9 +23,6 @@ def dir_is_empty(ls):
     """Given a list of ListEntry objects, return True if there are no
     directories, symlinks, or nonempty files. (That is, if the directory
     is safe for deletion.)
-    Note that a ListEntry list conventionally omits Index, so this test
-    will ignore the possibility of data in an Index file. We'll double-
-    check later.
     """
     if not ls:
         return True

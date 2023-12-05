@@ -56,6 +56,7 @@ from adminlib.util import urlencode
 from adminlib.util import canon_archivedir, FileConsistency
 from adminlib.util import sortcanon
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
+from adminlib.info import dir_is_empty
 from adminlib.index import IndexDir
     
 # URL handlers...
@@ -833,6 +834,7 @@ class han_ArchiveDir(base_DirectoryPage):
         else:
             map['uribase'] = 'arch/' + req._dirname
         ls = self.get_filelist(req, dirs=True, sort='name')
+        map['emptydir'] = dir_is_empty(ls)
 
         indexdir = None
         indexpath = os.path.join(self.get_dirpath(req), 'Index')
@@ -877,7 +879,7 @@ class han_ArchiveDir(base_DirectoryPage):
     def get_fileops(self, req):
         ls = []
         if req._user.has_role('filing'):
-            ls = ['rename', 'delete', 'move', 'csubdir']
+            ls = ['rename', 'delete', 'move', 'csubdir', 'dsubdir']
         if req._user.has_role('index'):
             ls.append('eindex')
         return ls
@@ -909,6 +911,7 @@ class han_ArchiveRoot(base_DirectoryPage):
         map['dirname'] = ''
         map['isroot'] = True
         ls = self.get_filelist(req, dirs=True, sort='name')
+        map['emptydir'] = False
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
         dirls.sort(key=lambda ent:sortcanon(ent.name))

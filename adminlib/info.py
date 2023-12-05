@@ -19,6 +19,22 @@ def formatdate(date, user=None, shortdate=False):
         return mtime.strftime('%b %d, %Y')
 
 
+def dir_is_empty(ls):
+    """Given a list of ListEntry objects, return True if there are no
+    directories, symlinks, or nonempty files. (That is, if the directory
+    is safe for deletion.)
+    """
+    if not ls:
+        return True
+    for ent in ls:
+        if isinstance(ent, FileEntry):
+            if ent.size:
+                return False
+        else:
+            return False
+    return True
+
+
 class ListEntry:
     """Base class for FileEntry, DirEntry, SymlinkEntry.
     Objects in these classes should always have isfile, isdir, and

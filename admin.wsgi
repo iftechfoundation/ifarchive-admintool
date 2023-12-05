@@ -56,7 +56,7 @@ from adminlib.util import urlencode
 from adminlib.util import canon_archivedir, FileConsistency
 from adminlib.util import sortcanon
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
-from adminlib.info import dir_is_empty
+from adminlib.info import get_dir_entries, dir_is_empty
 from adminlib.index import IndexDir
     
 # URL handlers...
@@ -277,37 +277,10 @@ class base_DirectoryPage(AdminHandler):
         
     def get_filelist(self, req, dirs=False, shortdate=False, sort=None):
         """Get a list of FileEntries from our directory.
-        Include DirEntries if requested.
-        SymlinkEntries for files will always be included; for dirs too if
-        requested.
+        See get_dir_entries().
+        Optionally sort by date or filename.
         """
-        filelist = []
-        for ent in os.scandir(self.get_dirpath(req)):
-            if ent.is_symlink():
-                target = os.readlink(ent)
-                path = os.path.realpath(ent.path)
-                # By this rule, a link to the root if-archive directory itself will show as broken. Fine.
-                if path.startswith(self.app.archive_dir+'/') and os.path.exists(path):
-                    relpath = path[ len(self.app.archive_dir)+1 : ]
-                    if os.path.isfile(path):
-                        stat = os.stat(path)
-                        file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=False, user=req._user, shortdate=shortdate)
-                        filelist.append(file)
-                    elif dirs and os.path.isdir(path):
-                        stat = os.stat(path)
-                        dir = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=req._user, shortdate=shortdate)
-                        filelist.append(dir)
-                else:
-                    file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=req._user, shortdate=shortdate)
-                    filelist.append(file)
-            elif ent.is_file():
-                stat = ent.stat()
-                file = FileEntry(ent.name, stat, user=req._user, shortdate=shortdate)
-                filelist.append(file)
-            elif dirs and ent.is_dir():
-                stat = ent.stat()
-                dir = DirEntry(ent.name, stat, user=req._user, shortdate=shortdate)
-                filelist.append(dir)
+        filelist = get_dir_entries(self.get_dirpath(req), self.app.archive_dir, dirs=dirs, user=req._user, shortdate=shortdate)
         if sort == 'date':
             filelist.sort(key=lambda file:file.date)
         elif sort == 'name':
@@ -486,7 +459,6 @@ class base_DirectoryPage(AdminHandler):
                 # permit deletion of dirs second-level and deeper.
                 val = self.get_dirname(req)
                 delparentdir, _, delchilddir = val.rpartition('/')
-                req.loginfo('### parent=%r, child=%r', delparentdir, delchilddir)
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                movedestorig=movedestorig,
@@ -725,8 +697,18 @@ class base_DirectoryPage(AdminHandler):
 
         subdirname = self.get_dirname(req)+'/'+subdir
         subdirpath = os.path.join(self.get_dirpath(req), subdir)
-        req.loginfo('### subdirname=%s, subdirpath=%s', subdirname, subdirpath)
-        
+        req.loginfo('### subdirname=%s, subdirpath=%s', subdirname, subdirpath) ###
+
+        # Errors from this point don't use selecterror, because we've jumped to the parent directory.
+        if not os.path.isdir(subdirpath):
+            return self.render(self.template, req,
+                               formerror='Directory does not exist: "%s"' % (subdirname,))
+
+        ls = dir_nonempty_files(subdirpath)
+        if ls:
+            return self.render(self.template, req,
+                               formerror='Directory "%s" is not empty: %s' % (subdirname, ', '.join(ls)))
+            
         req.loginfo('Deleted directory /%s', self.get_dirname(req))
         return self.render(self.template, req,
                            diddeldir='.', didnewname=subdirname)

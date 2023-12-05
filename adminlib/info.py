@@ -18,7 +18,44 @@ def formatdate(date, user=None, shortdate=False):
     else:
         return mtime.strftime('%b %d, %Y')
 
+def get_dir_entries(dirpath, archivedir, dirs=False, user=None, shortdate=False):
+    """Get a list of FileEntries from a given directory.
+    Include DirEntries if requested.
+    SymlinkEntries for files will always be included; for dirs too if
+    requested.
+    Can supply user and shortdate options (for timestamp formatting).
+    """
+    filelist = []
+    
+    for ent in os.scandir(dirpath):
+        if ent.is_symlink():
+            target = os.readlink(ent)
+            path = os.path.realpath(ent.path)
+            # By this rule, a link to the root if-archive directory itself will show as broken. Fine.
+            if path.startswith(archivedir+'/') and os.path.exists(path):
+                relpath = path[ len(archivedir)+1 : ]
+                if os.path.isfile(path):
+                    stat = os.stat(path)
+                    file = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=False, user=user, shortdate=shortdate)
+                    filelist.append(file)
+                elif dirs and os.path.isdir(path):
+                    stat = os.stat(path)
+                    dir = SymlinkEntry(ent.name, target, stat, realpath=relpath, isdir=True, user=user, shortdate=shortdate)
+                    filelist.append(dir)
+            else:
+                file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=user, shortdate=shortdate)
+                filelist.append(file)
+        elif ent.is_file():
+            stat = ent.stat()
+            file = FileEntry(ent.name, stat, user=user, shortdate=shortdate)
+            filelist.append(file)
+        elif dirs and ent.is_dir():
+            stat = ent.stat()
+            dir = DirEntry(ent.name, stat, user=user, shortdate=shortdate)
+            filelist.append(dir)
 
+    return filelist
+    
 def dir_is_empty(ls):
     """Given a list of ListEntry objects, return True if there are no
     directories, symlinks, or nonempty files. (That is, if the directory

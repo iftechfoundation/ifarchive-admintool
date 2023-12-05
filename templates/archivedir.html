@@ -50,7 +50,7 @@
 </div>
 {% endif %}
 
-{% if dirname and fileops and 'csubdir' in fileops %}
+{% if dirname and fileops and ('csubdir' in fileops or 'deldir' in fileops) %}
 {% set isdirselected = (op and opfile == '.') %}
 <hr>
 {% include "subdirbuttons.html" %}

@@ -113,25 +113,25 @@
 	<a target="_blank" href="https://iplayif.com/?story={{ archivepath|urlencode }}">(play)</a>
       {% endif %}
 
-      {% if file.indexdesc or file.indexmeta %}
-      <dd class="FileInfoList">
-        <ul>
-        {% if file.indexdesc %}
-        <div class="FileComments">{{ file.indexdesc }}</div>
-        {% endif %}
-        {% if file.indexmeta %}
-          {% for key, val in file.indexmeta %}
-          <li class="MetadataLine">{{ key }}: {{ val }}
-          {% endfor %}
-        {% endif %}
-        </ul>
-      {% endif %}
-
     {% else %}
       <dd class="FileInfoLine">
       <span class="Tabular">{{ file.fdate }}</span>
     {% endif %}
       
+    {% if file.indexdesc or file.indexmeta %}
+    <dd class="FileInfoList">
+      <ul>
+      {% if file.indexdesc %}
+      <div class="FileComments">{{ file.indexdesc }}</div>
+      {% endif %}
+      {% if file.indexmeta %}
+        {% for key, val in file.indexmeta %}
+        <li class="MetadataLine">{{ key }}: {{ val }}
+        {% endfor %}
+      {% endif %}
+      </ul>
+    {% endif %}
+
     {% if fileops and not file.isspecial %}
     {% set ent = file %}
     {% include "filebuttons.html" %}

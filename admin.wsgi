@@ -754,7 +754,7 @@ class han_Incoming(base_DirectoryPage):
         return count
 
 
-@beforeall(require_role('incoming'))
+@beforeall(require_role('incoming', 'index'))
 class han_Trash(base_DirectoryPage):
     renderparams = {
         'navtab': 'trash',

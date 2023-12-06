@@ -21,7 +21,7 @@
   <a {% if navtab=='archive' %} class="Selected" {% endif %} href="{{ approot }}/arch">Archive</a>
   {% endif %}
 
-  {% if 'incoming' in user.roles %}
+  {% if 'incoming' in user.roles or 'index' in user.roles %}
   <a {% if navtab=='trash' %} class="Selected" {% endif %} href="{{ approot }}/trash">Trash</a>
   {% endif %}
 

@@ -2,6 +2,7 @@
 {% if diddelete %}
 <p class="ResultNote">
   Deleted <code>{{ diddelete }}</code> from <code>/{{ dirname }}</code>.
+  {% if didindextoo %}(Also removed it from the Index file.){% endif %}
 </p>
 {% endif %}
 

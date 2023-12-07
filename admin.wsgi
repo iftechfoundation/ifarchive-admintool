@@ -496,9 +496,19 @@ class base_DirectoryPage(AdminHandler):
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(self.app.trash_dir, newname)
         os.rename(origpath, newpath)
+
+        # See if we need to delete an Index entry as well.
+        dirname = self.get_dirname(req)
+        indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
+        ient = indexdir.getmap().get(filename)
+        if ient:
+            indexdir.delete(filename)
+            self.app.rewrite_indexdir(indexdir)
+        
         req.loginfo('Deleted "%s" from /%s', filename, self.get_dirname(req))
         return self.render(self.template, req,
-                           diddelete=filename, didnewname=newname)
+                           diddelete=filename, didnewname=newname,
+                           didindextoo=bool(ient))
         
     def do_post_move(self, req, dirpath, filename):
         """Handle a move operation. This checks the radio buttons and
@@ -601,10 +611,9 @@ class base_DirectoryPage(AdminHandler):
                                selecterror='Filename already in use: "%s"' % (newname,))
         
         os.rename(origpath, newpath)
-
-        dirname = self.get_dirname(req)
         
         # See if we need to rename an Index entry as well.
+        dirname = self.get_dirname(req)
         indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
         ient = indexdir.getmap().get(filename)
         if ient:
@@ -613,7 +622,8 @@ class base_DirectoryPage(AdminHandler):
         
         req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,
-                           didrename=filename, didnewname=newname, didindextoo=bool(ient))
+                           didrename=filename, didnewname=newname,
+                           didindextoo=bool(ient))
         
     def do_post_zip(self, req, dirpath, filename):
         """Handle a zip-up-file operation.

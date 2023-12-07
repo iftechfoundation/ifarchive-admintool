@@ -4,11 +4,13 @@
 
 {% block postfilelist %}
 
-{% if trashcount %}
+{% if unproccount %}
 <hr>
-<p>({% if files %}Also, {% else %}{% endif %}{{ trashcount }}
-  {{ trashcount|plural('file is', 'files are') }} in
-  <code><a href="{{ approot }}/trash">/trash</a></code>.)</p>
+<p>
+  ({% if files %}Also, {% else %}{% endif %}{{ unproccount }}
+  {{ unproccount|plural('file is', 'files are') }} in
+  <code><a href="{{ approot }}/arch/unprocessed">/unprocessed</a></code>.)
+</p>
 {% endif %}
 
 {% endblock %}

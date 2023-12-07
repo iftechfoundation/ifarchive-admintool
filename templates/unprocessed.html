@@ -19,9 +19,11 @@
 
 {% if incomingcount %}
 <hr>
-<p>({% if files %}Also, {% else %}{% endif %}{{ incomingcount }}
+<p>
+  ({% if files %}Also, {% else %}{% endif %}{{ incomingcount }}
   {{ incomingcount|plural('file is', 'files are') }} in
-  <code>{{ optlink('/incoming', '/incoming', ('incoming' in user.roles)) }}</code>.)</p>
+  <code>{{ optlink('/incoming', '/incoming', ('incoming' in user.roles)) }}</code>.)
+</p>
 {% endif %}
 
 {% endblock %}

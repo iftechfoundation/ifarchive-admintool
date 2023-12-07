@@ -746,9 +746,12 @@ class han_Incoming(base_DirectoryPage):
     template = 'incoming.html'
 
     def add_renderparams(self, req, map):
+        # Sorry about the special case.
+        unproccount = len([ ent for ent in os.scandir(self.app.unprocessed_dir) if ent.is_file() and ent.name != '.listing' ])
+        
         map['dirname'] = self.get_dirname(req)
         map['fileops'] = req._fileops
-        map['trashcount'] = self.get_trashcount(req)
+        map['unproccount'] = unproccount
         map['files'] = self.get_filelist(req, shortdate=True, sort='date')
         return map
 
@@ -761,10 +764,6 @@ class han_Incoming(base_DirectoryPage):
 
     def get_dirpath(self, req):
         return self.app.incoming_dir
-
-    def get_trashcount(self, req):
-        count = len([ ent for ent in os.scandir(self.app.trash_dir) if ent.is_file() ])
-        return count
 
 
 @beforeall(require_role('incoming', 'index'))

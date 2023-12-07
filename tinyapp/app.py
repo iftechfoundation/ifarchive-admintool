@@ -178,18 +178,27 @@ class TinyApp:
 
     def loginfo(self, req, msg, *args):
         """Shortcut for logging at INFO level."""
-        val = req.lognote()
-        logging.info('%s: '+msg, val, *args)
+        if not req:
+            logging.info(msg, *args)
+        else:
+            val = req.lognote()
+            logging.info('%s: '+msg, val, *args)
 
     def logwarning(self, req, msg, *args):
         """Shortcut for logging at WARNING level."""
-        val = req.lognote()
-        logging.warning('%s: '+msg, val, *args)
+        if not req:
+            logging.warning(msg, *args)
+        else:
+            val = req.lognote()
+            logging.warning('%s: '+msg, val, *args)
 
     def logerror(self, req, msg, *args):
         """Shortcut for logging at ERROR level."""
-        val = req.lognote()
-        logging.error('%s: '+msg, val, *args)
+        if not req:
+            logging.error(msg, *args)
+        else:
+            val = req.lognote()
+            logging.error('%s: '+msg, val, *args)
 
     def test_dump(self, uri):
         """Generate the page for the given URI and print it to stdout.

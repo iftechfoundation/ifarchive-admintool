@@ -163,6 +163,14 @@ class IndexDir:
         dir.metadata = self.metadata
         return map
 
+    def delete(self, filename):
+        """Remove a file entry. (Not '.'.)
+        """
+        for index, file in enumerate(self.files):
+            if file.filename == filename:
+                del self.files[index]
+                break
+
     def update(self, filename, desc, metadata):
         """Update (or add) a file entry (or directory entry, if filename
         is '.'.)

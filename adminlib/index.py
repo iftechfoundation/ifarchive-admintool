@@ -163,6 +163,11 @@ class IndexDir:
         dir.metadata = self.metadata
         return map
 
+    def add(self, file):
+        """Add a new IndexFile object. This clones the file you pass in.
+        """
+        self.files.append(file.copy(self))
+
     def delete(self, filename):
         """Remove a file entry. (Not '.'.)
         """
@@ -288,6 +293,17 @@ class IndexFile:
         
     def __repr__(self):
         return '<IndexFile %s>' % (self.filename,)
+
+    def copy(self, dir=None):
+        """Create a clone, perhaps with a new IndexDir.
+        """
+        if dir is None:
+            dir = self.dir
+        res = IndexFile(self.filename, dir)
+        res.description = self.description
+        res.desclines = self.desclines.copy()
+        res.metadata = self.metadata.copy()
+        return res
 
     def hasdata(self):
         """Check whether there's any data.

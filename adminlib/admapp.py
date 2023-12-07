@@ -1,5 +1,5 @@
 import time
-import os.path
+import os, os.path
 import threading
 import sqlite3
 
@@ -11,6 +11,7 @@ import tinyapp.auth
 
 from adminlib.session import find_user
 from adminlib.info import formatdate
+from adminlib.util import find_unused_filename
 from adminlib.jenv import DelimNumber, Pluralize, SplitURI, AllLatin1
 
 class AdminApp(TinyApp):
@@ -148,6 +149,31 @@ class AdminApp(TinyApp):
         except:
             return (None, None)
 
+    def rewrite_indexdir(self, indexdir):
+        """Write out an IndexDir to a directory, or delete the existing
+        Index file if there's nothing to write. We copy the old Index file
+        to the trash if there is one.
+        """
+        dirname = indexdir.dirname
+        
+        indextext = indexdir.getorigtext()
+        if indextext is not None:
+            # Save a copy of the old text in the trash.
+            trashname = 'Index-%s' % (dirname.replace('/', '-'),)
+            trashname = find_unused_filename(trashname, dir=self.trash_dir)
+            trashpath = os.path.join(self.trash_dir, trashname)
+            outfl = open(trashpath, 'w', encoding='utf-8')
+            outfl.write(indextext)
+            outfl.close()
+        
+        if not indexdir.hasdata():
+            # Delete the Index file entirely.
+            if os.path.exists(indexdir.indexpath):
+                os.remove(indexdir.indexpath)
+        else:
+            # Write out the updated Index.
+            indexdir.write()
+        
 
 class AdminRequest(TinyRequest):
     """Our app-specific subclass of TinyRequest. This just has a spot

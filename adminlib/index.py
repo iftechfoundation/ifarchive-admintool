@@ -199,12 +199,15 @@ class IndexDir:
         self.files.append(file)
         return
 
-    def gettext(self):
-        """Return the original Index file as raw text.
+    def getorigtext(self):
+        """Return the original Index file as raw text. If there is no
+        such file, return None.
         (This ignores any modifications you might have made to the contents.
         We use it to fetch the original of a Index before writing out a
         modified version.)
         """
+        if not os.path.exists(self.indexpath):
+            return None
         infl = open(self.indexpath, encoding='utf-8')
         dat = infl.read()
         infl.close()

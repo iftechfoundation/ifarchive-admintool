@@ -608,17 +608,8 @@ class base_DirectoryPage(AdminHandler):
         indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
         ient = indexdir.getmap().get(filename)
         if ient:
-            # Save a copy of the old text in the trash.
-            indextext = indexdir.gettext()
-            trashname = 'Index-%s' % (dirname.replace('/', '-'),)
-            trashname = find_unused_filename(trashname, dir=self.app.trash_dir)
-            trashpath = os.path.join(self.app.trash_dir, trashname)
-            outfl = open(trashpath, 'w', encoding='utf-8')
-            outfl.write(indextext)
-            outfl.close()
-            # Now write out the updated Index
             ient.filename = newname
-            indexdir.write()
+            self.app.rewrite_indexdir(indexdir)
         
         req.loginfo('Renamed "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,

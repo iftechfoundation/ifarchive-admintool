@@ -579,9 +579,21 @@ class base_DirectoryPage(AdminHandler):
                                selecterror='A file named %s already exists in %s.' % (filename, newdir,))
             
         os.rename(origpath, newpath)
+
+        # See if we need to Move an Index entry as well.
+        indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
+        ient = indexdir.getmap().get(filename)
+        if ient:
+            indexdir2 = IndexDir(newdir, rootdir=self.app.archive_dir, orblank=True)
+            indexdir2.add(ient)
+            indexdir.delete(filename)
+            self.app.rewrite_indexdir(indexdir2)
+            self.app.rewrite_indexdir(indexdir)
+        
         req.loginfo('Moved "%s" from /%s to /%s', filename, self.get_dirname(req), newdir)
         return self.render(self.template, req,
-                               didmove=filename, didnewdir=newdir, didnewuri='arch/'+newdir)
+                               didmove=filename, didnewdir=newdir, didnewuri='arch/'+newdir,
+                           didindextoo=bool(ient))
         
     def do_post_rename(self, req, dirpath, filename):
         """Handle a rename operation. This checks the input field to see

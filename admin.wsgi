@@ -1265,7 +1265,7 @@ class han_DebugDump(AdminHandler):
         req.set_content_type(PLAINTEXT)
         yield 'sys.version: %s\n' % (sys.version,)
         yield 'sys.path: %s\n' % (sys.path,)
-        yield '__name__": %s\n' % (__name__,)
+        yield '__name__: %s\n' % (__name__,)
         if req.match:
             yield 'match: %s\n' % (req.match,)
             yield 'match.groups: %s\n' % (req.match.groups(),)

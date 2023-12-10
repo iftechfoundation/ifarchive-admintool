@@ -1,5 +1,6 @@
 import re
 import os, os.path
+import time
 
 from adminlib.util import in_user_time
 from adminlib.util import canon_archivedir, FileConsistency
@@ -8,13 +9,20 @@ def formatdate(date, user=None, shortdate=False):
     """Format a timestamp into human-readable form. If user is provided,
     we use the user's time zone.
     If shortdate is false, this looks like "Oct 28, 2023".
-    If shortdate is true, this looks like "Oct 28, 14:38 EDT".
-    The point is to use shortdate=True for date lists that are known to be
-    all recent.
+    If shortdate is true, this looks like "Oct 28, 14:38 EDT", or
+    "Oct 28 2022, 14:38 EDT" for dates more than six months in the past.
+    The point is to use shortdate=True for date lists where we care about
+    the exact time. (E.g. many recent files.) If we only care about the
+    historical date, use shortdate=False for a uniform display.
+    (Yes, this means "shortdate=False" gives a shorter string than
+    "shortdate=True". Sorry, the semantics shifted a bit.)
     """
     mtime = in_user_time(user, date)
     if shortdate:
-        return mtime.strftime('%b %d, %H:%M %Z')
+        if date < time.time() - 15552000:
+            return mtime.strftime('%b %d %Y, %H:%M %Z')
+        else:
+            return mtime.strftime('%b %d, %H:%M %Z')
     else:
         return mtime.strftime('%b %d, %Y')
 

@@ -58,6 +58,15 @@ Then, below:
 
 (Or `/opt/homebrew` for ARM Macs. I'm gonna stop giving both versions, sorry, keep substituting as needed.)
 
+Also make sure the `IFARCHIVE_CONFIG` env var is set in your own environment, with the same value as above.
+
+```
+# sh-style:
+% export IFARCHIVE_CONFIG=/Users/zarf/src/ifarchive-admintool/test.config
+# csh-style:
+% setenv IFARCHIVE_CONFIG /Users/zarf/src/ifarchive-admintool/test.config
+```
+
 Create these directories that you just configured, and symlink in the appropriate files from your repo:
 
 ```
@@ -214,6 +223,8 @@ Create the SQLite database (which, as configured above, will be in `/var/ifarchi
 % python3 wsgi-bin/admin.wsgi createdb
 % python3 wsgi-bin/admin.wsgi adduser zarf zarf@zarfhome.com password --roles admin
 ```
+
+(If you see "Config file not found: /var/ifarchive/lib/ifarch.config", you forgot to set the `IFARCHIVE_CONFIG` env variable.)
 
 You should now be able to visit `http://localhost/admin` and log in (`zarf` / `password`, as set up above).
 

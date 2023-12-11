@@ -17,29 +17,6 @@ import configparser
 import subprocess
 import logging, logging.handlers
 
-
-# The config file contains all the paths and settings used by the app.
-
-configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
-#configpath = '/var/ifarchive/lib/ifarch.config'
-config = configparser.ConfigParser()
-config.read(configpath)
-
-# Set up PyLibPath before we start importing tinyapp modules
-if 'PyLibPath' in config['AdminTool']:
-    val = config['AdminTool']['PyLibPath']
-    if val not in sys.path:
-        sys.path.append(val)
-
-# Set up the logging configuration
-loghandler = logging.handlers.WatchedFileHandler(config['AdminTool']['LogFile'])
-logging.basicConfig(
-    format = '[%(levelname).1s %(asctime)s] %(message)s',
-    datefmt = '%b-%d %H:%M:%S',
-    level = logging.INFO,
-    handlers = [ loghandler ],
-)
-
 from tinyapp.constants import PLAINTEXT, BINARY
 from tinyapp.handler import before, beforeall
 from tinyapp.excepts import HTTPError, HTTPRedirectPost, HTTPRawResponse
@@ -58,6 +35,23 @@ from adminlib.util import sortcanon
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
 from adminlib.info import get_dir_entries, dir_is_empty
 from adminlib.index import IndexDir
+
+# The config file contains all the paths and settings used by the app.
+
+configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
+#configpath = '/var/ifarchive/lib/ifarch.config'
+config = configparser.ConfigParser()
+config.read(configpath)
+
+# Set up the logging configuration
+loghandler = logging.handlers.WatchedFileHandler(config['AdminTool']['LogFile'])
+logging.basicConfig(
+    format = '[%(levelname).1s %(asctime)s] %(message)s',
+    datefmt = '%b-%d %H:%M:%S',
+    level = logging.INFO,
+    handlers = [ loghandler ],
+)
+
     
 # URL handlers...
 

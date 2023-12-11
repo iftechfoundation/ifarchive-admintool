@@ -36,10 +36,12 @@ In the `<IfModule alias_module>` stanza, add:
 
 ```
 # For Intel Macs:
+SetEnv IFARCHIVE_CONFIG "/Users/zarf/src/ifarchive-admintool/test.config"
 WSGIScriptAlias /admintest "/usr/local/var/www/wsgi-bin/test.wsgi"
 WSGIPythonPath "/usr/local/var/www/wsgi-bin"
 
 # For ARM Macs:
+SetEnv IFARCHIVE_CONFIG "/Users/zarf/src/ifarchive-admintool/test.config"
 WSGIScriptAlias /admintest "/opt/homebrew/var/www/wsgi-bin/test.wsgi"
 WSGIPythonPath "/opt/homebrew/var/www/wsgi-bin"
 ```
@@ -110,14 +112,6 @@ MaxSessionAge = 864000
 MaxTrashAge = 2592000
 ```
 
-You must also change the `configpath` line in `admin.wsgi` to refer to this new `test.config` file:
-
-```
-configpath = '/Users/zarf/src/ifarchive-admintool/test.config'
-```
-
-(Yes, this is awfully awkward. I should be using an environment variable or something.)
-
 Create the directories mentioned above:
 
 ```
@@ -164,14 +158,6 @@ Copy the files into position:
 ```
 
 In `lib/ifarch.config`, change the `SecureSite` entry to `false`. (This must be false if your test server is on `http:`.)
-
-You must also change the `configpath` line in `admin.wsgi` to refer to the `ifarch.config` file:
-
-```
-configpath = '/var/ifarchive/lib/ifarch.config'
-```
-
-(Yes, this is awfully awkward. I should be using an environment variable or something.)
 
 Install `apache2`, `python3`, and `libapache2-mod-wsgi-py3` via your package manager.
 

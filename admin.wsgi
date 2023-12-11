@@ -16,6 +16,7 @@ import hashlib
 import configparser
 import subprocess
 import logging, logging.handlers
+import threading
 
 from tinyapp.constants import PLAINTEXT, BINARY
 from tinyapp.handler import before, beforeall
@@ -36,21 +37,6 @@ from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, Upl
 from adminlib.info import get_dir_entries, dir_is_empty
 from adminlib.index import IndexDir
 
-# The config file contains all the paths and settings used by the app.
-
-configpath = '/Users/zarf/src/ifarch/ifarchive-admintool/test.config'
-#configpath = '/var/ifarchive/lib/ifarch.config'
-config = configparser.ConfigParser()
-config.read(configpath)
-
-# Set up the logging configuration
-loghandler = logging.handlers.WatchedFileHandler(config['AdminTool']['LogFile'])
-logging.basicConfig(
-    format = '[%(levelname).1s %(asctime)s] %(message)s',
-    datefmt = '%b-%d %H:%M:%S',
-    level = logging.INFO,
-    handlers = [ loghandler ],
-)
 
     
 # URL handlers...
@@ -1297,14 +1283,64 @@ handlers = [
     #('/debugdump/(?P<arg>.+)', han_DebugDump),
 ]
 
-# Create the application instance itself.
-appinstance = AdminApp(config, handlers)
+appinstance = None
+config = None
+initlock = threading.Lock()
 
-# Set up the WSGI entry point.
-application = appinstance.application
+def create_appinstance(environ):
+    """Read the configuration and create the TinyApp instance.
+    
+    We have to do this when the first application request comes in,
+    because the config file location is stored in the WSGI environment,
+    which is passed in to application(). (It's *not* in os.environ,
+    unless we're calling this from the command line.)
+    """
+    global config, appinstance
 
+    # To be extra careful, we do this under a thread lock. (I don't know
+    # if application() can be called by two threads at the same time, but
+    # let's assume it's possible.)
+
+    with initlock:
+        if appinstance is not None:
+            # Another thread did all the work while we were grabbing the lock!
+            return
+    
+        # The config file contains all the paths and settings used by the app.
+        configpath = '/var/ifarchive/lib/ifarch.config'
+        configpath = environ.get('IFARCHIVE_CONFIG', configpath)
+        if not os.path.isfile(configpath):
+            raise Exception('Config file not found: ' + configpath)
+        
+        config = configparser.ConfigParser()
+        config.read(configpath)
+        
+        # Set up the logging configuration
+        logfilepath = config['AdminTool']['LogFile']
+        loghandler = logging.handlers.WatchedFileHandler(logfilepath)
+        logging.basicConfig(
+            format = '[%(levelname).1s %(asctime)s] %(message)s',
+            datefmt = '%b-%d %H:%M:%S',
+            level = logging.INFO,
+            handlers = [ loghandler ],
+        )
+        
+        # Create the application instance itself.
+        appinstance = AdminApp(config, handlers)
+        logging.info('### created appinstance: %s', appinstance) ###
+
+
+def application(environ, start_response):
+    """The exported WSGI entry point.
+    Normally this would just be appinstance.application, but we need to
+    wrap that in order to call create_appinstance().
+    """
+    if appinstance is None:
+        create_appinstance(environ)
+    return appinstance.application(environ, start_response)
 
 
 if __name__ == '__main__':
     import adminlib.cli
+    create_appinstance(os.environ)
     adminlib.cli.run(appinstance)

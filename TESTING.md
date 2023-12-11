@@ -63,6 +63,7 @@ Also make sure the `IFARCHIVE_CONFIG` env var is set in your own environment, wi
 ```
 # sh-style:
 % export IFARCHIVE_CONFIG=/Users/zarf/src/ifarchive-admintool/test.config
+
 # csh-style:
 % setenv IFARCHIVE_CONFIG /Users/zarf/src/ifarchive-admintool/test.config
 ```
@@ -133,6 +134,8 @@ Create the SQLite database (which, as configured above, will be in `/Users/zarf/
 % python3 admin.wsgi createdb
 % python3 admin.wsgi adduser zarf zarf@zarfhome.com password --roles admin
 ```
+
+(If you see "Config file not found: /var/ifarchive/lib/ifarch.config", you forgot to set the `IFARCHIVE_CONFIG` env variable.)
 
 You should now be able to visit `http://localhost:8080/admintest` and log in (`zarf` / `password`, as set up above).
 
@@ -223,8 +226,6 @@ Create the SQLite database (which, as configured above, will be in `/var/ifarchi
 % python3 wsgi-bin/admin.wsgi createdb
 % python3 wsgi-bin/admin.wsgi adduser zarf zarf@zarfhome.com password --roles admin
 ```
-
-(If you see "Config file not found: /var/ifarchive/lib/ifarch.config", you forgot to set the `IFARCHIVE_CONFIG` env variable.)
 
 You should now be able to visit `http://localhost/admin` and log in (`zarf` / `password`, as set up above).
 

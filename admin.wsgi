@@ -1297,16 +1297,19 @@ def create_appinstance(environ):
     """
     global config, appinstance
 
-    # To be extra careful, we do this under a thread lock. (I don't know
-    # if application() can be called by two threads at the same time, but
-    # let's assume it's possible.)
-
     with initlock:
+        # To be extra careful, we do this under a thread lock. (I don't know
+        # if application() can be called by two threads at the same time, but
+        # let's assume it's possible.)
+        
         if appinstance is not None:
             # Another thread did all the work while we were grabbing the lock!
             return
     
         # The config file contains all the paths and settings used by the app.
+        # The location is specified by the IFARCHIVE_CONFIG env var (if
+        # on the command line) or the "SetEnv IFARCHIVE_CONFIG" line (in the
+        # Apache WSGI environment).
         configpath = '/var/ifarchive/lib/ifarch.config'
         configpath = environ.get('IFARCHIVE_CONFIG', configpath)
         if not os.path.isfile(configpath):
@@ -1327,7 +1330,8 @@ def create_appinstance(environ):
         
         # Create the application instance itself.
         appinstance = AdminApp(config, handlers)
-        logging.info('### created appinstance: %s', appinstance) ###
+
+    # Thread lock is released when we exit the "with" block.
 
 
 def application(environ, start_response):

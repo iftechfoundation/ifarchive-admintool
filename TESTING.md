@@ -232,7 +232,9 @@ If you edit the Python modules in `tinyapp` and `adminlib`, the changes will not
 % sudo apachectl restart
 ```
 
-Other changes (templates, `test.config`, the `admin.wsgi` file itself) are picked up immediately and require no restart.
+If you change the config file (`ifarch.config` or `test.config`), you should touch `admin.wsgi` to reload the config.
+
+The `admin.wsgi` file itself is automatically restarted if it changes. Other file changes (templates, for example) are picked up immediately and require no restart.
 
 This test environment does not include the "Rebuild Indexes" script. (That would require more test files which have nothing to do with the admin tool per se.) So hitting that button in the admin interface will fail.
 

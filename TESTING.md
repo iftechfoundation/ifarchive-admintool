@@ -185,14 +185,14 @@ Inside the `<VirtualHost>` section, add the lines:
 WSGIScriptAlias /admin /var/ifarchive/wsgi-bin/admin.wsgi
 
 <Directory "/var/ifarchive/htdocs/">
-   Order allow,deny
-   Allow from all
-   Require all granted
+    Order allow,deny
+    Allow from all
+    Require all granted
 </Directory>
 
 <Directory "/var/ifarchive/wsgi-bin/">
-	Require all granted
-	SetEnv LANG en_US.UTF-8
+    Require all granted
+    SetEnv LANG en_US.UTF-8
 </Directory>
 ```
 

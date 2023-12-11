@@ -31,8 +31,8 @@ All activity is logged. (The log is not viewable from the web service; you need 
 ## Contents
 
 - `admin.wsgi`: A Python script that handles the main web interface. This lives in /var/ifarchive/wsgi-bin.
-- `tinyapp`: A general web-app framework for WSGI apps. Used by `admin.wsgi`. Lives in /var/ifarchive/wsgi-bin/lib.
-- `adminlib`: App-specific support for `admin.wsgi`. Lives in /var/ifarchive/wsgi-bin/lib.
+- `tinyapp`: A general web-app framework for WSGI apps. Used by `admin.wsgi`. Lives in /var/ifarchive/wsgi-bin.
+- `adminlib`: App-specific support for `admin.wsgi`. Lives in /var/ifarchive/wsgi-bin.
 - `templates`: HTML templates for various admin pages. Lives in /var/ifarchive/lib/admintool.
 - `sample.config`: Config file. Lives in /var/ifarchive/lib/ifarch.config. Note that the version in this repository is an incomplete sample. The real ifarch.config has settings for other tools (upload, ifmap).
 - `css/admintool.css`: Stylesheet. Lives in /var/ifarchive/htdocs/misc.

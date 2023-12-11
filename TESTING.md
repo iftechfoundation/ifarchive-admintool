@@ -37,23 +37,17 @@ In the `<IfModule alias_module>` stanza, add:
 ```
 # For Intel Macs:
 WSGIScriptAlias /admintest "/usr/local/var/www/wsgi-bin/test.wsgi"
-WSGIPythonPath "/usr/local/var/www/wsgi-lib"
+WSGIPythonPath "/usr/local/var/www/wsgi-bin"
 
 # For ARM Macs:
 WSGIScriptAlias /admintest "/opt/homebrew/var/www/wsgi-bin/test.wsgi"
-WSGIPythonPath "/opt/homebrew/var/www/wsgi-lib"
+WSGIPythonPath "/opt/homebrew/var/www/wsgi-bin"
 ```
 
 Then, below:
 
 ```
 <Directory "/usr/local/var/www/wsgi-bin">
-    AllowOverride None
-    Options FollowSymLinks
-    Require all granted
-</Directory>
-
-<Directory "/usr/local/var/www/wsgi-lib">
     AllowOverride None
     Options FollowSymLinks
     Require all granted
@@ -66,10 +60,9 @@ Create these directories that you just configured, and symlink in the appropriat
 
 ```
 % mkdir /usr/local/var/www/wsgi-bin
-% mkdir /usr/local/var/www/wsgi-lib
 % ln -s /Users/zarf/src/ifarchive-admintool/admin.wsgi /usr/local/var/www/wsgi-bin/test.wsgi
-% ln -s /Users/zarf/src/ifarchive-admintool/adminlib /usr/local/var/www/wsgi-lib/adminlib
-% ln -s /Users/zarf/src/ifarchive-admintool/tinyapp /usr/local/var/www/wsgi-lib/tinyapp
+% ln -s /Users/zarf/src/ifarchive-admintool/adminlib /usr/local/var/www/wsgi-bin/adminlib
+% ln -s /Users/zarf/src/ifarchive-admintool/tinyapp /usr/local/var/www/wsgi-bin/tinyapp
 % cp /Users/zarf/src/ifarchive-admintool/css/admintool.css /usr/local/var/www
 ```
 
@@ -153,7 +146,7 @@ Create a directory `/var/ifarchive` to store all Archive data. For testing purpo
 % sudo chmod 777 /var/ifarchive
 % cd /var/ifarchive
 % mkdir lib lib/sql lib/admintool
-% mkdir incoming trash logs wsgi-bin wsgi-bin/lib
+% mkdir incoming trash logs wsgi-bin
 % mkdir htdocs htdocs/misc htdocs/if-archive htdocs/if-archive/unprocessed
 ```
 
@@ -162,8 +155,8 @@ Clone the repo into `/var/ifarchive/ifarchive-admintool`.
 Copy the files into position:
 
 ```
-% cp -r ifarchive-admintool/tinyapp wsgi-bin/lib
-% cp -r ifarchive-admintool/adminlib wsgi-bin/lib
+% cp -r ifarchive-admintool/tinyapp wsgi-bin
+% cp -r ifarchive-admintool/adminlib wsgi-bin
 % cp -r ifarchive-admintool/templates lib/admintool
 % cp ifarchive-admintool/admin.wsgi wsgi-bin
 % cp ifarchive-admintool/css/admintool.css htdocs/misc
@@ -220,7 +213,7 @@ WSGIScriptAlias /admin /var/ifarchive/wsgi-bin/admin.wsgi
 *After* the `<VirtualHost>` section, add the line:
 
 ```
-WSGIPythonPath /var/ifarchive/wsgi-bin/lib
+WSGIPythonPath /var/ifarchive/wsgi-bin
 ```
 
 At this point you need to restart httpd to pick up the config changes:

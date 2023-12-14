@@ -431,7 +431,7 @@ class base_DirectoryPage(AdminHandler):
                                formerror='Invalid operation: %s' % (op,))
 
         dirpath = self.get_dirpath(req)
-        
+
         filename = req.get_input_field('filename')
         if filename == '.':
             ent = None   # directory operation
@@ -440,7 +440,6 @@ class base_DirectoryPage(AdminHandler):
                 ent = self.get_symlink(filename, req)
             else:
                 ent = self.get_file(filename, req)
-            req.loginfo('### file entry: %s', ent) ###
             if not ent:
                 return self.render(self.template, req,
                                    formerror='File not found: "%s"' % (filename,))

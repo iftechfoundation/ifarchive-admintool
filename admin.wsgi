@@ -497,9 +497,12 @@ class base_DirectoryPage(AdminHandler):
         if req.get_input_field('cancel'):
             raise HTTPRedirectPost(self.app.approot+req.path_info+'?view=info&filename='+urlencode(filename))
 
-        op = None
-        if req.get_input_field('addusernote'):
-            op = 'addusernote'
+        if req.get_input_field('op'):
+            op = req.get_input_field('op')
+        else:
+            op = None
+            if req.get_input_field('addusernote'):
+                op = 'addusernote'
         if not op:
             return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,
                                formerror='Invalid operation: %s' % (op,))
@@ -513,6 +516,31 @@ class base_DirectoryPage(AdminHandler):
             
         # The "confirm" button was pressed, so it's time to perform the
         # action.
+
+        note = req.get_input_field('usernote')
+        if note:
+            note = note.strip()
+        if not note:
+            return self.render('uploadinfo.html', req,
+                               op=op,
+                               filename=filename, filesize=filesize, uploads=uploads,
+                               formerror='You must supply a line of text.')
+
+        if not uploads:
+            return self.render('uploadinfo.html', req,
+                               op=op,
+                               filename=filename, filesize=filesize, uploads=uploads,
+                               formerror='This file has no upload record, so there is no place to add a note.')
+
+        # We are assuming that every upload record for this md5 has the same
+        # usernote info. (Other fields may differ! But usernotes are updated
+        # by md5, so they should all match.)
+
+        val = uploads[0].usernote
+        if not val:
+            newnote = note
+        else:
+            newnote = val.strip() + '\n' + note
         ####
 
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)

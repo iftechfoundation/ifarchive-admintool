@@ -499,6 +499,8 @@ class base_DirectoryPage(AdminHandler):
             return self.do_post_delete(req, dirpath, filename)
         elif op == 'dellink':
             return self.do_post_dellink(req, dirpath, filename)
+        elif op == 'linkto':
+            return self.do_post_linkto(req, dirpath, filename)
         elif op == 'move':
             return self.do_post_move(req, dirpath, filename)
         elif op == 'rename':
@@ -641,6 +643,35 @@ class base_DirectoryPage(AdminHandler):
                            diddellink=filename,
                            didindextoo=bool(ient))
         
+    def do_post_linkto(self, req, dirpath, filename):
+        """Handle a create-symlink operation.
+        """
+        op = 'linkto'
+        destdir = req.get_input_field('destination')
+        if not destdir:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You must select a directory.')
+
+        newdir = '' ###
+        
+        if not newdir:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You cannot create symlinks in the Archive root.')
+
+        dirname = self.get_dirname(req)
+        
+        if newdir == dirname:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You are already in %s!' % (newdir,))
+
+        req.loginfo('Created symlink to "%s" in /%s in /%s', filename, self.get_dirname(req), newdir)
+        return self.render(self.template, req,
+                           didlinkto=filename, didnewdir=newdir, didnewuri='arch/'+newdir)
+        
+    
     def do_post_move(self, req, dirpath, filename):
         """Handle a move operation. This checks the radio buttons and
         input field to see where you want to move the file.

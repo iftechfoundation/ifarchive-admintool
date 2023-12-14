@@ -597,7 +597,15 @@ class base_DirectoryPage(AdminHandler):
         if not os.path.islink(origpath):
             raise Exception('dellink op requires a symlink')
 
-        ient = None ####
+        os.remove(origpath)
+
+        # See if we need to delete an Index entry as well.
+        dirname = self.get_dirname(req)
+        indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
+        ient = indexdir.getmap().get(filename)
+        if ient:
+            indexdir.delete(filename)
+            self.app.rewrite_indexdir(indexdir)
         
         req.loginfo('Deleted symlink "%s" from /%s', filename, self.get_dirname(req))
         return self.render(self.template, req,

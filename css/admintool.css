@@ -166,9 +166,9 @@ pre {
 }
 
 ul {
-    list-style: none;
-    padding-left: 16px;
+    list-style: url("cssbullet.png");
     margin-left: 10px;
+    padding-left: 9px;
     border-left: 3px solid #F0D0A0;
 }
 
@@ -184,18 +184,6 @@ ul.InfoList li {
 ul.UserInfoList li {
     margin-top: 4px;
     margin-bottom: 4px;
-}
-
-.StaticDocs ul li {
-    margin-left: 20px;
-    text-indent: -20px;
-}
-
-.StaticDocs ul.Bulleted li::before {
-    position: relative;
-    content: "\25A0";
-    left: -22px;
-    color: #E0C090;
 }
 
 .DirButtons {

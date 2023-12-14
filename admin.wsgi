@@ -653,12 +653,26 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='You must select a directory.')
 
-        newdir = '' ###
+        newdir = destdir
+        if newdir.startswith('/'):
+            newdir = newdir[ 1 : ]
+        if newdir.startswith('if-archive/'):
+            newdir = newdir[ 11 : ]
+        try:
+            newdir = canon_archivedir(newdir, archivedir=req.app.archive_dir)
+        except FileConsistency as ex:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='Not an Archive directory: %s' % (newdir,))
         
         if not newdir:
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='You cannot create symlinks in the Archive root.')
+        if newdir == 'unprocessed':
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You cannot create symlinks in /unprocessed.')
 
         dirname = self.get_dirname(req)
         
@@ -667,7 +681,9 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='You are already in %s!' % (newdir,))
 
-        req.loginfo('Created symlink to "%s" in /%s in /%s', filename, self.get_dirname(req), newdir)
+        ####
+        
+        req.loginfo('Created symlink to "%s" from /%s to /%s', filename, self.get_dirname(req), newdir)
         return self.render(self.template, req,
                            didlinkto=filename, didnewdir=newdir, didnewuri='arch/'+newdir)
         

@@ -374,6 +374,15 @@ class base_DirectoryPage(AdminHandler):
         itself.
         """
         self.check_fileops(req)
+        view = req.get_query_field('view')
+        if view:
+            # In this case there will be a "filename" field in the query
+            # string. (Not form field.)
+            filename = req.get_query_field('filename')
+            if view == 'info':
+                return self.do_post_info(req, filename)
+            raise HTTPError('404 Not Found', 'View "%s" not found: %s' % (view, filename,))
+        
         dirpath = self.get_dirpath(req)
         
         filename = req.get_input_field('filename')
@@ -466,6 +475,36 @@ class base_DirectoryPage(AdminHandler):
             return self.render(self.template, req,
                                formerror='Operation not implemented: %s' % (op,))
 
+    def do_post_info(self, req, filename):
+        """Like do_post(), but for the ?view=info case.
+        """
+        uploads = [] ###
+        filesize = 999 ###
+
+        # On any Cancel button, we redirect back to the GET for this page.
+        if req.get_input_field('cancel'):
+            raise HTTPRedirectPost(self.app.approot+req.path_info+'?view=info&filename='+urlencode(filename))
+
+        op = None
+        if req.get_input_field('addusernote'):
+            op = 'addusernote'
+        if not op:
+            return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,
+                               formerror='Invalid operation: %s' % (op,))
+            
+        # If neither "confirm" nor "cancel" was pressed, we're at the
+        # stage of showing those buttons.
+        if not req.get_input_field('confirm'):
+            return self.render('uploadinfo.html', req,
+                               op=op,
+                               filename=filename, filesize=filesize, uploads=uploads)
+            
+        # The "confirm" button was pressed, so it's time to perform the
+        # action.
+        ####
+
+        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
+        
     def do_post_delete(self, req, dirpath, filename):
         """Handle a delete operation (which is really "move to trash").
         """

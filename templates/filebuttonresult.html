@@ -30,6 +30,16 @@
   {% endif %}
   {% if didindextoo %}(Also updated the Index files.){% endif %}
 </p>
+{% endif %}
+
+{% if didlinkto %}
+<p class="ResultNote">
+  Created symlink to <code>{{ didlinkto }}</code> in
+  {% if didnewuri %}
+    <a href="{{ approot }}/{{ didnewuri|urlencode }}"><code>{{ didnewdir }}</code></a>.
+  {% else %}
+    <code>{{ didnewdir }}</code>.
+  {% endif %}
 </p>
 {% endif %}
 

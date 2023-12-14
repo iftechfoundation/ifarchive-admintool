@@ -33,6 +33,9 @@
     {% if 'rename' in fileops %}
       <input class="FormButton SmallButton" name="rename" type="submit" value="Rename">
     {% endif %}
+    {% if 'linkto' in fileops %}
+      <input class="FormButton SmallButton" name="linkto" type="submit" value="Create Symlink">
+    {% endif %}
     {% if 'delete' in fileops %}
       <input class="FormButton SmallButton" name="delete" type="submit" value="Delete">
     {% endif %}
@@ -124,6 +127,21 @@
       </div>
     {% endif %}
   {% endif %}
+  <input class="FormButton HotButton" name="confirm" type="submit" value="Move">
+  <input class="FormButton" name="cancel" type="submit" value="Cancel">
+  </form>
+  
+  {% elif op == 'linkto' %}
+  
+  <div class="FormAction">Create symlink to <code>{{ opfile }}</code> in...</div>
+  <form method="post" action="{{ requri }}#list_{{ ent.name |urlencode }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="{{ opfile }}"/>
+  <input type="hidden" name="op" value="{{ op }}"/>
+  <div>
+    <input class="FormInput" autocomplete="disabled"
+      id="dest_field" name="destination" type="input" placeholder="Directory">
+  </div>
   <input class="FormButton HotButton" name="confirm" type="submit" value="Move">
   <input class="FormButton" name="cancel" type="submit" value="Cancel">
   </form>

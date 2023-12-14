@@ -43,6 +43,10 @@
   {% if ent.about %}
   <li><div class="FileComments">{{ ent.about }}</div>
   {% endif %}
+  
+  {% if ent.usernotes %}
+  <li><div class="FileComments"><span class="ItemGloss">Admin notes:</span><br>{{ ent.usernotes }}</div>
+  {% endif %}
 </ul>
 {% endfor %}
 

@@ -493,6 +493,9 @@ class base_DirectoryPage(AdminHandler):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
 
+        # Note that we do not check fileops! The "Add Note" button does
+        # not require a role check; it's always available.
+        
         # On any Cancel button, we redirect back to the GET for this page.
         if req.get_input_field('cancel'):
             raise HTTPRedirectPost(self.app.approot+req.path_info+'?view=info&filename='+urlencode(filename))

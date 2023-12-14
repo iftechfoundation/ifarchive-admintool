@@ -26,6 +26,8 @@ Upload Info
 
 {% block postuploadlist %}
 
+{# Annoyingly, user notes are stored in the upload info. No upload info
+   records, nowhere to store a usernote. #}
 {% if uploads %}
   {% include "infobuttons.html" %}
 {% endif %}

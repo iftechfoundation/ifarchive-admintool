@@ -477,6 +477,8 @@ class base_DirectoryPage(AdminHandler):
 
     def do_post_info(self, req, filename):
         """Like do_post(), but for the ?view=info case.
+        This duplicates the structure of do_post(), which is annoyingly
+        redundant. But it also avoids a bunch of fiddly special cases.
         """
         uploads = [] ###
         filesize = 999 ###

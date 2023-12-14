@@ -6,6 +6,13 @@
 </p>
 {% endif %}
 
+{% if diddellink %}
+<p class="ResultNote">
+  Deleted symlink <code>{{ diddellink }}</code> from <code>/{{ dirname }}</code>.
+  {% if didindextoo %}(Also removed it from the Index file.){% endif %}
+</p>
+{% endif %}
+
 {% if didrename %}
 <p class="ResultNote">
   Renamed <code>{{ didrename }}</code> to <code>{{ didnewname }}</code>.

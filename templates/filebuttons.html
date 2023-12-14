@@ -60,6 +60,17 @@
   <input class="FormButton" name="cancel" type="submit" value="Cancel">
   </form>
   
+  {% elif op == 'dellink' %}
+  
+  <div class="FormAction">Really delete symlink <code>{{ opfile }}</code>?</div>
+  <form method="post" action="{{ requri }}#list_{{ ent.name |urlencode }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="{{ opfile }}"/>
+  <input type="hidden" name="op" value="{{ op }}"/>
+  <input class="FormButton HotButton" name="confirm" type="submit" value="Delete">
+  <input class="FormButton" name="cancel" type="submit" value="Cancel">
+  </form>
+  
   {% elif op == 'rename' %}
 
   <div class="FormAction">Rename <code>{{ opfile }}</code> to...</div>

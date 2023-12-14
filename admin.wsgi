@@ -261,8 +261,6 @@ class base_DirectoryPage(AdminHandler):
         if bad_filename(filename):
             return None
         pathname = os.path.join(self.get_dirpath(req), filename)
-        if not os.path.exists(pathname):
-            return None
         if not os.path.islink(pathname):
             return None
         target = os.readlink(pathname)

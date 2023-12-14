@@ -685,10 +685,19 @@ class base_DirectoryPage(AdminHandler):
         newpath = os.path.join(self.app.archive_dir, newdir, filename)
         relpath = os.path.relpath(origpath, start=os.path.join(self.app.archive_dir, newdir))
         os.symlink(relpath, newpath)
+
+        # See if we need to clone an Index entry.
+        indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
+        ient = indexdir.getmap().get(filename)
+        if ient:
+            indexdir2 = IndexDir(newdir, rootdir=self.app.archive_dir, orblank=True)
+            indexdir2.add(ient)
+            self.app.rewrite_indexdir(indexdir2)
         
         req.loginfo('Created symlink to "%s" from /%s to /%s', filename, self.get_dirname(req), newdir)
         return self.render(self.template, req,
-                           didlinkto=filename, didnewdir=newdir, didnewuri='arch/'+newdir)
+                           didlinkto=filename, didnewdir=newdir, didnewuri='arch/'+newdir,
+                           didindextoo=bool(ient))
         
     
     def do_post_move(self, req, dirpath, filename):
@@ -761,7 +770,7 @@ class base_DirectoryPage(AdminHandler):
             
         os.rename(origpath, newpath)
 
-        # See if we need to Move an Index entry as well.
+        # See if we need to move an Index entry as well.
         indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
         ient = indexdir.getmap().get(filename)
         if ient:

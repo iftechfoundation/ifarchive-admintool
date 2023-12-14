@@ -488,8 +488,10 @@ class base_DirectoryPage(AdminHandler):
         This duplicates the structure of do_post(), which is annoyingly
         redundant. But it also avoids a bunch of fiddly special cases.
         """
-        uploads = [] ###
-        filesize = 999 ###
+        (uploads, filesize) = self.get_uploadinfo(req, filename)
+        if uploads is None or filesize is None:
+            msg = 'Not found: %s' % (filename,)
+            raise HTTPError('404 Not Found', msg)
 
         # On any Cancel button, we redirect back to the GET for this page.
         if req.get_input_field('cancel'):

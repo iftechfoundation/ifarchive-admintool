@@ -268,19 +268,19 @@ class base_DirectoryPage(AdminHandler):
         target = os.readlink(pathname)
         path = os.path.realpath(pathname)
         if path.startswith(self.app.archive_dir+'/') and os.path.exists(path):
-            relpath = path[ len(archivedir)+1 : ]
+            relpath = path[ len(self.app.archive_dir)+1 : ]
             if os.path.isfile(path):
                 stat = os.stat(path)
-                return SymlinkEntry(filename, target, stat, realpath=relpath, isdir=False, user=user)
+                return SymlinkEntry(filename, target, stat, realpath=relpath, isdir=False, user=req._user)
             elif os.path.isdir(path):
                 stat = os.stat(path)
-                return SymlinkEntry(filename, target, stat, realpath=relpath, isdir=True, user=user)
+                return SymlinkEntry(filename, target, stat, realpath=relpath, isdir=True, user=req._user)
             else:
                 return None
         else:
             # Gotta use the link's own stat
             stat = os.lstat(pathname)
-            return SymlinkEntry(filename, target, stat, isdir=False, broken=True, user=user)
+            return SymlinkEntry(filename, target, stat, isdir=False, broken=True, user=req._user)
         
     def get_filelist(self, req, dirs=False, shortdate=False, sort=None):
         """Get a list of FileEntries from our directory.
@@ -438,7 +438,11 @@ class base_DirectoryPage(AdminHandler):
         if filename == '.':
             ent = None   # directory operation
         else:
-            ent = self.get_file(filename, req)
+            if op == 'dellink':
+                ent = self.get_symlink(filename, req)
+            else:
+                ent = self.get_file(filename, req)
+            req.loginfo('### file entry: %s', ent) ###
             if not ent:
                 return self.render(self.template, req,
                                    formerror='File not found: "%s"' % (filename,))

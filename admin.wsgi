@@ -645,7 +645,7 @@ class base_DirectoryPage(AdminHandler):
         res = curs.execute('SELECT * FROM uploads where md5 = ?', (origmd5,))
         for tup in list(res.fetchall()):
             ent = UploadEntry(tup)
-            curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (ent.uploadtime, newmd5, newsize, newname, ent.origfilename, ent.donorname, ent.donoremail, ent.donorip, ent.donoruseragent, ent.permission, ent.suggestdir, ent.ifdbid, ent.about))
+            curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about, usernotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (ent.uploadtime, newmd5, newsize, newname, ent.origfilename, ent.donorname, ent.donoremail, ent.donorip, ent.donoruseragent, ent.permission, ent.suggestdir, ent.ifdbid, ent.about, ent.usernotes))
 
         req.loginfo('Zipped "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,

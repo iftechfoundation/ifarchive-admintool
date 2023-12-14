@@ -102,6 +102,7 @@ def cmd_createdb(args, app):
     """Create the database tables. This only needs to be done once ever,
     unless of course we change the table structure or decide to wipe
     and start over.
+    ### Add a column if it doesn't exist?
     """
     logging.info('CLI user=%s: createdb', get_curuser())
     curs = app.getdb().cursor()
@@ -124,7 +125,7 @@ def cmd_createdb(args, app):
         print('"uploads" table exists')
     else:
         print('creating "uploads" table...')
-        curs.execute('CREATE TABLE uploads(uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about)')
+        curs.execute('CREATE TABLE uploads(uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about, usernotes)')
 
 
 def cmd_adduser(args, app):

@@ -144,6 +144,9 @@ class FileEntry(ListEntry):
         
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
+    def __repr__(self):
+        return '<FileEntry "%s">' % (self.name,)
+
 class DirEntry(ListEntry):
     """Represents one subdirectory in a directory.
     """
@@ -153,6 +156,9 @@ class DirEntry(ListEntry):
         self.isdir = True
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
+
+    def __repr__(self):
+        return '<DirEntry "%s">' % (self.name,)
 
 class SymlinkEntry(ListEntry):
     """Represents one symlink in a directory.
@@ -182,6 +188,11 @@ class SymlinkEntry(ListEntry):
                 self.realuri = 'arch'
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
+
+    def __repr__(self):
+        isbroken = ' (broken)' if self.broken else ''
+        istype = ' (file)' if self.isfile else ' (dir)'
+        return '<SymlinkEntry "%s" to "%s"%s%s>' % (self.name, self.target, istype, isbroken)
 
 class IndexOnlyEntry(ListEntry):
     """Represents a file that doesn't exist at all (in this directory),

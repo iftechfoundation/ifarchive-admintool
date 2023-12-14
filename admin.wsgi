@@ -267,6 +267,36 @@ class base_DirectoryPage(AdminHandler):
             filelist.sort(key=lambda file:sortcanon(file.name))
         return filelist
 
+    def get_uploadinfo(self, req, filename):
+        """Return a list of UploadEntry records and the file size for a file.
+        If the file doesn't exist or is not readable, return (None, None).
+        """
+        if bad_filename(filename):
+            return (None, None)
+        pathname = os.path.join(self.get_dirpath(req), filename)
+        if not os.path.isfile(pathname):
+            return (None, None)
+        try:
+            stat = os.stat(pathname)
+            filesize = stat.st_size
+        except Exception as ex:
+            return (None, None)
+
+        if not filesize:
+            # No point in checking the upload history for zero-length
+            # uploads.
+            uploads = []
+        else:
+            hashval = read_md5(pathname)
+            curs = self.app.getdb().cursor()
+            res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', (hashval,))
+            uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
+
+        for obj in uploads:
+            obj.checksuggested(self.app)
+
+        return (uploads, filesize)
+
     def do_get(self, req):
         """The GET case has to handle download and "show info" links,
         as well as the basic file list.
@@ -339,32 +369,10 @@ class base_DirectoryPage(AdminHandler):
     def do_get_info(self, req, filename):
         """Handler to show upload info for a file within a directory.
         """
-        if bad_filename(filename):
+        (uploads, filesize) = self.get_uploadinfo(req, filename)
+        if uploads is None or filesize is None:
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
-        pathname = os.path.join(self.get_dirpath(req), filename)
-        if not os.path.isfile(pathname):
-            msg = 'Not a file: %s' % (pathname,)
-            raise HTTPError('400 Not Readable', msg)
-        try:
-            stat = os.stat(pathname)
-            filesize = stat.st_size
-        except Exception as ex:
-            msg = 'Unable to stat: %s %s' % (pathname, ex,)
-            raise HTTPError('400 Not Readable', msg)
-
-        if not filesize:
-            # No point in checking the upload history for zero-length
-            # uploads.
-            uploads = []
-        else:
-            hashval = read_md5(pathname)
-            curs = self.app.getdb().cursor()
-            res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', (hashval,))
-            uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
-
-        for obj in uploads:
-            obj.checksuggested(self.app)
             
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
 

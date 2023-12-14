@@ -43,7 +43,7 @@
       <dd class="FileInfoList">
         <ul>
         {% if dir.indexdesc %}
-        <div class="FileComments">{{ dir.indexdesc }}</div>
+        <li><div class="FileComments">{{ dir.indexdesc }}</div>
         {% endif %}
         {% if dir.indexmeta %}
           {% for key, val in dir.indexmeta %}
@@ -122,7 +122,7 @@
     <dd class="FileInfoList">
       <ul>
       {% if file.indexdesc %}
-      <div class="FileComments">{{ file.indexdesc }}</div>
+      <li><div class="FileComments">{{ file.indexdesc }}</div>
       {% endif %}
       {% if file.indexmeta %}
         {% for key, val in file.indexmeta %}

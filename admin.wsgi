@@ -681,7 +681,10 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='You are already in %s!' % (newdir,))
 
-        ####
+        origpath = os.path.join(dirpath, filename)
+        newpath = os.path.join(self.app.archive_dir, newdir, filename)
+        relpath = os.path.relpath(origpath, start=os.path.join(self.app.archive_dir, newdir))
+        os.symlink(relpath, newpath)
         
         req.loginfo('Created symlink to "%s" from /%s to /%s', filename, self.get_dirname(req), newdir)
         return self.render(self.template, req,

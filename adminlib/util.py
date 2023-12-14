@@ -86,7 +86,7 @@ def read_md5(pathname):
     hasher = hashlib.md5()
     fl = open(pathname, 'rb')
     while True:
-        dat = fl.read(8192)
+        dat = fl.read(16384)
         if not dat:
             break
         hasher.update(dat)

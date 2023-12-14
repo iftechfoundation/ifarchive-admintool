@@ -536,13 +536,20 @@ class base_DirectoryPage(AdminHandler):
         # usernote info. (Other fields may differ! But usernotes are updated
         # by md5, so they should all match.)
 
-        val = uploads[0].usernote
+        hashval = uploads[0].md5
+        val = uploads[0].usernotes
         if not val:
-            newnote = note
+            newnotes = note
         else:
-            newnote = val.strip() + '\n' + note
-        ####
+            newnotes = val.strip() + '\n' + note
 
+        curs = self.app.getdb().cursor()
+        curs.execute('UPDATE uploads SET usernotes = ? WHERE md5 = ?', (newnotes, hashval))
+
+        # Gotta reload to see the change.
+        (uploads, filesize) = self.get_uploadinfo(req, filename)
+        
+        req.loginfo('Added usernote to "%s" from /%s: "%s"', filename, self.get_dirname(req), note)
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
         
     def do_post_delete(self, req, dirpath, filename):

@@ -525,6 +525,8 @@ class base_DirectoryPage(AdminHandler):
                                op=op,
                                filename=filename, filesize=filesize, uploads=uploads,
                                formerror='You must supply a line of text.')
+        # Add the username.
+        note = req._user.name+': '+note
 
         if not uploads:
             return self.render('uploadinfo.html', req,

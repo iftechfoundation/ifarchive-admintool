@@ -208,6 +208,9 @@ class IndexOnlyEntry(ListEntry):
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
+    def __repr__(self):
+        return '<IndexOnlyEntry "%s">' % (self.name,)
+
 
 class UploadEntry:
     """Represents one entry in the upload log.

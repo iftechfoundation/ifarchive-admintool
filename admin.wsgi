@@ -418,21 +418,6 @@ class base_DirectoryPage(AdminHandler):
                 return self.do_post_info(req, filename)
             raise HTTPError('404 Not Found', 'View "%s" not found: %s' % (view, filename,))
         
-        dirpath = self.get_dirpath(req)
-        
-        filename = req.get_input_field('filename')
-        if filename == '.':
-            ent = None   # directory operation
-        else:
-            ent = self.get_file(filename, req)
-            if not ent:
-                return self.render(self.template, req,
-                                   formerror='File not found: "%s"' % (filename,))
-
-        # On any Cancel button, we redirect back to the GET for this page.
-        if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+req.path_info+'#list_'+urlencode(filename))
-
         # The operation may be defined by an "op" hidden field or by the
         # button just pressed. (Depending on what stage we're at.)
         if req.get_input_field('op'):
@@ -446,6 +431,22 @@ class base_DirectoryPage(AdminHandler):
         if not op or op not in req._fileops:
             return self.render(self.template, req,
                                formerror='Invalid operation: %s' % (op,))
+
+        dirpath = self.get_dirpath(req)
+        
+        filename = req.get_input_field('filename')
+        if filename == '.':
+            ent = None   # directory operation
+        else:
+            ent = self.get_file(filename, req)
+            if not ent:
+                return self.render(self.template, req,
+                                   formerror='File not found: "%s"' % (filename,))
+        # ent is not actually used after this point, though. It was just a check.
+
+        # On any Cancel button, we redirect back to the GET for this page.
+        if req.get_input_field('cancel'):
+            raise HTTPRedirectPost(self.app.approot+req.path_info+'#list_'+urlencode(filename))
 
         # If neither "confirm" nor "cancel" was pressed, we're at the
         # stage of showing those buttons. (And also the "rename" input

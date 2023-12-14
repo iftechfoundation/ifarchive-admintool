@@ -566,6 +566,10 @@ class base_DirectoryPage(AdminHandler):
         newname = find_unused_filename(filename, self.app.trash_dir)
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(self.app.trash_dir, newname)
+
+        if not os.path.isfile(origpath):
+            raise Exception('delete op requires a file')
+        
         os.rename(origpath, newpath)
 
         # See if we need to delete an Index entry as well.

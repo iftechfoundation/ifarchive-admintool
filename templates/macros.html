@@ -1,4 +1,8 @@
 
+{# dirchain(): Given a list of (dirname, URI) pairs, write them out
+   as hyperlinks. (If lastbare is true, omit the last hyperlink.)
+   This is typically used on "uri|splituri". #}
+
 {%- macro dirchain(ls, lastbare=False) -%}
   {% if not lastbare %}
     {% set slash = joiner('/') %}
@@ -13,6 +17,9 @@
     {{ slash() }}{{ ls[-1][0] }}
   {% endif %}
 {%- endmacro -%}
+
+
+{# optlink(): Turn a URI into a hyperlink if flag is set. #}
 
 {%- macro optlink(text, uri, flag) -%}
   {%- if flag -%}

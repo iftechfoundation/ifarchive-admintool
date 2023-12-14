@@ -468,6 +468,8 @@ class base_DirectoryPage(AdminHandler):
         
         if op == 'delete':
             return self.do_post_delete(req, dirpath, filename)
+        elif op == 'dellink':
+            return self.do_post_dellink(req, dirpath, filename)
         elif op == 'move':
             return self.do_post_move(req, dirpath, filename)
         elif op == 'rename':
@@ -583,6 +585,23 @@ class base_DirectoryPage(AdminHandler):
         req.loginfo('Deleted "%s" from /%s', filename, self.get_dirname(req))
         return self.render(self.template, req,
                            diddelete=filename, didnewname=newname,
+                           didindextoo=bool(ient))
+
+    def do_post_dellink(self, req, dirpath, filename):
+        """Handle a delete-symlink operation (which really is delete; we
+        don't put symlinks in the trash).
+        """
+        op = 'dellink'
+    
+        origpath = os.path.join(dirpath, filename)
+        if not os.path.islink(origpath):
+            raise Exception('dellink op requires a symlink')
+
+        ient = None ####
+        
+        req.loginfo('Deleted symlink "%s" from /%s', filename, self.get_dirname(req))
+        return self.render(self.template, req,
+                           diddellink=filename,
                            didindextoo=bool(ient))
         
     def do_post_move(self, req, dirpath, filename):

@@ -229,6 +229,12 @@ ul.UserInfoList li {
     background-color: #EAFB80;
 }
 
+.SubdirButtons.Selected {
+    background: #FFA;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
 .FileComments {
     margin-top: 10px;
     margin-bottom: 10px;

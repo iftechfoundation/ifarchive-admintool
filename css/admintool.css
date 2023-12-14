@@ -186,6 +186,10 @@ ul.UserInfoList li {
     margin-bottom: 4px;
 }
 
+.StaticDocs ul li {
+    text-indent: 20px hanging;
+}
+
 .DirButtons {
     margin-left: 0px;
     padding-left: 40px;

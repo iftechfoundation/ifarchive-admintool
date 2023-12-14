@@ -255,6 +255,33 @@ class base_DirectoryPage(AdminHandler):
         stat = os.stat(pathname)
         return FileEntry(filename, stat, user=req._user)
         
+    def get_symlink(self, filename, req):
+        """Same as above, but for symlinks.
+        """
+        if bad_filename(filename):
+            return None
+        pathname = os.path.join(self.get_dirpath(req), filename)
+        if not os.path.exists(pathname):
+            return None
+        if not os.path.islink(pathname):
+            return None
+        target = os.readlink(pathname)
+        path = os.path.realpath(pathname)
+        if path.startswith(self.app.archive_dir+'/') and os.path.exists(path):
+            relpath = path[ len(archivedir)+1 : ]
+            if os.path.isfile(path):
+                stat = os.stat(path)
+                return SymlinkEntry(filename, target, stat, realpath=relpath, isdir=False, user=user)
+            elif os.path.isdir(path):
+                stat = os.stat(path)
+                return SymlinkEntry(filename, target, stat, realpath=relpath, isdir=True, user=user)
+            else:
+                return None
+        else:
+            # Gotta use the link's own stat
+            stat = os.lstat(pathname)
+            return SymlinkEntry(filename, target, stat, isdir=False, broken=True, user=user)
+        
     def get_filelist(self, req, dirs=False, shortdate=False, sort=None):
         """Get a list of FileEntries from our directory.
         See get_dir_entries().

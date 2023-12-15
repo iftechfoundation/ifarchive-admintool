@@ -42,12 +42,13 @@ class Hasher:
         """Get both the MD5 checksum and the size for a file.
         """
         stat = os.stat(pathname)
-        key = (pathname, stat.st_size, stat.st_mtime)
+        key = (pathname, stat.st_size, int(stat.st_mtime))
         now = time.time()
         
         with self.lock:
             ent = self.map.get(key)
             if ent is not None:
+                logging.info('### hasher %s: got %s / %s', self, pathname, key)
                 ent.lastuse = now
                 return ent.md5, ent.size
 
@@ -67,21 +68,33 @@ class Hasher:
         with self.lock:
             # This is a good time to clean out old entries.
             timelimit = now - self.expiretime
-            delkeys = [ key for key, ent in self.map.items() if ent.lastuse < timelimit ]
+            delkeys = [ dkey for dkey, dent in self.map.items() if dent.lastuse < timelimit ]
             if delkeys:
-                for key in delkeys:
-                    del self.map[key]
+                for dkey in delkeys:
+                    del self.map[dkey]
+                logging.info('### hasher %s: expired %d entries', self, len(delkeys))
                     
             # Another thread might have created an entry for this key;
             # we'll just replace it. It was identical anyhow.
+            logging.info('### hasher %s: computed %s / %s', self, pathname, key)
             ent = MapEntry(key, now, md5)
             self.map[key] = ent
             return ent.md5, ent.size
+
+    def dump(self):
+        """Get all the pathnames and md5s in the cache. We only use this
+        for diagnostics.
+        """
+        with self.lock:
+            ls = [ (ent.pathname, ent.md5) for ent in self.map.values() ]
+        return ls
 
 class MapEntry:
     def __init__(self, key, now, md5):
         self.key = key
         self.md5 = md5
+        self.pathname = key[0]
         self.size = key[1]
+        self.modtime = key[2]
         self.lastuse = now
         

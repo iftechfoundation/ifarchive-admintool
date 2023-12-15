@@ -27,7 +27,6 @@ from adminlib.admapp import AdminApp, AdminHandler
 from adminlib.session import User, Session
 from adminlib.session import require_user, require_role
 from adminlib.util import bad_filename, in_user_time, clean_newlines
-from adminlib.util import read_md5, read_size
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
 from adminlib.util import urlencode
@@ -312,7 +311,7 @@ class base_DirectoryPage(AdminHandler):
             # uploads.
             uploads = []
         else:
-            hashval = read_md5(pathname)
+            hashval = self.app.hasher.get_md5(pathname)
             curs = self.app.getdb().cursor()
             res = curs.execute('SELECT * FROM uploads WHERE md5 = ? ORDER BY uploadtime', (hashval,))
             uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
@@ -467,7 +466,7 @@ class base_DirectoryPage(AdminHandler):
                 # if it's valid.
                 try:
                     origpath = os.path.join(dirpath, filename)
-                    origmd5 = read_md5(origpath)
+                    origmd5 = self.app.hasher.get_md5(origpath)
                     curs = self.app.getdb().cursor()
                     res = curs.execute('SELECT * FROM uploads where md5 = ?', (origmd5,))
                     tup = res.fetchone()
@@ -839,7 +838,7 @@ class base_DirectoryPage(AdminHandler):
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='File already exists: "%s"' % (newname,))
-        origmd5 = read_md5(origpath)
+        origmd5 = self.app.hasher.get_md5(origpath)
         zip_compress(origpath, newpath)
 
         # Now move the original to the trash.
@@ -849,8 +848,7 @@ class base_DirectoryPage(AdminHandler):
             os.rename(origpath, trashpath)
 
         # Now create a new upload entry with the new md5.
-        newsize = read_size(newpath)
-        newmd5 = read_md5(newpath)
+        newmd5, newsize = self.app.hasher.get_md5_size(newpath)
         curs = self.app.getdb().cursor()
         res = curs.execute('SELECT * FROM uploads where md5 = ?', (origmd5,))
         for tup in list(res.fetchall()):

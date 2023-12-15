@@ -6,7 +6,7 @@ Hash Cache
 
 {% block content %}
 
-<p>Process {{ pid }}:</p>
+<p>Process {{ pid }} has {{ cachels|length }} {{ cachels|length|plural('hash', 'hashes') }} cached.</p>
 
 <ul>
   {% for path, md5 in cachels %}

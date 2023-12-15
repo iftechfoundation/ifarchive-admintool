@@ -13,6 +13,7 @@ from adminlib.session import find_user
 from adminlib.info import formatdate
 from adminlib.util import find_unused_filename
 from adminlib.jenv import DelimNumber, Pluralize, SplitURI, AllLatin1
+from adminlib.hasher import Hasher
 
 class AdminApp(TinyApp):
     """AdminApp: The TinyApp class.
@@ -58,6 +59,9 @@ class AdminApp(TinyApp):
 
         # Thread-local storage for various things which are not thread-safe.
         self.threadcache = threading.local()
+
+        # Module for computing (and caching) MD5 checksums. It is thread-safe.
+        self.hasher = Hasher()
 
     def getdb(self):
         """Get or create a sqlite3 db connection object. These are

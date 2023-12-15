@@ -5,7 +5,6 @@ import hashlib
 import logging
 
 from tinyapp.util import random_bytes, time_now
-from adminlib.util import read_md5, read_size
 
 def run(appinstance):
     """The entry point when admin.wsgi is invoked on the command line.
@@ -176,8 +175,7 @@ def cmd_addupload(args, app):
     """Create a new upload record.
     """
     filename = args.file
-    md5 = read_md5(filename)
-    size = read_size(filename)
+    md5, size = app.hasher.get_md5_size(filename)
     barefilename = os.path.basename(filename)
     origfile = args.origfile or barefilename
     now = time_now()

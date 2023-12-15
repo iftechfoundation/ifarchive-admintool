@@ -1,4 +1,5 @@
 import os
+import time
 import hashlib
 import threading
 
@@ -15,19 +16,43 @@ class Hasher:
     be thread-safe.
     """
     def __init__(self):
+        self.map = {}
+        
         # Any access to the map must be done under this lock.
         self.lock = threading.Lock()
+
+    def get_md5(self, pathname):
+        """Get an MD5 checksum from a file.
+        We need the size for the cache lookup, so this just calls
+        get_md5_size() and picks out the part we need.
+        """
+        md5, size = self.get_md5_size(pathname)
+        return md5
+
+    def get_size(self, pathname):
+        """Get the size of a file. (This doesn't use the cache; it's
+        here for completeness.)
+        """
+        stat = os.stat(pathname)
+        return stat.st_size
 
     def get_md5_size(self, pathname):
         """Get both the MD5 checksum and the size for a file.
         """
-        size = self.get_size(pathname)
-        md5 = self.get_md5(pathname)
-        return (md5, size)
+        stat = os.stat(pathname)
+        key = (pathname, stat.st_size, stat.st_mtime)
+        now = time.time()
+        
+        with self.lock:
+            ent = self.map.get(key)
+            if ent is not None:
+                ent.lastuse = now
+                return ent.md5, ent.size
 
-    def get_md5(self, pathname):
-        """Get an MD5 checksum from a file.
-        """
+        # Gotta do this the hard way. Note that we do the md5 computation
+        # *outside* the lock. There's a small chance that two threads will
+        # start this work at the same time, but that's okay.
+
         hasher = hashlib.md5()
         fl = open(pathname, 'rb')
         while True:
@@ -35,12 +60,20 @@ class Hasher:
             if not dat:
                 break
             hasher.update(dat)
-        return hasher.hexdigest()
+        md5 = hasher.hexdigest()
 
-    def get_size(self, pathname):
-        """Get the size of a file.
-        """
-        stat = os.stat(pathname)
-        return stat.st_size
+        with self.lock:
+            ### clean out old entries?
+            # Another thread might have created an entry for this key;
+            # we'll just replace it. It was identical anyhow.
+            ent = MapEntry(key, now, md5)
+            self.map[key] = ent
+            return ent.md5, ent.size
 
-    
+class MapEntry:
+    def __init__(self, key, now, md5):
+        self.key = key
+        self.md5 = md5
+        self.size = key[1]
+        self.lastuse = now
+        

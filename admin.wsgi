@@ -194,7 +194,18 @@ class han_AllSessions(AdminHandler):
         return self.render('allsessions.html', req,
                                sessions=sessionlist)
 
-    
+
+@beforeall(require_role('admin'))
+class han_HashCache(AdminHandler):
+    renderparams = { 'navtab':'admin' }
+
+    def do_get(self, req):
+        cachels = self.app.hasher.dump()
+        pid = os.getpid()
+        return self.render('hashcache.html', req,
+                           cachels=cachels, pid=pid)
+
+        
 class base_DirectoryPage(AdminHandler):
     """Base class for all handlers that display a file list.
     This will have subclasses for each directory that has special
@@ -1479,6 +1490,7 @@ handlers = [
     ('/admin', han_AdminAdmin),
     ('/admin/allusers', han_AllUsers),
     ('/admin/allsessions', han_AllSessions),
+    ('/admin/hashcache', han_HashCache),
     ('/incoming', han_Incoming),
     ('/trash', han_Trash),
     ('/arch', han_ArchiveRoot),

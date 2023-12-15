@@ -1,0 +1,17 @@
+{% extends "page.html" %}
+
+{% block title %}
+Hash Cache
+{% endblock %}
+
+{% block content %}
+
+<p>Process {{ pid }}:</p>
+
+<ul>
+  {% for path, md5 in cachels %}
+  <li>{{ md5 }} {{ path }}
+  {% endfor %}
+</ul>
+
+{% endblock %}

@@ -80,24 +80,6 @@ def find_unused_filename(val, dir):
         if not os.path.exists(path):
             return newval
 
-def read_md5(pathname):
-    """Get an MD5 checksum from a file.
-    """
-    hasher = hashlib.md5()
-    fl = open(pathname, 'rb')
-    while True:
-        dat = fl.read(16384)
-        if not dat:
-            break
-        hasher.update(dat)
-    return hasher.hexdigest()
-
-def read_size(pathname):
-    """Get the size of a file.
-    """
-    stat = os.stat(pathname)
-    return stat.st_size
-
 def zip_compress(origpath, newpath):
     """Compress a file. The new pathname must not exist yet.
     """

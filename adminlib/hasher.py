@@ -16,8 +16,9 @@ class Hasher:
     The AdminApp will keep a reference to this object. All methods must
     be thread-safe.
     """
-    def __init__(self, expiretime=30):
+    def __init__(self, expiretime=604800):
         self.map = {}
+        # expiretime defaults to seven days
         self.expiretime = expiretime
         
         # Any access to the map must be done under this lock.

@@ -65,7 +65,13 @@ class Hasher:
         md5 = hasher.hexdigest()
 
         with self.lock:
-            ### clean out old entries?
+            # This is a good time to clean out old entries.
+            timelimit = now - self.expiretime
+            delkeys = [ key for key, ent in self.map.items() if ent.lastuse < timelimit ]
+            if delkeys:
+                for key in delkeys:
+                    del self.map[key]
+                    
             # Another thread might have created an entry for this key;
             # we'll just replace it. It was identical anyhow.
             ent = MapEntry(key, now, md5)

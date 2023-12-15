@@ -49,7 +49,6 @@ class Hasher:
         with self.lock:
             ent = self.map.get(key)
             if ent is not None:
-                logging.info('### hasher %s: got %s / %s', self, pathname, key)
                 ent.lastuse = now
                 return ent.md5, ent.size
 
@@ -73,11 +72,9 @@ class Hasher:
             if delkeys:
                 for dkey in delkeys:
                     del self.map[dkey]
-                logging.info('### hasher %s: expired %d entries', self, len(delkeys))
                     
             # Another thread might have created an entry for this key;
             # we'll just replace it. It was identical anyhow.
-            logging.info('### hasher %s: computed %s / %s', self, pathname, key)
             ent = MapEntry(key, now, md5)
             self.map[key] = ent
             return ent.md5, ent.size

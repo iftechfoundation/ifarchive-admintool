@@ -2,6 +2,7 @@ import os
 import time
 import hashlib
 import threading
+import logging
 
 class Hasher:
     """In the course of the admintool, we do a lot of md5 hashing of files.
@@ -15,8 +16,9 @@ class Hasher:
     The AdminApp will keep a reference to this object. All methods must
     be thread-safe.
     """
-    def __init__(self):
+    def __init__(self, expiretime=30):
         self.map = {}
+        self.expiretime = expiretime
         
         # Any access to the map must be done under this lock.
         self.lock = threading.Lock()

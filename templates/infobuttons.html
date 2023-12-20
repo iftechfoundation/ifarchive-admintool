@@ -39,6 +39,32 @@
   </div>
   </form>
 
+{% elif op == 'notifyifdb' %}
+
+  {% set ifdbids = uploads|ifdbidlist %}
+  <div class="FormAction">Notify IFDB that this file's permanent home is <code>if-archive/{{ dirname }}</code>...</div>
+  <form method="post" action="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ filename|urlencode }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="{{ filename }}"/>
+  <input type="hidden" name="filedir" value="{{ dirname }}"/>
+  <input type="hidden" name="op" value="{{ op }}"/>
+  {% if ifdbids|length == 1 %}
+    <input type="hidden" name="ifdbid" value="{{ ifdbids[0] }}"/>
+  {% else %}
+    <div class="FormAction">(This file was uploaded {{ ifdbids|length }} times with different IFDB IDs. IFDB will probably recognize one at most; you may have to try them all.)</div>
+    {% for val in ifdbids %}
+      <div>
+        <input id=ifdbid_{{ val }} type="radio" name="ifdbid" value="{{ val }}">
+        <label for="ifdbid_{{ val }}"><span class="ItemName">IFDB temp ID:</span> {{ val }}</label>
+      </div>
+    {% endfor %}
+  {% endif %}
+  <div>
+    <input class="FormButton HotButton" name="confirm" type="submit" value="Notify">
+    <input class="FormButton" name="cancel" type="submit" value="Cancel">
+  </div>
+  </form>
+
 {% else %}
 
   <div>Action not implemented: {{ op }}</div>

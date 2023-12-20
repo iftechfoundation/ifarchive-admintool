@@ -554,6 +554,8 @@ class base_DirectoryPage(AdminHandler):
             op = None
             if req.get_input_field('addusernote'):
                 op = 'addusernote'
+            elif req.get_input_field('notifyifdb'):
+                op = 'notifyifdb'
         if not op:
             return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,
                                formerror='Invalid operation: %s' % (op,))

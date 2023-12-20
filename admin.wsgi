@@ -973,7 +973,6 @@ class base_DirectoryPage(AdminHandler):
         # IFDB IDs and the commit key should be alphanumeric.
         urltofetch = ifdburl.format(ifdbid=ifdbid, path=urlencode(ifdbpath), key=self.app.ifdb_commit_key)
         
-        req.loginfo('### %s', urltofetch) ###
         try:
             ifdbreq = urllib.request.urlopen(urltofetch)
             reqresult = ifdbreq.read()

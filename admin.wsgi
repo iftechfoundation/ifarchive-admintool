@@ -569,7 +569,20 @@ class base_DirectoryPage(AdminHandler):
             
         # The "confirm" button was pressed, so it's time to perform the
         # action.
+        
+        if op == 'addusernote':
+            return self.do_post_addusernote(req, filename, uploads, filesize)
+        else:
+            return self.render('uploadinfo.html', req,
+                               op=op,
+                               filename=filename, filesize=filesize, uploads=uploads,
+                               formerror='Operation not implemented: %s' % (op,))
 
+    def do_post_addusernote(self, req, filename, uploads, filesize):
+        """Handle the add-admin-note operation.
+        """
+        op = 'addusernote'
+        
         note = req.get_input_field('usernote')
         if note:
             note = note.strip()

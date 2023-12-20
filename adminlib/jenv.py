@@ -67,7 +67,20 @@ class SplitURI(jinja2.ext.Extension):
                 res.append( (ls[ix], '/'.join(ls[ 0 : ix+1 ])) )
             return res
         return [ (val, val) ]
-    
+
+
+class IFDBIDList(jinja2.ext.Extension):
+    """Given a list of UploadEntry items, return a list of all the
+    nonempty ifdbid values.
+    """
+    def __init__(self, env):
+        env.filters['ifdbidlist'] = self.ifdbidlist
+
+    @staticmethod
+    def ifdbidlist(ls):
+        res = [ ent.ifdbid for ent in ls if ent.ifdbid ]
+        return res
+
             
 class AllLatin1(jinja2.ext.Extension):
     """Return True if the input string is all Latin-1 characters. If there's

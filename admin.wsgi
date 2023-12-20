@@ -578,48 +578,6 @@ class base_DirectoryPage(AdminHandler):
                                filename=filename, filesize=filesize, uploads=uploads,
                                formerror='Operation not implemented: %s' % (op,))
 
-    def do_post_addusernote(self, req, filename, uploads, filesize):
-        """Handle the add-admin-note operation.
-        """
-        op = 'addusernote'
-        
-        note = req.get_input_field('usernote')
-        if note:
-            note = note.strip()
-        if not note:
-            return self.render('uploadinfo.html', req,
-                               op=op,
-                               filename=filename, filesize=filesize, uploads=uploads,
-                               formerror='You must supply a line of text.')
-        # Add the username.
-        note = req._user.name+': '+note
-
-        if not uploads:
-            return self.render('uploadinfo.html', req,
-                               op=op,
-                               filename=filename, filesize=filesize, uploads=uploads,
-                               formerror='This file has no upload record, so there is no place to add a note.')
-
-        # We are assuming that every upload record for this md5 has the same
-        # usernote info. (Other fields may differ! But usernotes are updated
-        # by md5, so they should all match.)
-
-        hashval = uploads[0].md5
-        val = uploads[0].usernotes
-        if not val:
-            newnotes = note
-        else:
-            newnotes = val.strip() + '\n' + note
-
-        curs = self.app.getdb().cursor()
-        curs.execute('UPDATE uploads SET usernotes = ? WHERE md5 = ?', (newnotes, hashval))
-
-        # Gotta reload to see the change.
-        (uploads, filesize) = self.get_uploadinfo(req, filename)
-        
-        req.loginfo('Added usernote to "%s" from /%s: "%s"', filename, self.get_dirname(req), note)
-        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
-        
     def do_post_delete(self, req, dirpath, filename):
         """Handle a delete operation (which is really "move to trash").
         """
@@ -955,6 +913,49 @@ class base_DirectoryPage(AdminHandler):
         req.loginfo('Deleted directory /%s', self.get_dirname(req))
         return self.render(self.template, req,
                            diddeldir='.', didnewname=subdirname)
+
+    def do_post_addusernote(self, req, filename, uploads, filesize):
+        """Handle the add-admin-note operation.
+        """
+        op = 'addusernote'
+        
+        note = req.get_input_field('usernote')
+        if note:
+            note = note.strip()
+        if not note:
+            return self.render('uploadinfo.html', req,
+                               op=op,
+                               filename=filename, filesize=filesize, uploads=uploads,
+                               formerror='You must supply a line of text.')
+        # Add the username.
+        note = req._user.name+': '+note
+
+        if not uploads:
+            return self.render('uploadinfo.html', req,
+                               op=op,
+                               filename=filename, filesize=filesize, uploads=uploads,
+                               formerror='This file has no upload record, so there is no place to add a note.')
+
+        # We are assuming that every upload record for this md5 has the same
+        # usernote info. (Other fields may differ! But usernotes are updated
+        # by md5, so they should all match.)
+
+        hashval = uploads[0].md5
+        val = uploads[0].usernotes
+        if not val:
+            newnotes = note
+        else:
+            newnotes = val.strip() + '\n' + note
+
+        curs = self.app.getdb().cursor()
+        curs.execute('UPDATE uploads SET usernotes = ? WHERE md5 = ?', (newnotes, hashval))
+
+        # Gotta reload to see the change.
+        (uploads, filesize) = self.get_uploadinfo(req, filename)
+        
+        req.loginfo('Added usernote to "%s" from /%s: "%s"', filename, self.get_dirname(req), note)
+        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
+        
 
 @beforeall(require_role('incoming'))
 class han_Incoming(base_DirectoryPage):

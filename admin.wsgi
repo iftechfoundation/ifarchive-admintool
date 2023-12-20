@@ -959,7 +959,14 @@ class base_DirectoryPage(AdminHandler):
         """
         op = 'notifyifdb'
         
-        req.loginfo('Notified IFDB about "%s" being in /%s', filename, self.get_dirname(req))
+        ifdbid = req.get_input_field('ifdbid')
+        if not ifdbid:
+            return self.render('uploadinfo.html', req,
+                               op=op,
+                               filename=filename, filesize=filesize, uploads=uploads,
+                               formerror='You must select an IFDB ID to send.')
+        
+        req.loginfo('Notified IFDB about "%s" (ID "%s") being in /%s', filename, ifdbid, self.get_dirname(req))
         ### result?
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
 

@@ -967,8 +967,8 @@ class base_DirectoryPage(AdminHandler):
                                formerror='You must select an IFDB ID to send.')
         
         req.loginfo('Notified IFDB about "%s" (ID "%s") being in /%s', filename, ifdbid, self.get_dirname(req))
-        ### result?
-        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
+        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,
+                           didnotifyifdb=True, ifdbid=ifdbid)
 
 
 @beforeall(require_role('incoming'))

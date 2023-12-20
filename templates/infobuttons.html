@@ -74,3 +74,12 @@
 {% if formerror %}
 <p>{{ formerror }}</p>
 {% endif %}
+
+{# We handle the notifyifdb result here -- there's no separate infobuttonresult.html template. #}
+
+{% if didnotifyifdb %}
+<p class="ResultNote">
+  Notified IFDB that this file (with IFDB temp ID {{ ifdbid }})
+  is now in <code>if-archive/{{ dirname }}</code>.
+</p>
+{% endif %}

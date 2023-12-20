@@ -24,6 +24,10 @@
     {% if ent.permission == 'author' %}<span class="ItemGloss">("I am the author of this file and I give permission")</span>{% endif %}
     {% if ent.permission == 'tried' %}<span class="ItemGloss">("to the best of my knowledge the author is okay with this")</span>{% endif %}
     {% if ent.permission == 'cli' %}<span class="ItemGloss">(info added by admin)</span>{% endif %}
+  {% if 'admin' in user.roles %}
+  <li><span class="ItemName">Hash:</span>
+    <span class="ItemGloss">{{ ent.md5 }}</span>
+  {% endif %}
   {% if ent.suggestdir %}
     <li><span class="ItemName">Suggested dir:</span>
       <code>if-archive/{{ ent.suggestdir }}</code>

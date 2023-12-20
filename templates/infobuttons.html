@@ -10,7 +10,7 @@
   </form>
 </div>
 
-{% if canifdbize and uploads|ifdbidlist %}
+{% if 'notifyifdb' in fileops and uploads|ifdbidlist %}
 <div>
   <form method="post" action="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ filename|urlencode }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>

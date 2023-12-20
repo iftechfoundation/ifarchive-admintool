@@ -409,12 +409,7 @@ class base_DirectoryPage(AdminHandler):
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
 
-        canifdbize = False
-        if req._user.has_role('filing'):
-            dirname = self.get_dirname(req)
-            canifdbize = (dirname != 'unprocessed' and dirname != 'incoming')
-            
-        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads, canifdbize=canifdbize)
+        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
 
     def do_post(self, req):
         """The POST case has to handle showing the "confirm/cancel" buttons
@@ -572,6 +567,8 @@ class base_DirectoryPage(AdminHandler):
         
         if op == 'addusernote':
             return self.do_post_addusernote(req, filename, uploads, filesize)
+        elif op == 'notifyifdb':
+            return self.do_post_notifyifdb(req, filename, uploads, filesize)
         else:
             return self.render('uploadinfo.html', req,
                                op=op,
@@ -956,6 +953,16 @@ class base_DirectoryPage(AdminHandler):
         req.loginfo('Added usernote to "%s" from /%s: "%s"', filename, self.get_dirname(req), note)
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
         
+    def do_post_notifyifdb(self, req, filename, uploads, filesize):
+        """Handle notifying IFDB about a file location. (Used to be the
+        ifdbize.py script.)
+        """
+        op = 'notifyifdb'
+        
+        req.loginfo('Notified IFDB about "%s" being in /%s', filename, self.get_dirname(req))
+        ### result?
+        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
+
 
 @beforeall(require_role('incoming'))
 class han_Incoming(base_DirectoryPage):
@@ -1130,7 +1137,7 @@ class han_ArchiveDir(base_DirectoryPage):
     def get_fileops(self, req):
         ls = []
         if req._user.has_role('filing'):
-            ls = ['rename', 'delete', 'dellink', 'move', 'linkto', 'csubdir', 'deldir']
+            ls = ['rename', 'delete', 'dellink', 'move', 'linkto', 'csubdir', 'deldir', 'notifyifdb']
         if req._user.has_role('index'):
             ls.append('eindex')
         return ls

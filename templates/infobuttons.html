@@ -10,6 +10,18 @@
   </form>
 </div>
 
+{% if canifdbize and uploads|ifdbidlist %}
+<div>
+  <form method="post" action="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ filename|urlencode }}">
+  <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+  <input type="hidden" name="filename" value="{{ filename }}"/>
+  <input type="hidden" name="filedir" value="{{ dirname }}"/>
+  <input class="FormButton" name="notifyifdb" type="submit" value="Notify IFDB">
+    of location <code>if-archive/{{ dirname }}</code>
+  </form>
+</div>
+{% endif %}
+
 {% elif op == 'addusernote' %}
 
   <form method="post" action="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ filename|urlencode }}">

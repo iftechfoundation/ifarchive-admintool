@@ -408,8 +408,13 @@ class base_DirectoryPage(AdminHandler):
         if uploads is None or filesize is None:
             msg = 'Not found: %s' % (filename,)
             raise HTTPError('404 Not Found', msg)
+
+        canifdbize = False
+        if req._user.has_role('filing'):
+            dirname = self.get_dirname(req)
+            canifdbize = (dirname != 'unprocessed' and dirname != 'incoming')
             
-        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
+        return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads, canifdbize=canifdbize)
 
     def do_post(self, req):
         """The POST case has to handle showing the "confirm/cancel" buttons

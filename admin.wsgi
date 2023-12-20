@@ -13,6 +13,7 @@ import sys
 import time
 import os, os.path
 import hashlib
+import urllib.request
 import configparser
 import subprocess
 import logging, logging.handlers
@@ -971,11 +972,19 @@ class base_DirectoryPage(AdminHandler):
         ifdburl = 'https://ifdb.org/ifarchive-commit?ifdbid={ifdbid}&path={path}&key={key}'
         # IFDB IDs and the commit key should be alphanumeric.
         urltofetch = ifdburl.format(ifdbid=ifdbid, path=urlencode(ifdbpath), key=self.app.ifdb_commit_key)
-        req.loginfo('### %s', urltofetch)
+        
+        req.loginfo('### %s', urltofetch) ###
+        try:
+            ifdbreq = urllib.request.urlopen(urltofetch)
+            reqresult = ifdbreq.read()
+            ifdbreq.close()
+            reqresult = reqresult.decode()
+        except Exception as ex:
+            reqresult = str(ex)
         
         req.loginfo('Notified IFDB about "%s" (ID "%s") being in /%s', filename, ifdbid, self.get_dirname(req))
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,
-                           didnotifyifdb=True, ifdbid=ifdbid)
+                           didnotifyifdb=True, ifdbid=ifdbid, reqresult=reqresult)
 
 
 @beforeall(require_role('incoming'))

@@ -981,7 +981,7 @@ class base_DirectoryPage(AdminHandler):
         except Exception as ex:
             reqresult = str(ex)
         
-        req.loginfo('Notified IFDB about "%s" (ID "%s") being in /%s', filename, ifdbid, self.get_dirname(req))
+        req.loginfo('Notified IFDB about "%s" (ID "%s") being in /%s: "%s"', filename, ifdbid, self.get_dirname(req), reqresult.replace('\n', ' '))
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,
                            didnotifyifdb=True, ifdbid=ifdbid, reqresult=reqresult)
 

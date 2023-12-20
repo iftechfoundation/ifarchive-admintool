@@ -965,6 +965,13 @@ class base_DirectoryPage(AdminHandler):
                                op=op,
                                filename=filename, filesize=filesize, uploads=uploads,
                                formerror='You must select an IFDB ID to send.')
+
+        # This logic is copied from ifdbize.py.
+        ifdbpath = os.path.join('if-archive', self.get_dirname(req), filename)
+        ifdburl = 'https://ifdb.org/ifarchive-commit?ifdbid={ifdbid}&path={path}&key={key}'
+        # IFDB IDs and the commit key should be alphanumeric.
+        urltofetch = ifdburl.format(ifdbid=ifdbid, path=urlencode(ifdbpath), key=self.app.ifdb_commit_key)
+        req.loginfo('### %s', urltofetch)
         
         req.loginfo('Notified IFDB about "%s" (ID "%s") being in /%s', filename, ifdbid, self.get_dirname(req))
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,

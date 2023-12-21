@@ -85,11 +85,18 @@ def cmd_cleanup(args, app):
 
     # Clean out old trash files.
     timelimit = time.time() - app.max_trash_age
+    # We clean up "Index*" files in a quarter the time, because wow
+    # there are a lot of them.
+    indextimelimit = time.time() - app.max_trash_age / 4
+    
     dells = []
     for ent in os.scandir(app.trash_dir):
         if ent.is_file():
             stat = ent.stat()
-            if stat.st_mtime < timelimit:
+            uselimit = timelimit
+            if ent.name.startswith('Index-'):
+                uselimit = indextimelimit
+            if stat.st_mtime < uselimit:
                 dells.append(ent.name)
 
     for name in dells:

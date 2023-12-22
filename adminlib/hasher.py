@@ -24,12 +24,14 @@ class Hasher:
         # Any access to the map must be done under this lock.
         self.lock = threading.Lock()
 
-    def get_md5(self, pathname):
+    def get_md5(self, pathname, sizelimit=None):
         """Get an MD5 checksum from a file.
+        If sizelimit is not None, we bail out (returning None) for files
+        larger than that.
         We need the size for the cache lookup, so this just calls
         get_md5_size() and picks out the part we need.
         """
-        md5, size = self.get_md5_size(pathname)
+        md5, size = self.get_md5_size(pathname, sizelimit=sizelimit)
         return md5
 
     def get_size(self, pathname):
@@ -39,12 +41,18 @@ class Hasher:
         stat = os.stat(pathname)
         return stat.st_size
 
-    def get_md5_size(self, pathname):
+    def get_md5_size(self, pathname, sizelimit=None):
         """Get both the MD5 checksum and the size for a file.
+        If sizelimit is not None, we bail out for files larger than that.
+        (This is handy if you're checking a bunch of files and don't
+        want to be bogged down on the really big ones.)
         """
         stat = os.stat(pathname)
         key = (pathname, stat.st_size, int(stat.st_mtime))
         now = time.time()
+
+        if sizelimit is not None and stat.st_size >= sizelimit:
+            return (None, None)
         
         with self.lock:
             ent = self.map.get(key)

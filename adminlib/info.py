@@ -144,6 +144,9 @@ class FileEntry(ListEntry):
         
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
+        # We don't fill this in, but the caller might.
+        self.uploads = None
+
     def __repr__(self):
         return '<FileEntry "%s">' % (self.name,)
 

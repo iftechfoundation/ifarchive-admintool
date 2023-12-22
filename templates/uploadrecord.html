@@ -1,0 +1,47 @@
+<ul class="InfoList">
+  <li><span class="ItemName">Upload time:</span>
+    <span class="Tabular">{{ uprec.fdate }}</span>
+  <li><span class="ItemName">Filename:</span>
+    <code>{{ uprec.filename }}</code>
+  {% if uprec.filename != uprec.origfilename %}
+    <li><span class="ItemName">Original filename:</span> <code>{{ uprec.origfilename }}</code>
+  {% endif %}
+  <li><span class="ItemName">Size:</span>
+    {{ uprec.size|delimnumber }} bytes
+  <li><span class="ItemName">Uploader:</span>
+    {% if uprec.donorname %}{{ uprec.donorname }}{% else %}Anonymous{% endif %}
+    {% if uprec.donoremail %}&lt;{{ uprec.donoremail }}&gt;{% endif %}
+    {% if uprec.donorip %}&nbsp; ({{ uprec.donorip }}){% endif %}
+  <li><span class="ItemName">Rights:</span>
+    {{ uprec.permission }}
+    {% if uprec.permission == 'author' %}<span class="ItemGloss">("I am the author of this file and I give permission")</span>{% endif %}
+    {% if uprec.permission == 'tried' %}<span class="ItemGloss">("to the best of my knowledge the author is okay with this")</span>{% endif %}
+    {% if uprec.permission == 'cli' %}<span class="ItemGloss">(info added by admin)</span>{% endif %}
+  {% if uprec.suggestdir %}
+    <li><span class="ItemName">Suggested dir:</span>
+      <code>if-archive/{{ uprec.suggestdir }}</code>
+    {% if uprec.suggestdirchecked %}
+      {% if uprec.suggestdiruri %}
+        &nbsp; <a class="ItemGloss" href="{{ approot }}/{{ uprec.suggestdiruri|urlencode }}">(link)</a>
+      {% else %}
+        &nbsp; <span class="ItemGloss">(not an Archive dir)</span>
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  {% if uprec.ifdbid %}
+    <li><span class="ItemName">IFDB temp ID:</span>
+      {{ uprec.ifdbid }}
+  {% endif %}
+  {% if 'admin' in user.roles %}
+  <li><span class="ItemName">Hash:</span>
+    <span class="ItemGloss">{{ uprec.md5 }}</span>
+  {% endif %}
+  
+  {% if uprec.about %}
+  <li><div class="FileComments">{{ uprec.about }}</div>
+  {% endif %}
+  
+  {% if uprec.usernotes %}
+  <li><div class="FileComments"><span class="ItemGloss">Admin notes:</span><br>{{ uprec.usernotes }}</div>
+  {% endif %}
+</ul>

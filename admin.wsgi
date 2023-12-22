@@ -1603,7 +1603,9 @@ def create_appinstance(environ):
         config = configparser.ConfigParser()
         config.read(configpath)
         
-        # Set up the logging configuration
+        # Set up the logging configuration.
+        # (WatchedFileHandler allows logrotate to rotate the file out from
+        # under it.)
         logfilepath = config['AdminTool']['LogFile']
         loghandler = logging.handlers.WatchedFileHandler(logfilepath)
         logging.basicConfig(

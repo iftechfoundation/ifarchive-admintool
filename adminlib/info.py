@@ -241,6 +241,9 @@ class UploadEntry:
         self.fdate = formatdate(uploadtime, user=user, shortdate=True)
         self.suggestdirchecked = False
 
+    def __repr__(self):
+        return '<UploadEntry %s "%s">' % (self.md5, self.filename,)
+    
     def checksuggested(self, app):
         """Check whether the suggested directory exists.
         """

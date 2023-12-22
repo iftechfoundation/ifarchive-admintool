@@ -303,10 +303,12 @@ class base_DirectoryPage(AdminHandler):
         filelist = get_dir_entries(self.get_dirpath(req), self.app.archive_dir, dirs=dirs, user=req._user, shortdate=shortdate)
         
         if self.autoload_uploadinfo:
+            # Optionally load up the uploadinfo for the files in the list.
             for file in filelist:
                 if isinstance(file, FileEntry):
                     (uploads, size) = self.get_uploadinfo(req, file.name)
-                    req.loginfo('### %s : %s', file, uploads)
+                    if uploads:
+                        file.uploads = uploads
             
         if sort == 'date':
             filelist.sort(key=lambda file:file.date)

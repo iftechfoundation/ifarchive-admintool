@@ -65,12 +65,15 @@ class Hasher:
         # start this work at the same time, but that's okay.
 
         hasher = hashlib.md5()
-        fl = open(pathname, 'rb')
-        while True:
-            dat = fl.read(16384)
-            if not dat:
-                break
-            hasher.update(dat)
+        if stat.st_size > 0:
+            # We only need to read non-zero-length files!
+            fl = open(pathname, 'rb')
+            while True:
+                dat = fl.read(16384)
+                if not dat:
+                    break
+                hasher.update(dat)
+            fl.close()
         md5 = hasher.hexdigest()
 
         with self.lock:

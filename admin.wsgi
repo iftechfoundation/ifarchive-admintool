@@ -216,6 +216,10 @@ class base_DirectoryPage(AdminHandler):
     buttons that can appear under a file name: Move, Rename, Delete,
     and so on.
     """
+
+    # Should we load UploadEntry info for files in this directory?
+    # (Subclasses may override this to be true.)
+    autoload_uploadinfo = False
     
     def get_dirpath(self, req):
         """Return the (full) filesystem path of the directory that this
@@ -297,6 +301,13 @@ class base_DirectoryPage(AdminHandler):
         Optionally sort by date or filename.
         """
         filelist = get_dir_entries(self.get_dirpath(req), self.app.archive_dir, dirs=dirs, user=req._user, shortdate=shortdate)
+        
+        if self.autoload_uploadinfo:
+            for file in filelist:
+                if isinstance(file, FileEntry):
+                    (uploads, size) = self.get_uploadinfo(req, file.name)
+                    req.loginfo('### %s : %s', file, uploads)
+            
         if sort == 'date':
             filelist.sort(key=lambda file:file.date)
         elif sort == 'name':
@@ -993,6 +1004,7 @@ class han_Incoming(base_DirectoryPage):
         'uribase': 'incoming',
     }
     template = 'incoming.html'
+    autoload_uploadinfo = True
 
     def add_renderparams(self, req, map):
         # Sorry about the special case.
@@ -1047,6 +1059,7 @@ class han_Unprocessed(base_DirectoryPage):
         'uribase': 'arch/unprocessed',
     }
     template = 'unprocessed.html'
+    autoload_uploadinfo = True
 
     def add_renderparams(self, req, map):
         map['dirname'] = self.get_dirname(req)

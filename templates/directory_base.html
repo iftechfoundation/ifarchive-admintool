@@ -132,6 +132,13 @@
       </ul>
     {% endif %}
 
+    {% if file.uploads %}
+      <dd class="FileInfoList">
+      {% for uprec in file.uploads %}
+      {% include "uploadrecord.html" %}
+      {% endfor %}
+    {% endif %}
+
     {% if fileops and not file.isspecial %}
     {% set ent = file %}
     {% include "filebuttons.html" %}

@@ -98,6 +98,7 @@ body {
 
 .FormButton {
     font-size: 100%;
+    font-weight: normal;
     margin: 4px;
     background-color: white;
     color: black;

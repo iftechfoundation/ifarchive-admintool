@@ -531,6 +531,8 @@ class base_DirectoryPage(AdminHandler):
             return self.do_post_rename(req, dirpath, filename)
         elif op == 'zip':
             return self.do_post_zip(req, dirpath, filename)
+        elif op == 'uncache':
+            return self.do_post_uncache(req, dirpath, filename)
         elif op == 'csubdir':
             return self.do_post_csubdir(req, dirpath)
         elif op == 'deldir':
@@ -858,6 +860,15 @@ class base_DirectoryPage(AdminHandler):
         req.loginfo('Zipped "%s" to "%s" in /%s', filename, newname, self.get_dirname(req))
         return self.render(self.template, req,
                            didzip=filename, didnewname=newname)
+
+    def do_post_uncache(self, req, dirpath, filename):
+        """Handle a cache-purge operation.
+        """
+        op = 'uncache'
+        
+        req.loginfo('Cache-wiped "%s" in /%s', filename, self.get_dirname(req))
+        return self.render(self.template, req,
+                           diduncache=filename)
 
     def do_post_csubdir(self, req, dirpath):
         """Handle a create-subdir operation.

@@ -152,6 +152,9 @@
   {% elif op == 'uncache' %}
 
   <div class="FormAction">Wipe <code>{{ opfile }}</code> from the CloudFlare cache?</div>
+  {% if ziptoo %}
+    <div class="FormAction FormWarning">(For zip files, remember to rebuild the indexes before wiping the cache! And then wait five minutes before visiting Unbox. Otherwise you might have to wipe the cache again.)</div>
+  {% endif %}
   <form method="post" action="{{ requri }}#list_{{ ent.name |urlencode }}">
   <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
   <input type="hidden" name="filename" value="{{ opfile }}"/>

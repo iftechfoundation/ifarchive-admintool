@@ -865,10 +865,12 @@ class base_DirectoryPage(AdminHandler):
         """Handle a cache-purge operation.
         """
         op = 'uncache'
+
+        ziptoo = filename.lower().endswith('.zip')
         
         req.loginfo('Cache-wiped "%s" in /%s', filename, self.get_dirname(req))
         return self.render(self.template, req,
-                           diduncache=filename)
+                           diduncache=filename, ziptoo=ziptoo)
 
     def do_post_csubdir(self, req, dirpath):
         """Handle a create-subdir operation.

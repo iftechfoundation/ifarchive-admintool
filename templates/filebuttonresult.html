@@ -47,6 +47,7 @@
 {% if diduncache %}
 <p class="ResultNote">
   Wiped <code>{{ diduncache }}</code> from the CloudFlare cache.
+  {% if ziptoo %}(And its Unbox contents.){% endif %}
 </p>
 {% endif %}
 

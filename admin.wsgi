@@ -483,6 +483,7 @@ class base_DirectoryPage(AdminHandler):
             movedestgood = None
             delparentdir = None
             delchilddir = None
+            ziptoo = None
             if op == 'move' and self.get_dirname(req) == 'unprocessed':
                 # This is messy, but the plan is to look up the
                 # "suggested" dir for this file and then check whether
@@ -509,12 +510,16 @@ class base_DirectoryPage(AdminHandler):
                 # permit deletion of dirs second-level and deeper.
                 val = self.get_dirname(req)
                 delparentdir, _, delchilddir = val.rpartition('/')
+            if op == 'uncache':
+                # Check the filename for zip-ness.
+                ziptoo = filename.lower().endswith('.zip')
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                movedestorig=movedestorig,
                                movedestgood=movedestgood,
                                delparentdir=delparentdir,
-                               delchilddir=delchilddir)
+                               delchilddir=delchilddir,
+                               ziptoo=ziptoo)
 
         # The "confirm" button was pressed, so it's time to perform the
         # action.

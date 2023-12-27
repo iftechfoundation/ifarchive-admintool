@@ -1520,7 +1520,7 @@ class han_RebuildIndexes(AdminHandler):
             if self.app.secure_site:
                 args.insert(0, '/usr/bin/sudo')
             subprocess.run(args, check=True, text=True, capture_output=True)
-        except Exception as ex:
+        except subprocess.CalledProcessError as ex:
             errortext = ''
             if ex.stdout:
                 errortext += ex.stdout
@@ -1530,6 +1530,10 @@ class han_RebuildIndexes(AdminHandler):
                                locktime=locktime,
                                formerror='Error: %s' % (ex,),
                                errortext=errortext)
+        except Exception as ex:
+            return self.render('rebuild.html', req,
+                               locktime=locktime,
+                               formerror='Error: %s' % (ex,))
             
         req.loginfo('Requested index rebuild')
         raise HTTPRedirectPost(self.app.approot)

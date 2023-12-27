@@ -870,6 +870,9 @@ class base_DirectoryPage(AdminHandler):
         
         try:
             args = [ self.app.uncache_script_path ]
+            if ziptoo:
+                args.append('--zip')
+            args.append('if-archive/%s/%s' % (dirpath, filename,))
             if self.app.secure_site:
                 args.insert(0, '/usr/bin/sudo')
             subprocess.run(args, check=True, text=True, capture_output=True)

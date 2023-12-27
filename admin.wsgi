@@ -1174,7 +1174,7 @@ class han_ArchiveDir(base_DirectoryPage):
     def get_fileops(self, req):
         ls = []
         if req._user.has_role('filing'):
-            ls = ['rename', 'delete', 'dellink', 'move', 'linkto', 'csubdir', 'deldir', 'notifyifdb']
+            ls = ['rename', 'delete', 'dellink', 'move', 'linkto', 'csubdir', 'deldir', 'uncache', 'notifyifdb']
         if req._user.has_role('index'):
             ls.append('eindex')
         return ls

@@ -44,6 +44,12 @@
 </p>
 {% endif %}
 
+{% if diduncache %}
+<p class="ResultNote">
+  Wiped <code>{{ didzip }}</code> from the CloudFlare cache.
+</p>
+{% endif %}
+
 {% if didzip %}
 <p class="ResultNote">
   Zipped <code>{{ didzip }}</code> to <code>{{ didnewname }}</code>.

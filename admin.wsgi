@@ -866,13 +866,14 @@ class base_DirectoryPage(AdminHandler):
         """
         op = 'uncache'
 
+        dirname = self.get_dirname(req)
         ziptoo = filename.lower().endswith('.zip')
         
         try:
             args = [ self.app.uncache_script_path ]
             if ziptoo:
                 args.append('--zip')
-            args.append('if-archive/%s/%s' % (dirpath, filename,))
+            args.append('if-archive/%s/%s' % (dirname, filename,))
             if self.app.secure_site:
                 args.insert(0, '/usr/bin/sudo')
             subprocess.run(args, check=True, text=True, capture_output=True)

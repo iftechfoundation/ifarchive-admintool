@@ -55,6 +55,7 @@ class AdminApp(TinyApp):
         self.build_script_path = config['AdminTool']['BuildScriptFile']
         self.build_lock_path = config['AdminTool']['BuildLockFile']
         self.build_output_path = config['AdminTool']['BuildOutputFile']
+        self.uncache_script_path = config['AdminTool']['UncacheScriptFile']
         self.template_path = config['AdminTool']['TemplateDir']
         self.app_css_uri = config['AdminTool']['AppCSSURI']
 

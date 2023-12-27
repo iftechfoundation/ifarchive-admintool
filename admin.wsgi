@@ -890,10 +890,12 @@ class base_DirectoryPage(AdminHandler):
                 errortext += ex.stderr
             return self.render(self.template, req,
                                op=op, opfile=filename,
+                               ziptoo=ziptoo,
                                selecterror='Error: %s\n%s' % (ex, errortext))
         except Exception as ex:
             return self.render(self.template, req,
                                op=op, opfile=filename,
+                               ziptoo=ziptoo,
                                selecterror='Error: %s' % (ex,))
             
         req.loginfo('Cache-wiped "%s" in /%s', filename, self.get_dirname(req))

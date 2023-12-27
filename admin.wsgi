@@ -868,6 +868,25 @@ class base_DirectoryPage(AdminHandler):
 
         ziptoo = filename.lower().endswith('.zip')
         
+        try:
+            args = [ self.app.uncache_script_path ]
+            if self.app.secure_site:
+                args.insert(0, '/usr/bin/sudo')
+            subprocess.run(args, check=True, text=True, capture_output=True)
+        except subprocess.CalledProcessError as ex:
+            errortext = ''
+            if ex.stdout:
+                errortext += ex.stdout
+            if ex.stderr:
+                errortext += ex.stderr
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='Error: %s\n%s' % (ex, errortext))
+        except Exception as ex:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='Error: %s' % (ex,))
+            
         req.loginfo('Cache-wiped "%s" in /%s', filename, self.get_dirname(req))
         return self.render(self.template, req,
                            diduncache=filename, ziptoo=ziptoo)

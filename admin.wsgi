@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 AdminTool: Web app for IF Archive administration.
 

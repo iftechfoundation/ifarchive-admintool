@@ -1,0 +1,17 @@
+{% extends "page.html" %}
+
+{% block title %}
+{{ status }}
+{% endblock %}
+
+{% block content %}
+
+<p>
+  {{ msg }}
+</p>
+
+<p>
+  <a href="{{ approot }}">{% if user %}(Home){% else %}(Log in){% endif %}</a>
+</p>
+
+{% endblock %}

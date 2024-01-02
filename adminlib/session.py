@@ -4,6 +4,7 @@ import pytz
 # stuck with it.
 
 from tinyapp.excepts import HTTPError
+from tinyapp.util import time_now
 from adminlib.util import in_user_time
 
 class User:
@@ -77,19 +78,27 @@ def find_user(req, han):
     require_user() for that.)
     """
     cookiename = req.app.cookieprefix+'sessionid'
-    if cookiename in req.cookies:
-        sessionid = req.cookies[cookiename].value
-        curs = req.app.getdb().cursor()
-        ### also restrict by refreshtime?
-        res = curs.execute('SELECT name FROM sessions WHERE sessionid = ?', (sessionid,))
-        tup = res.fetchone()
-        if tup:
-            name = tup[0]
-            res = curs.execute('SELECT email, roles, tzname FROM users WHERE name = ?', (name,))
-            tup = res.fetchone()
-            if tup:
-                email, roles, tzname = tup
-                req._user = User(name, email, roles=roles, tzname=tzname, sessionid=sessionid)
+    if cookiename not in req.cookies:
+        return han(req)
+    
+    sessionid = req.cookies[cookiename].value
+    curs = req.app.getdb().cursor()
+    res = curs.execute('SELECT name, refreshtime FROM sessions WHERE sessionid = ?', (sessionid,))
+    tup = res.fetchone()
+    if not tup:
+        return han(req)
+    name = tup[0]
+    refreshtime = tup[1]
+    if time_now() - refreshtime > req.app.max_session_age:
+        # Session has expired.
+        return han(req)
+    
+    res = curs.execute('SELECT email, roles, tzname FROM users WHERE name = ?', (name,))
+    tup = res.fetchone()
+    if tup:
+        email, roles, tzname = tup
+        req._user = User(name, email, roles=roles, tzname=tzname, sessionid=sessionid)
+        
     return han(req)
         
 def require_user(req, han):

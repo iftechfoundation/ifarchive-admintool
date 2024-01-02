@@ -3,6 +3,7 @@ import pytz
 # pytz is obsolete, but the Archive machine is still on Py3.7 so we're
 # stuck with it.
 
+from tinyapp.constants import PLAINTEXT, HTML
 from tinyapp.excepts import HTTPError
 from tinyapp.util import random_bytes, time_now
 from adminlib.util import in_user_time
@@ -122,7 +123,7 @@ def require_user(req, han):
     isn't, it throws a 401 error.
     """
     if not req._user:
-        raise HTTPError('401 Unauthorized', 'Not logged in')
+        raise NotLoggedInError('401 Unauthorized', 'Not logged in')
     return han(req)
 
 def require_role(*roles):
@@ -132,13 +133,23 @@ def require_role(*roles):
     """
     def require(req, han):
         if not req._user:
-            raise HTTPError('401 Unauthorized', 'Not logged in')
+            raise NotLoggedInError('401 Unauthorized', 'Not logged in')
         got = False
         for role in roles:
             if role in req._user.roles:
                 got = True
                 break
         if not got:
-            raise HTTPError('401 Unauthorized', 'Not authorized for this page')
+            raise NotLoggedInError('401 Unauthorized', 'Not authorized for this page')
         return han(req)
     return require
+
+class NotLoggedInError(HTTPError):
+    """Not-logged-in error. This is your basic 401, except we display
+    a link to the login form.
+    """
+    def do_error(self, req):
+        req.set_content_type(HTML)
+        return req.app.render('notloggedin.html', req,
+                              status=self.status, msg=self.msg)
+        

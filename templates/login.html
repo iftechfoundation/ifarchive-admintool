@@ -11,6 +11,9 @@
 <div>
 <input class="FormInput" autocapitalize="off"
   id="login_field" name="name" type="text" placeholder="Name or email"
+  {% if username %}
+    value="{{ username }}"
+  {% endif %}
   autofocus="autofocus">
 </div>
 <div>

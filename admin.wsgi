@@ -45,6 +45,12 @@ from adminlib.index import IndexDir
 
 class han_Home(AdminHandler):
     renderparams = { 'navtab':'top' }
+
+    def add_renderparams(self, req, map):
+        cookiename = req.app.cookieprefix+'username'
+        if cookiename in req.cookies:
+            map['username'] = req.cookies[cookiename].value
+        return map
     
     def do_get(self, req):
         if not req._user:
@@ -91,6 +97,7 @@ class han_Home(AdminHandler):
 
         sessionid = random_bytes(20)
         req.set_cookie(self.app.cookieprefix+'sessionid', sessionid, maxage=self.app.max_session_age, httponly=True)
+        req.set_cookie(self.app.cookieprefix+'username', name, httponly=True)
         now = time_now()
         ipaddr = req.env.get('REMOTE_ADDR', '?')
         

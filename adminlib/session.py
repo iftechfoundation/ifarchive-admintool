@@ -97,10 +97,12 @@ def find_user(req, han):
         # Session has expired.
         return han(req)
     if now - refreshtime > req.app.max_session_age / 2:
-        # Session is half over. Let's refresh it. (Only on GET, because
-        # I don't want to stick more than one hot dog in the gears at
-        # a time..)
+        # Session is half over. Let's refresh it -- that is, delete it
+        # and create a new one.
+        # (Only on GET, because I don't want to stick more than one
+        # hot dog in the gears at a time.)
         if req.request_method == 'GET':
+            curs.execute('DELETE FROM sessions WHERE sessionid = ?', (sessionid,))
             sessionid = random_bytes(20)
             req.set_cookie(req.app.cookieprefix+'sessionid', sessionid, maxage=req.app.max_session_age, httponly=True)
             ipaddr = req.env.get('REMOTE_ADDR', '?')

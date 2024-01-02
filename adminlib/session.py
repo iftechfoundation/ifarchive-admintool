@@ -4,7 +4,7 @@ import pytz
 # stuck with it.
 
 from tinyapp.excepts import HTTPError
-from tinyapp.util import time_now
+from tinyapp.util import random_bytes, time_now
 from adminlib.util import in_user_time
 
 class User:
@@ -70,6 +70,9 @@ class Session:
 def find_user(req, han):
     """Request filter which figures out which user sent the request
     by looking for a session cookie.
+
+    If the session is also due for refreshing, we take care of that (and
+    send out a new session cookie).
     
     This sets req._user to a User object if the request was authenticated.
     If not, it leaves req._user as None.
@@ -83,15 +86,24 @@ def find_user(req, han):
     
     sessionid = req.cookies[cookiename].value
     curs = req.app.getdb().cursor()
-    res = curs.execute('SELECT name, refreshtime FROM sessions WHERE sessionid = ?', (sessionid,))
+    res = curs.execute('SELECT name, starttime, refreshtime FROM sessions WHERE sessionid = ?', (sessionid,))
     tup = res.fetchone()
     if not tup:
         return han(req)
-    name = tup[0]
-    refreshtime = tup[1]
-    if time_now() - refreshtime > req.app.max_session_age:
+    name, starttime, refreshtime = tup
+
+    now = time_now()
+    if now - refreshtime > req.app.max_session_age:
         # Session has expired.
         return han(req)
+    if now - refreshtime > req.app.max_session_age / 2:
+        # Session is half over. Let's refresh it.
+        if req.request_method == 'GET':
+            sessionid = random_bytes(20)
+            req.set_cookie(req.app.cookieprefix+'sessionid', sessionid, maxage=req.app.max_session_age, httponly=True)
+            ipaddr = req.env.get('REMOTE_ADDR', '?')
+            curs.execute('INSERT INTO sessions VALUES (?, ?, ?, ?, ?)', (name, sessionid, ipaddr, starttime, now))
+            req.loginfo('Refreshed login session: user=%s', name)
     
     res = curs.execute('SELECT email, roles, tzname FROM users WHERE name = ?', (name,))
     tup = res.fetchone()

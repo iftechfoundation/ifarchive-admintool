@@ -167,6 +167,10 @@ pre {
     font-style: italic;
 }
 
+.RightAlign {
+    text-align: right;
+}
+
 ul {
     list-style: url("cssbullet.png");
     margin-left: 10px;

@@ -17,6 +17,9 @@
 
 {% block prefilelist %}{% endblock %}
 
+{# We use this to avoid repeating UploadInfo records. #}
+{% set seenmd5set = {} %}
+
 {% if subdirs %}
   <hr>
   <dl class="FileList">
@@ -133,10 +136,25 @@
     {% endif %}
 
     {% if file.uploads %}
+      {% set uploadhash = file.uploads[0].md5 %}
       <dd class="FileInfoList">
-      {% for uprec in file.uploads %}
-      {% include "uploadrecord.html" %}
-      {% endfor %}
+      {% if uploadhash in seenmd5set %}
+        <ul class="InfoList">
+          <li><span class="ItemName">
+	      {{ file.uploads|length }} upload record{{ file.uploads|length|plural }}
+	      already shown
+	      </span>
+          <li><span class="ItemName">
+	      See identical file <code>{{ seenmd5set[uploadhash] }}</code>,
+	      above
+	      </span>
+        </ul>
+      {% else %}
+        {% for uprec in file.uploads %}
+        {% include "uploadrecord.html" %}
+        {% endfor %}
+        {% set _ = seenmd5set.__setitem__(uploadhash, file.name) %}
+      {% endif %}
     {% endif %}
 
     {% if fileops and not file.isspecial %}

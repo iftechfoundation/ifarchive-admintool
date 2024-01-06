@@ -172,13 +172,19 @@ pre {
 }
 
 ul {
-    list-style: url("cssbullet.png");
+    list-style: none;
+    padding-left: 0px;
     margin-left: 10px;
-    padding-left: 9px;
     border-left: 3px solid #F0D0A0;
 }
 
 ul li {
+    background-image: url("cssbullet.png");
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    background-position-y: 0.5cap;
+    background-position-x: -2px;
+    padding-left: 12px;
     text-indent: 20px hanging;
 }
 

@@ -75,12 +75,12 @@ Create these directories that you just configured, and symlink in the appropriat
 % ln -s /Users/zarf/src/ifarchive-admintool/admin.wsgi /usr/local/var/www/wsgi-bin/test.wsgi
 % ln -s /Users/zarf/src/ifarchive-admintool/adminlib /usr/local/var/www/wsgi-bin/adminlib
 % ln -s /Users/zarf/src/ifarchive-admintool/tinyapp /usr/local/var/www/wsgi-bin/tinyapp
-% cp /Users/zarf/src/ifarchive-admintool/css/admintool.css /usr/local/var/www
+% cp /Users/zarf/src/ifarchive-admintool/css/admintool.css /Users/zarf/src/ifarchive-admintool/css/cssbullet.png /usr/local/var/www
 ```
 
 (You could put the `/Users/zarf/src/ifarchive-admintool/...` paths directly into your `<Directory>` stanzas rather than creating symlinks. This is just how I did it.)
 
-(I copied the `admintool.css`, rather than symlinking it, because Apache's config for `/usr/local/var/www` might not support symlinks.)
+(I copied `admintool.css`, rather than symlinking it, because Apache's config for `/usr/local/var/www` might not support symlinks.)
 
 At this point you need to restart `httpd` to pick up the config changes:
 
@@ -165,7 +165,7 @@ Copy the files into position:
 % cp -r ifarchive-admintool/adminlib wsgi-bin
 % cp -r ifarchive-admintool/templates lib/admintool
 % cp ifarchive-admintool/admin.wsgi wsgi-bin
-% cp ifarchive-admintool/css/admintool.css htdocs/misc
+% cp ifarchive-admintool/css/admintool.css ifarchive-admintool/css/cssbullet.png htdocs/misc
 % cp ifarchive-admintool/sample.config lib/ifarch.config
 ```
 

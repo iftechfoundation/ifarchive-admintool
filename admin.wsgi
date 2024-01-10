@@ -35,6 +35,7 @@ from adminlib.util import find_unused_filename
 from adminlib.util import urlencode
 from adminlib.util import canon_archivedir, FileConsistency
 from adminlib.util import sortcanon
+from adminlib.util import log_files_tail
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
 from adminlib.info import get_dir_entries, dir_is_empty
 from adminlib.index import IndexDir
@@ -1531,13 +1532,29 @@ class han_UploadLog(AdminHandler):
         uploads = [ UploadEntry(tup, user=req._user) for tup in res.fetchall() ]
         for obj in uploads:
             obj.checksuggested(self.app)
-        return self.render('uploadlog.html', req, uploads=uploads, start=start, limit=self.PAGE_LIMIT, prevstart=max(0, start-self.PAGE_LIMIT), nextstart=start+self.PAGE_LIMIT)
+        return self.render('uploadlog.html', req,
+                           uploads=uploads,
+                           start=start, limit=self.PAGE_LIMIT,
+                           prevstart=max(0, start-self.PAGE_LIMIT), nextstart=start+self.PAGE_LIMIT)
 
     
 @beforeall(require_role('log'))
 class han_AdminLog(AdminHandler):
+    renderparams = { 'navtab':'adminlog', 'uribase':'adminlog' }
+    
+    PAGE_LIMIT = 50
+    
     def do_get(self, req):
-        return self.render('adminlog.html', req)
+        val = req.get_query_field('start')
+        if val:
+            start = int(val)
+        else:
+            start = 0
+        lines = log_files_tail(self.app.log_file_path, count=self.PAGE_LIMIT, start=start)
+        return self.render('adminlog.html', req,
+                           lines=lines,
+                           start=start, limit=self.PAGE_LIMIT,
+                           prevstart=max(0, start-self.PAGE_LIMIT), nextstart=start+self.PAGE_LIMIT)
 
         
 @beforeall(require_role('rebuild'))

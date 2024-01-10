@@ -1532,7 +1532,13 @@ class han_UploadLog(AdminHandler):
         for obj in uploads:
             obj.checksuggested(self.app)
         return self.render('uploadlog.html', req, uploads=uploads, start=start, limit=self.PAGE_LIMIT, prevstart=max(0, start-self.PAGE_LIMIT), nextstart=start+self.PAGE_LIMIT)
+
     
+@beforeall(require_role('log'))
+class han_AdminLog(AdminHandler):
+    def do_get(self, req):
+        return self.render('adminlog.html', req)
+
         
 @beforeall(require_role('rebuild'))
 class han_RebuildIndexes(AdminHandler):
@@ -1619,6 +1625,7 @@ handlers = [
     ('/arch/(?P<dir>.+)', han_ArchiveDir),
     ('/editindex', han_EditIndexFile),
     ('/uploadlog', han_UploadLog),
+    ('/adminlog', han_AdminLog),
     ('/rebuild', han_RebuildIndexes),
     #('/debugdump', han_DebugDump),
     #('/debugdump/(?P<arg>.+)', han_DebugDump),

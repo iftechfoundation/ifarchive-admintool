@@ -24,6 +24,10 @@
   {% if 'incoming' in user.roles or 'index' in user.roles %}
   <a {% if navtab=='trash' %} class="Selected" {% endif %} href="{{ approot }}/trash">Trash</a>
   {% endif %}
+  
+  {% if 'log' in user.roles %}
+  <a {% if navtab=='adminlog' %} class="Selected" {% endif %} href="{{ approot }}/adminlog">AdminLog</a>
+  {% endif %}
 
   {% if 'admin' in user.roles %}
   <a {% if navtab=='admin' %} class="Selected" {% endif %} href="{{ approot }}/admin">Admin&#xB2;</a>

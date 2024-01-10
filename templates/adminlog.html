@@ -6,6 +6,12 @@ Admin Tool Activity Log
 
 {% block content %}
 
+{% if not start %}
+  <p class="ItemGloss">(Most recent first)</p>
+{% else %}
+  <p class="ItemGloss">(Starting {{ start }} lines ago, going back)</p>
+{% endif %}
+
 <ul>
 {% for line in lines %}
   <li>{{ line }}

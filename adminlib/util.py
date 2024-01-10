@@ -87,6 +87,39 @@ def zip_compress(origpath, newpath):
     outfl.write(origpath, arcname=os.path.basename(origpath))
     outfl.close()
 
+def log_files_tail(basepath, count, start=0):
+    """Given a text file path, return the last count lines. If start
+    is nonzero, start that many back from the end. If we run out,
+    return an empty list.
+    We assume that logrotate is running: we check basepath, then basepath.1,
+    basepath.2, etc, until we run out of files. We don't try to read
+    basepath.N.gz though.
+    This doesn't need to be ginormously efficient; our log files are small.
+    """
+    res = []
+    suffix = 0
+    while True:
+        if not suffix:
+            path = basepath
+        else:
+            path = basepath + '.%d' % (suffix,)
+        if not os.path.isfile(path):
+            return res
+        suffix += 1
+        fl = open(path)
+        lines = fl.readlines()
+        lines.reverse()
+        fl.close()
+        if start >= len(lines):
+            start -= len(lines)
+            continue
+        subls = lines[ start : start+count ]
+        res.extend(subls)
+        start = 0
+        count -= len(subls)
+        if count <= 0:
+            return res
+    
 tz_utc = pytz.timezone('UTC')
 
 def in_user_time(user, timestamp):

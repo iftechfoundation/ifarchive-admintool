@@ -57,6 +57,7 @@ class AdminApp(TinyApp):
         self.build_output_path = config['AdminTool']['BuildOutputFile']
         self.uncache_script_path = config['AdminTool']['UncacheScriptFile']
         self.template_path = config['AdminTool']['TemplateDir']
+        self.log_file_path = config['AdminTool']['LogFile']
         self.app_css_uri = config['AdminTool']['AppCSSURI']
 
         # Thread-local storage for various things which are not thread-safe.

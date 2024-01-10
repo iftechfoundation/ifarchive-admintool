@@ -1,0 +1,25 @@
+{% extends "page.html" %}
+
+{% block title %}
+Admin Tool Activity Log
+{% endblock %}
+
+{% block content %}
+
+<ul>
+{% for line in lines %}
+  <li>{{ line }}
+{% endfor %}
+</ul>
+
+<p>
+{% if start %}
+  <a href="{{ uribase }}?start={{ prevstart }}">&#x2190; Prev page</a>
+  &nbsp;
+{% endif %}
+{% if lines %}
+  <a href="{{ uribase }}?start={{ nextstart }}">Next page &#x2192;</a>
+{% endif %}
+</p>
+
+{% endblock %}

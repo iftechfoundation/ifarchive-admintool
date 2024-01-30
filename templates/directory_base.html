@@ -116,6 +116,11 @@
           {% set archivepath = "https://ifarchive.org/if-archive/" ~ dirname ~ "/" ~ file.name %}
           <a target="_blank" href="https://iplayif.com/?story={{ archivepath|urlencode }}">(play)</a>
         {% endif %}
+        {% if file.isunbox and not file.isspecial %}
+          &nbsp;
+          {% set archivepath = "/if-archive/" ~ dirname ~ "/" ~ file.name %}
+          <a target="_blank" href="https://unbox.ifarchive.org/?url={{ archivepath|urlencode }}">(contents)</a>
+        {% endif %}
       {% endif %}
 
     {% else %}

@@ -108,12 +108,12 @@
       {% if file.isspecial or file.isbroken %}
       {% else %}
         &nbsp;
-	<a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
+        <a href="{{ approot }}/{{ uribase|urlencode }}?view=info&amp;filename={{ file.name|urlencode }}">(info)</a>
       {% endif %}
       {% if dirname != 'incoming' and dirname != 'trash' and dirname != '' and file.isiplay and not file.isspecial %}
         &nbsp;
-	{% set archivepath = "https://ifarchive.org/if-archive/" ~ dirname ~ "/" ~ file.name %}
-	<a target="_blank" href="https://iplayif.com/?story={{ archivepath|urlencode }}">(play)</a>
+        {% set archivepath = "https://ifarchive.org/if-archive/" ~ dirname ~ "/" ~ file.name %}
+        <a target="_blank" href="https://iplayif.com/?story={{ archivepath|urlencode }}">(play)</a>
       {% endif %}
 
     {% else %}
@@ -141,13 +141,13 @@
       {% if uploadhash in seenmd5set %}
         <ul class="InfoList">
           <li><span class="ItemName">
-	      {{ file.uploads|length }} upload record{{ file.uploads|length|plural }}
-	      already shown
-	      </span>
+            {{ file.uploads|length }} upload record{{ file.uploads|length|plural }}
+            already shown
+            </span>
           <li><span class="ItemName">
-	      See identical file <code>{{ seenmd5set[uploadhash] }}</code>,
-	      above
-	      </span>
+            See identical file <code>{{ seenmd5set[uploadhash] }}</code>,
+            above
+            </span>
         </ul>
       {% else %}
         {% for uprec in file.uploads %}

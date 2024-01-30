@@ -129,6 +129,9 @@ class FileEntry(ListEntry):
     # Some files should be zipped because they potentially contain
     # scripting. (HTML and also SVG.)
     pat_html = re.compile('[.](htm|html|svg)$', re.IGNORECASE)
+
+    # Some files should be shown with an Unbox link.
+    pat_unbox = re.compile('[.](zip|tgz|tar.gz)$', re.IGNORECASE)
     
     def __init__(self, filename, stat, user=None, shortdate=False):
         ListEntry.__init__(self, filename)
@@ -139,6 +142,7 @@ class FileEntry(ListEntry):
         self.size = stat.st_size
         self.isspecial = (filename in self.specialnames)
         self.ishtml = bool(self.pat_html.search(filename))
+        self.isunbox = bool(self.pat_unbox.search(filename))
         self.isiplay = not bool(self.pat_noiplay.search(filename))
         self.isfile = True
         

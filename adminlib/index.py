@@ -2,6 +2,9 @@ import re
 import os.path
 from collections import OrderedDict
 
+from adminlib.info import IndexOnlyEntry
+from adminlib.util import sortcanon
+
 # A filename header starts with exactly one "#" (an h1 header in Markdown)
 filename_pattern = re.compile('^#[^#]')
 
@@ -313,4 +316,28 @@ class IndexFile:
         if self.metadata:
             return True
         return False
+    
+def update_file_entries(ls, indexdir, user=None):
+    ifmap = indexdir.getmap()
+    # ifnames excludes '.'
+    ifnames = set([ ifile.filename for ifile in indexdir.files ])
+
+    for ent in ls:
+        ifile = ifmap.get(ent.name)
+        if ifile:
+            if ifile.description:
+                ent.indexdesc = ifile.description.strip()
+            ent.indexmeta = ifile.metadata
+        ifnames.discard(ent.name)
+
+    if ifnames:
+        ifnames = list(ifnames)
+        ifnames.sort(key=lambda val:sortcanon(val))
+        for name in ifnames:
+            ifile = ifmap[name]
+            ent = IndexOnlyEntry(ifile.filename, date=indexdir.date, user=user)
+            if ifile.description:
+                ent.indexdesc = ifile.description.strip()
+            ent.indexmeta = ifile.metadata
+            ls.append(ent)
     

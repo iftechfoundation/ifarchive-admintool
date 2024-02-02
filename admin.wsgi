@@ -1191,12 +1191,13 @@ class han_ArchiveDir(base_DirectoryPage):
             
         map['indexdir'] = indexdir
         if indexdir:
-            ifmap = indexdir.getmap()
-            # ifnames excludes '.'
-            ifnames = set([ ifile.filename for ifile in indexdir.files ])
             if indexdir.description:
                 map['indexdirdesc'] = indexdir.description.strip()
             map['indexdirmeta'] = indexdir.metadata
+            
+            ifmap = indexdir.getmap()
+            # ifnames excludes '.'
+            ifnames = set([ ifile.filename for ifile in indexdir.files ])
 
             for ent in ls:
                 ifile = ifmap.get(ent.name)

@@ -38,7 +38,7 @@ from adminlib.util import sortcanon
 from adminlib.util import log_files_tail
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
 from adminlib.info import get_dir_entries, dir_is_empty
-from adminlib.index import IndexDir
+from adminlib.index import IndexDir, update_file_entries
 
 
     
@@ -1194,29 +1194,7 @@ class han_ArchiveDir(base_DirectoryPage):
             if indexdir.description:
                 map['indexdirdesc'] = indexdir.description.strip()
             map['indexdirmeta'] = indexdir.metadata
-            
-            ifmap = indexdir.getmap()
-            # ifnames excludes '.'
-            ifnames = set([ ifile.filename for ifile in indexdir.files ])
-
-            for ent in ls:
-                ifile = ifmap.get(ent.name)
-                if ifile:
-                    if ifile.description:
-                        ent.indexdesc = ifile.description.strip()
-                    ent.indexmeta = ifile.metadata
-                ifnames.discard(ent.name)
-
-            if ifnames:
-                ifnames = list(ifnames)
-                ifnames.sort(key=lambda val:sortcanon(val))
-                for name in ifnames:
-                    ifile = ifmap[name]
-                    ent = IndexOnlyEntry(ifile.filename, date=indexdir.date, user=req._user)
-                    if ifile.description:
-                        ent.indexdesc = ifile.description.strip()
-                    ent.indexmeta = ifile.metadata
-                    ls.append(ent)
+            update_file_entries(ls, indexdir, user=req._user)
 
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]

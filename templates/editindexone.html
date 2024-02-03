@@ -7,7 +7,11 @@ Edit Index File
 {% block content %}
 
 <p>
+{% if dirname %}
 Editing Archive/{{ dirname }}/Index
+{% else %}
+Editing Archive/Index
+{% endif %}
 entry for <code>{{ filename }}</code>
 {% if filetype == 'file' %}
 (file)

@@ -6,7 +6,11 @@ Edit Index File
 
 {% block content %}
 
+{% if dirname %}
 <p>Editing Archive/{{ dirname }}/Index</p>
+{% else %}
+<p>Editing Archive/Index</p>
+{% endif %}
 
 <form method="post" action="{{ requri }}">
 

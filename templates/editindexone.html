@@ -29,7 +29,9 @@ entry for <code>{{ filename }}</code>
 {% if filetype %}
   <input type="hidden" name="filetype" value="{{ filetype }}"/>
 {% endif %}
-<input type="hidden" name="dirname" value="{{ dirname }}"/>
+{% if dirname %}
+  <input type="hidden" name="dirname" value="{{ dirname }}"/>
+{% endif %}
 <input type="hidden" name="indextime" value="{{ indextime }}"/>
 
 <p class="ItemName">Description:</p>

@@ -1497,7 +1497,10 @@ class han_EditIndexFile(AdminHandler):
         oldtext, oldtime = self.get_indextext(dirname)
         if len(oldtext.strip()):
             # Save a copy of the old text in the trash.
-            trashname = 'Index-%s' % (dirname.replace('/', '-'),)
+            if dirname:
+                trashname = 'Index-%s' % (dirname.replace('/', '-'),)
+            else:
+                trashname = 'Index-root'
             trashname = find_unused_filename(trashname, dir=self.app.trash_dir)
             trashpath = os.path.join(self.app.trash_dir, trashname)
             outfl = open(trashpath, 'w', encoding='utf-8')

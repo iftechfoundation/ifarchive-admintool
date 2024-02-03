@@ -60,7 +60,10 @@ class IndexDir:
         IndexDir.
         """
         self.dirname = dirname
-        self.indexpath = os.path.join(rootdir, dirname, 'Index')
+        if dirname:
+            self.indexpath = os.path.join(rootdir, dirname, 'Index')
+        else:
+            self.indexpath = os.path.join(rootdir, 'Index')
 
         self.description = None
         self.desclines = []

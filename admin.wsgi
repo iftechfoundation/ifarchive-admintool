@@ -1260,7 +1260,10 @@ class han_ArchiveRoot(base_DirectoryPage):
         return map
 
     def get_fileops(self, req):
-        return []
+        ls = []
+        if req._user.has_role('index'):
+            ls.append('eindex')
+        return ls
 
     def get_dirname(self, req):
         return ''
@@ -1367,9 +1370,10 @@ class han_EditIndexFile(AdminHandler):
         """
         dirname = req.get_input_field('dirname')
         modtime = req.get_input_field('indextime', 0)
+        archdirname = '/arch/'+dirname if dirname else '/arch'
         
         if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
+            raise HTTPRedirectPost(self.app.approot+archdirname)
 
         if req.get_input_field('revert'):
             indextext, indextime = self.get_indextext(dirname)
@@ -1402,14 +1406,20 @@ class han_EditIndexFile(AdminHandler):
 
         if len(oldtext.strip()):
             # Save a copy of the old text in the trash.
-            trashname = 'Index-%s' % (dirname.replace('/', '-'),)
+            if dirname:
+                trashname = 'Index-%s' % (dirname.replace('/', '-'),)
+            else:
+                trashname = 'Index-root'
             trashname = find_unused_filename(trashname, dir=self.app.trash_dir)
             trashpath = os.path.join(self.app.trash_dir, trashname)
             outfl = open(trashpath, 'w', encoding='utf-8')
             outfl.write(oldtext)
             outfl.close()
 
-        newpath = os.path.join(self.app.archive_dir, dirname, 'Index')
+        if dirname:
+            newpath = os.path.join(self.app.archive_dir, dirname, 'Index')
+        else:
+            newpath = os.path.join(self.app.archive_dir, 'Index')
         if not newtext:
             # Delete the Index file entirely.
             if os.path.exists(newpath):
@@ -1422,7 +1432,7 @@ class han_EditIndexFile(AdminHandler):
             outfl.close()
             req.loginfo('Updated Index in /%s' % (dirname,))
 
-        raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
+        raise HTTPRedirectPost(self.app.approot+archdirname)
 
     def do_post_editone(self, req):
         """Handle editing one entry in an Index file.
@@ -1431,9 +1441,10 @@ class han_EditIndexFile(AdminHandler):
         filename = req.get_input_field('filename')
         filetype = req.get_input_field('filetype')
         modtime = req.get_input_field('indextime', 0)
+        archdirname = '/arch/'+dirname if dirname else '/arch'
         
         if req.get_input_field('cancel'):
-            raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname+'#list_'+urlencode(filename))
+            raise HTTPRedirectPost(self.app.approot+archdirname+'#list_'+urlencode(filename))
 
         if req.get_input_field('revert'):
             indexdir, desc, metas, metacount = self.get_indexentry(dirname, filename)
@@ -1506,7 +1517,7 @@ class han_EditIndexFile(AdminHandler):
             indexdir.write()
             req.loginfo('Updated Index entry for "%s" in /%s' % (filename, dirname,))
         
-        raise HTTPRedirectPost(self.app.approot+'/arch/'+dirname)
+        raise HTTPRedirectPost(self.app.approot+archdirname)
 
 @beforeall(require_role('incoming'))
 class han_UploadLog(AdminHandler):

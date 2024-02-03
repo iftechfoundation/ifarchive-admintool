@@ -1239,10 +1239,24 @@ class han_ArchiveRoot(base_DirectoryPage):
         map['isroot'] = True
         ls = self.get_filelist(req, dirs=True, sort='name')
         map['emptydir'] = False
+
+        indexdir = None
+        indexpath = os.path.join(self.get_dirpath(req), 'Index')
+        if os.path.isfile(indexpath):
+            indexdir = IndexDir(map['dirname'], rootdir=self.app.archive_dir)
+            
+        map['indexdir'] = indexdir
+        if indexdir:
+            if indexdir.description:
+                map['indexdirdesc'] = indexdir.description.strip()
+            map['indexdirmeta'] = indexdir.metadata
+            update_file_entries(ls, indexdir, user=req._user)
+
         map['files'] = [ ent for ent in ls if ent.isfile ]
         dirls = [ ent for ent in ls if ent.isdir ]
         dirls.sort(key=lambda ent:sortcanon(ent.name))
         map['subdirs'] = dirls
+        
         return map
 
     def get_fileops(self, req):
@@ -1261,7 +1275,10 @@ class han_EditIndexFile(AdminHandler):
         """Return the contents and the mod timestamp of a directory's Index
         file. If the file does not exist, returns ('', 0).
         """
-        indexpath = os.path.join(self.app.archive_dir, dirname, 'Index')
+        if not dirname:
+            indexpath = os.path.join(self.app.archive_dir, 'Index')
+        else:
+            indexpath = os.path.join(self.app.archive_dir, dirname, 'Index')
         if not os.path.exists(indexpath):
             return ('', 0)
         
@@ -1324,9 +1341,6 @@ class han_EditIndexFile(AdminHandler):
             return self.render('editindexreq.html', req,
                                formerror='Bad directory: %s' % (str(ex),))
 
-        if not dirname:
-            return self.render('editindexreq.html', req,
-                               formerror='The Archive root directory has no Index file.')
         if dirname == 'unprocessed':
             return self.render('editindexreq.html', req,
                                formerror='The Archive /unprocessed directory has no Index file.')

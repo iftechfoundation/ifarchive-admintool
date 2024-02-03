@@ -1261,8 +1261,8 @@ class han_ArchiveRoot(base_DirectoryPage):
 
     def get_fileops(self, req):
         ls = []
-        if req._user.has_role('index'):
-            ls.append('eindex')
+        #if req._user.has_role('index'):
+        #    ls.append('eindex')
         return ls
 
     def get_dirname(self, req):

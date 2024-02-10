@@ -37,7 +37,7 @@
 
 {% block prefilelist %}
 
-{% if dirname and fileops and 'eindex' in fileops %}
+{% if fileops and 'eindex' in fileops %}
 <div class="DirButtons">
 <form method="post" action="{{ approot }}/editindex">
 <input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>

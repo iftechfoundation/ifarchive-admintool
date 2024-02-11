@@ -280,6 +280,19 @@ class base_DirectoryPage(AdminHandler):
         stat = os.stat(pathname)
         return FileEntry(filename, stat, user=req._user)
         
+    def get_dirent(self, filename, req):
+        """Same as above, but for subdirectories.
+        """
+        if bad_filename(filename):
+            return None
+        pathname = os.path.join(self.get_dirpath(req), filename)
+        if not os.path.exists(pathname):
+            return None
+        if not os.path.isdir(pathname):
+            return None
+        stat = os.stat(pathname)
+        return DirEntry(filename, stat, user=req._user)
+        
     def get_symlink(self, filename, req):
         """Same as above, but for symlinks.
         """

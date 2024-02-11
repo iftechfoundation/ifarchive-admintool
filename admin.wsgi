@@ -716,6 +716,11 @@ class base_DirectoryPage(AdminHandler):
 
         origpath = os.path.join(dirpath, filename)
         newpath = os.path.join(self.app.archive_dir, newdir, filename)
+        if os.path.exists(newpath):
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='The %s directory already contains %s.' % (newdir, filename))
+            
         relpath = os.path.relpath(origpath, start=os.path.join(self.app.archive_dir, newdir))
         os.symlink(relpath, newpath)
 

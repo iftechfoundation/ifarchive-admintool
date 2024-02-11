@@ -24,6 +24,7 @@
   <hr>
   <dl class="FileList">
     {% for dir in subdirs %}
+      {% set isselected = (op and opfile != '.' and opfile == dir.name) %}
     
       <dt id="list_{{ dir.name |urlencode }}">
       {% if not dir.islink %}

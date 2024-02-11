@@ -485,6 +485,10 @@ class base_DirectoryPage(AdminHandler):
         else:
             if op == 'dellink':
                 ent = self.get_symlink(filename, req)
+            elif op == 'linkto':
+                ent = self.get_file(filename, req)
+                if ent is None:
+                    ent = self.get_dirent(filename, req)
             else:
                 ent = self.get_file(filename, req)
             if not ent:

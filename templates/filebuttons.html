@@ -21,7 +21,7 @@
   {% if 'eindex' in fileops %}
     <input class="FormButton SmallButton" formaction="{{ approot }}/editindex" name="eindex" type="submit" value="Edit Index">
   {% endif %}
-  
+
   {# Only existent files (not directories) get these buttons. #}
   {% if ent.isfile and not ent.islink and not ent.isbroken %}
     {% if 'zip' in fileops and ent.ishtml %}
@@ -36,11 +36,15 @@
     {% if 'rename' in fileops %}
       <input class="FormButton SmallButton" name="rename" type="submit" value="Rename">
     {% endif %}
-    {% if 'linkto' in fileops %}
-      <input class="FormButton SmallButton" name="linkto" type="submit" value="Create Symlink">
-    {% endif %}
     {% if 'delete' in fileops %}
       <input class="FormButton SmallButton" name="delete" type="submit" value="Delete">
+    {% endif %}
+  {% endif %}
+  
+  {# Only existent files and directories get this. #}
+  {% if not ent.islink and not ent.isbroken %}
+    {% if 'linkto' in fileops %}
+      <input class="FormButton SmallButton" name="linkto" type="submit" value="Create Symlink">
     {% endif %}
   {% endif %}
   

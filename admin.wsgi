@@ -715,6 +715,16 @@ class base_DirectoryPage(AdminHandler):
                                selecterror='You are already in %s!' % (newdir,))
 
         origpath = os.path.join(dirpath, filename)
+        if os.path.islink(origpath):
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You cannot link to a link!')
+        origtype = '???'
+        if os.path.isfile(origpath):
+            origtype = 'file'
+        if os.path.isdir(origpath):
+            origtype = 'subdir'
+        
         newpath = os.path.join(self.app.archive_dir, newdir, filename)
         if os.path.exists(newpath):
             return self.render(self.template, req,
@@ -732,7 +742,7 @@ class base_DirectoryPage(AdminHandler):
             indexdir2.add(ient)
             self.app.rewrite_indexdir(indexdir2)
         
-        req.loginfo('Created symlink to "%s" from /%s to /%s', filename, self.get_dirname(req), newdir)
+        req.loginfo('Created symlink to %s "%s" from /%s to /%s', origtype, filename, self.get_dirname(req), newdir)
         return self.render(self.template, req,
                            didlinkto=filename, didnewdir=newdir, didnewuri='arch/'+newdir,
                            didindextoo=bool(ient))

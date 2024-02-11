@@ -49,7 +49,7 @@
   {% endif %}
   
   {# Links get different buttons. #}
-  {% if ent.isfile and ent.islink %}
+  {% if ent.islink %}
     {% if 'dellink' in fileops %}
       <input class="FormButton SmallButton" name="dellink" type="submit" value="Delete Link">
     {% endif %}

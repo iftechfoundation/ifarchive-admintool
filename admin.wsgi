@@ -1615,11 +1615,14 @@ class han_RebuildIndexes(AdminHandler):
                                locktime=locktime,
                                buildtime=buildtime, builddesc=builddesc,
                                formerror='Button not pressed')
+        reqall = req.get_input_field('reqall')
 
         try:
             args = [ self.app.build_script_path ]
             if self.app.secure_site:
                 args.insert(0, '/usr/bin/sudo')
+            if reqall:
+                args.append('--all')
             subprocess.run(args, check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as ex:
             errortext = ''
@@ -1636,7 +1639,7 @@ class han_RebuildIndexes(AdminHandler):
                                locktime=locktime,
                                formerror='Error: %s' % (ex,))
             
-        req.loginfo('Requested index rebuild')
+        req.loginfo('Requested %sindex rebuild', ('(total) ' if reqall else ''))
         raise HTTPRedirectPost(self.app.approot)
     
 class han_DebugDump(AdminHandler):

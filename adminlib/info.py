@@ -229,7 +229,7 @@ class UploadEntry:
     """
     
     def __init__(self, args, user=None):
-        (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about, usernotes, ifid) = args
+        (uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about, usernotes, tuid) = args
         self.uploadtime = uploadtime
         self.md5 = md5
         self.size = size
@@ -244,7 +244,7 @@ class UploadEntry:
         self.ifdbid = ifdbid
         self.about = about
         self.usernotes = usernotes
-        self.ifid = ifid
+        self.tuid = tuid
 
         self.fdate = formatdate(uploadtime, user=user, shortdate=True)
         self.suggestdirchecked = False

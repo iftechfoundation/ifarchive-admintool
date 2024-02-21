@@ -37,7 +37,7 @@ def run(appinstance):
     popt_addupload.add_argument('--name')
     popt_addupload.add_argument('--email')
     popt_addupload.add_argument('--tempid')
-    popt_addupload.add_argument('--ifid')
+    popt_addupload.add_argument('--tuid')
     popt_addupload.add_argument('--origfile')
     popt_addupload.add_argument('--dir')
     popt_addupload.add_argument('-m', '--message')
@@ -132,7 +132,7 @@ def cmd_createdb(args, app):
         print('"uploads" table exists')
     else:
         print('creating "uploads" table...')
-        curs.execute('CREATE TABLE uploads(uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about, usernotes, ifid)')
+        curs.execute('CREATE TABLE uploads(uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about, usernotes, tuid)')
 
 
 def cmd_adduser(args, app):
@@ -190,6 +190,6 @@ def cmd_addupload(args, app):
     print('adding upload record for %s...' % (filename,))
     logging.info('CLI user=%s: addupload %s', get_curuser(), filename)
     curs = app.getdb().cursor()
-    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, suggestdir, ifdbid, about, ifid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, origfile, args.name, args.email, 'cli', args.dir, args.tempid, args.message, args.ifid))
+    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, suggestdir, ifdbid, about, tuid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, origfile, args.name, args.email, 'cli', args.dir, args.tempid, args.message, args.tuid))
     
     

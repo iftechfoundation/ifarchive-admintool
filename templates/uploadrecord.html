@@ -28,6 +28,10 @@
       {% endif %}
     {% endif %}
   {% endif %}
+  {% if uprec.ifid %}
+    <li><span class="ItemName">IFID:</span>
+      {{ uprec.ifid }}
+  {% endif %}
   {% if uprec.ifdbid %}
     <li><span class="ItemName">IFDB temp ID:</span>
       {{ uprec.ifdbid }}

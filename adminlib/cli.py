@@ -36,6 +36,7 @@ def run(appinstance):
     popt_addupload.add_argument('file')
     popt_addupload.add_argument('--name')
     popt_addupload.add_argument('--email')
+    popt_addupload.add_argument('--tempid')
     popt_addupload.add_argument('--ifid')
     popt_addupload.add_argument('--origfile')
     popt_addupload.add_argument('--dir')
@@ -108,7 +109,7 @@ def cmd_createdb(args, app):
     """Create the database tables. This only needs to be done once ever,
     unless of course we change the table structure or decide to wipe
     and start over.
-    ### Add a column if it doesn't exist?
+    TODO: Add a column if it doesn't exist?
     """
     logging.info('CLI user=%s: createdb', get_curuser())
     curs = app.getdb().cursor()
@@ -131,7 +132,7 @@ def cmd_createdb(args, app):
         print('"uploads" table exists')
     else:
         print('creating "uploads" table...')
-        curs.execute('CREATE TABLE uploads(uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about, usernotes)')
+        curs.execute('CREATE TABLE uploads(uploadtime, md5, size, filename, origfilename, donorname, donoremail, donorip, donoruseragent, permission, suggestdir, ifdbid, about, usernotes, ifid)')
 
 
 def cmd_adduser(args, app):
@@ -189,6 +190,6 @@ def cmd_addupload(args, app):
     print('adding upload record for %s...' % (filename,))
     logging.info('CLI user=%s: addupload %s', get_curuser(), filename)
     curs = app.getdb().cursor()
-    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, suggestdir, ifdbid, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, origfile, args.name, args.email, 'cli', args.dir, args.ifid, args.message))
+    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, suggestdir, ifdbid, about, ifid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, origfile, args.name, args.email, 'cli', args.dir, args.tempid, args.message, args.ifid))
     
     

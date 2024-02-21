@@ -1089,7 +1089,7 @@ class base_DirectoryPage(AdminHandler):
         
         req.loginfo('Notified IFDB about "%s" (ID "%s") being in /%s: "%s"', filename, ifdbid, self.get_dirname(req), reqresult.replace('\n', ' '))
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,
-                           didnotifyifdb=True, ifdbid=ifdbid, reqresult=reqresult)
+                           didnotifyifdb=True, ifdbid=ifdbid, tuid=tuid, reqresult=reqresult)
 
 
 @beforeall(require_role('incoming'))

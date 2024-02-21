@@ -79,6 +79,20 @@ class IFDBIDList(jinja2.ext.Extension):
     @staticmethod
     def ifdbidlist(ls):
         res = [ ent.ifdbid for ent in ls if ent.ifdbid ]
+        res = list(set(res))
+        return res
+
+class TUIDList(jinja2.ext.Extension):
+    """Given a list of UploadEntry items, return a list of all the
+    nonempty tuid values.
+    """
+    def __init__(self, env):
+        env.filters['tuidlist'] = self.tuidlist
+
+    @staticmethod
+    def tuidlist(ls):
+        res = [ ent.tuid for ent in ls if ent.tuid ]
+        res = list(set(res))
         return res
 
             

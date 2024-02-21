@@ -12,7 +12,7 @@ import tinyapp.auth
 from adminlib.session import find_user
 from adminlib.info import formatdate
 from adminlib.util import find_unused_filename
-from adminlib.jenv import DelimNumber, Pluralize, IFDBIDList, SplitURI, AllLatin1
+from adminlib.jenv import DelimNumber, Pluralize, IFDBIDList, TUIDList, SplitURI, AllLatin1
 from adminlib.hasher import Hasher
 
 class AdminApp(TinyApp):
@@ -93,6 +93,7 @@ class AdminApp(TinyApp):
                     Pluralize,
                     SplitURI,
                     IFDBIDList,
+                    TUIDList,
                     AllLatin1,
                 ],
                 autoescape = select_autoescape(),

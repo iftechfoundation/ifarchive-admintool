@@ -88,9 +88,6 @@
 {% if didnotifyifdb %}
 <p class="ResultNote">
   Notified IFDB that this file (with IFDB temp ID {{ ifdbid }})
-  {% if tuid %}
-  (and IFDB TUID {{ tuid }})
-  {% endif %}
   is now in <code>if-archive/{{ dirname }}</code>.
 </p>
 <div class="ResultNote FileComments">{{ reqresult }}</div>

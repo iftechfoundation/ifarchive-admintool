@@ -1065,11 +1065,19 @@ class base_DirectoryPage(AdminHandler):
                                filename=filename, filesize=filesize, uploads=uploads,
                                formerror='You must select an IFDB ID to send.')
 
-        # This logic is copied from ifdbize.py.
+        tuid = req.get_input_field('tuid')
+
+        ifdburl = 'https://ifdb.org/ifarchive-commit'
         ifdbpath = os.path.join('if-archive', self.get_dirname(req), filename)
-        ifdburl = 'https://ifdb.org/ifarchive-commit?ifdbid={ifdbid}&path={path}&key={key}'
+
         # IFDB IDs and the commit key should be alphanumeric.
-        urltofetch = ifdburl.format(ifdbid=ifdbid, path=urlencode(ifdbpath), key=self.app.ifdb_commit_key)
+        urltofetch = '%s?ifdbid=%s&path=%s&key=%s' % (
+            ifdburl,
+            ifdbid,
+            urlencode(ifdbpath),
+            self.app.ifdb_commit_key)
+        if tuid:
+            urltofetch += '&tuid=%s' % (tuid,)
         
         try:
             ifdbreq = urllib.request.urlopen(urltofetch)

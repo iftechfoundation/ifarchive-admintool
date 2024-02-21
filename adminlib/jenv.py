@@ -69,29 +69,21 @@ class SplitURI(jinja2.ext.Extension):
         return [ (val, val) ]
 
 
-class IFDBIDList(jinja2.ext.Extension):
-    """Given a list of UploadEntry items, return a list of all the
-    nonempty ifdbid values.
+class AttrList(jinja2.ext.Extension):
+    """Given a list of objects, return a list of all the unique
+    nonempty obj.attr values.
+    The values must be hashable (so that uniqueness makes sense).
     """
     def __init__(self, env):
-        env.filters['ifdbidlist'] = self.ifdbidlist
+        env.filters['attrlist'] = self.attrlist
 
     @staticmethod
-    def ifdbidlist(ls):
-        res = [ ent.ifdbid for ent in ls if ent.ifdbid ]
-        res = list(set(res))
-        return res
-
-class TUIDList(jinja2.ext.Extension):
-    """Given a list of UploadEntry items, return a list of all the
-    nonempty tuid values.
-    """
-    def __init__(self, env):
-        env.filters['tuidlist'] = self.tuidlist
-
-    @staticmethod
-    def tuidlist(ls):
-        res = [ ent.tuid for ent in ls if ent.tuid ]
+    def attrlist(ls, key):
+        res = []
+        for ent in ls:
+            val = getattr(ent, key, None)
+            if val:
+                res.append(val)
         res = list(set(res))
         return res
 

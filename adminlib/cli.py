@@ -190,6 +190,6 @@ def cmd_addupload(args, app):
     print('adding upload record for %s...' % (filename,))
     logging.info('CLI user=%s: addupload %s', get_curuser(), filename)
     curs = app.getdb().cursor()
-    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, suggestdir, ifdbid, about, ifid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, origfile, args.name, args.email, 'cli', args.dir, args.tempid, args.message, args.ifid))
+    curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, donorname, donoremail, permission, suggestdir, ifdbid, about, ifid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (now, md5, size, barefilename, origfile, args.name, args.email, 'cli', args.dir, args.tempid, args.message, args.ifid))
     
     

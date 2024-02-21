@@ -1065,7 +1065,9 @@ class base_DirectoryPage(AdminHandler):
                                filename=filename, filesize=filesize, uploads=uploads,
                                formerror='You must select an IFDB ID to send.')
 
-        tuid = req.get_input_field('tuid')
+        # These can each have multiple values
+        tuids = req.input.get('tuid')
+        orignames = req.input.get('origfilename')
 
         ifdburl = 'https://ifdb.org/ifarchive-commit'
         ifdbpath = os.path.join('if-archive', self.get_dirname(req), filename)
@@ -1076,8 +1078,12 @@ class base_DirectoryPage(AdminHandler):
             ifdbid,
             urlencode(ifdbpath),
             self.app.ifdb_commit_key)
-        if tuid:
-            urltofetch += '&tuid=%s' % (tuid,)
+        if tuids:
+            for tuid in tuids:
+                urltofetch += '&tuid=%s' % (tuid,)
+        if orignames:
+            for origname in orignames:
+                urltofetch += '&original_filename=%s' % (urlencode(origname),)
         
         try:
             ifdbreq = urllib.request.urlopen(urltofetch)
@@ -1087,10 +1093,9 @@ class base_DirectoryPage(AdminHandler):
         except Exception as ex:
             reqresult = str(ex)
 
-        tuidreport = (', TUID "%s"' % (tuid,) if tuid else '')
-        req.loginfo('Notified IFDB about "%s" (temp ID "%s"%s) being in /%s: "%s"', filename, ifdbid, tuidreport, self.get_dirname(req), reqresult.replace('\n', ' '))
+        req.loginfo('Notified IFDB about "%s" (temp ID "%s") being in /%s: "%s"', filename, ifdbid, self.get_dirname(req), reqresult.replace('\n', ' '))
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads,
-                           didnotifyifdb=True, ifdbid=ifdbid, tuid=tuid, reqresult=reqresult)
+                           didnotifyifdb=True, ifdbid=ifdbid, reqresult=reqresult)
 
 
 @beforeall(require_role('incoming'))

@@ -1,6 +1,6 @@
 # The file admin interface for the IF Archive
 
-- Copyright 2023 by the Interactive Fiction Technology Foundation
+- Copyright 2023-24 by the Interactive Fiction Technology Foundation
 - Distributed under the MIT license
 - Created by Andrew Plotkin <erkyrath@eblong.com>
 

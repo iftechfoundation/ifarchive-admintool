@@ -20,13 +20,14 @@ We separate the work into roles as much as possible. A user can have any number 
 - "filing": Move files from /unprocessed to other archive directories.
 - "index": Edit `Index` files.
 - "rebuild": Run `build-indexes` to regenerate the Archive's public index pages.
+- "log": View the log of admin tool activity.
 - "admin": Do everything.
 
 It should not be possible to destroy or overwrite files from the web service. Mistakes should always be recoverable, although it might take an admin to untangle serious problems.
 
 Thus, "deleting" a file moves it to the /trash directory, where it will live for at least 30 days. Similarly, whenever you edit an `Index` file, the previous version is copied to /trash.
 
-All activity is logged. (The log is not viewable from the web service; you need command-line access to see it.)
+All activity is logged, and users can review the log (at least the recent part).
 
 ## Contents
 

@@ -1006,7 +1006,7 @@ class base_DirectoryPage(AdminHandler):
         # And the directory itself.
         os.rmdir(subdirpath)
             
-        req.loginfo('Deleted directory /%s', self.get_dirname(req))
+        req.loginfo('Deleted directory /%s', subdirname)
         return self.render(self.template, req,
                            diddeldir='.', didnewname=subdirname)
 

@@ -768,6 +768,10 @@ class base_DirectoryPage(AdminHandler):
             return self.render(self.template, req,
                                op=op, opfile=filename,
                                selecterror='You selected both /unprocessed and %s; which is it?' % (destdir,))
+        if destopt and destopt.startswith('dir_') and destdir:
+            return self.render(self.template, req,
+                               op=op, opfile=filename,
+                               selecterror='You selected both %s and %s; which is it?' % (destopt[4:], destdir,))
 
         if destopt == 'inc':
             # This isn't in the Archive tree, so handle it as a special case.
@@ -783,6 +787,15 @@ class base_DirectoryPage(AdminHandler):
         
         if destopt == 'unp':
             newdir = 'unprocessed'
+        elif destopt and destopt.startswith('dir_'):
+            dirname = self.get_dirname(req)
+            newdir = os.path.join(dirname, destopt[4:])
+            try:
+                newdir = canon_archivedir(newdir, archivedir=req.app.archive_dir)
+            except FileConsistency as ex:
+                return self.render(self.template, req,
+                                   op=op, opfile=filename,
+                                   selecterror='Not an Archive directory: %s' % (newdir,))
         else:
             newdir = destdir
             if newdir.startswith('/'):

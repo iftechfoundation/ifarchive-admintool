@@ -118,6 +118,14 @@
   </div>
   {% endif %}
   {% if 'filing' in user.roles %}
+    {% if subdirs %}
+      {% for subdir in subdirs %}
+        <div>
+          <input id="destopt_dir_{{ subdir.name }}" type="radio" name="destopt" value="dir_{{ subdir.name }}">
+          <label for="destopt_dir_{{ subdir.name }}">if-archive/{{ dirname }}/{{ subdir.name }}</label>
+	</div>
+      {% endfor %}
+    {% endif %}
     <div>
       <input id="destopt_other" type="radio" name="destopt" value="other">
       <label for="destopt_other">if-archive/</label>

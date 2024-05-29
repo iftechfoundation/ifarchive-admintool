@@ -160,11 +160,11 @@ def clean_newlines(val, prestrip=False):
 def sortcanon(val):
     """Lowercase a string for sensible sorting. This is not true
     case-insensitive Unicode sorting, but it covers the common cases.
-    We special-case "Index" and ".listing" -- those should always be
-    sorted at the top.
+    We also include a priority flag to special-case "Index" and ".listing".
+    Those should always be sorted at the top.
     """
     if val == 'Index':
-        return '..Index'
+        return (0, 'index')
     if val == '.listing':
-        return '..listing'
-    return val.lower()
+        return (0, 'listing')
+    return (1, val.lower())

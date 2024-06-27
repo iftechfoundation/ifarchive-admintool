@@ -1059,7 +1059,6 @@ class base_DirectoryPage(AdminHandler):
             # Extract an md5 directly from the file.
             newpath = os.path.join(self.get_dirpath(req), filename)
             hashval, hashsize = self.app.hasher.get_md5_size(newpath)
-            req.loginfo('### hashval %s, hashsize %d', hashval, hashsize)
             if not hashsize:
                 return self.render('uploadinfo.html', req,
                                    op=op,

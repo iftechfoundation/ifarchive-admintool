@@ -1039,25 +1039,38 @@ class base_DirectoryPage(AdminHandler):
         # Add the username.
         note = req._user.name+': '+note
 
-        if not uploads:
-            return self.render('uploadinfo.html', req,
-                               op=op,
-                               filename=filename, filesize=filesize, uploads=uploads,
-                               formerror='This file has no upload record, so there is no place to add a note.')
+        if uploads:
+            # Existing upload records.
+            # We are assuming that every upload record for this md5 has the
+            # same usernote info. (Other fields may differ! But usernotes
+            # are updated by md5, so they should all match.)
+            hashval = uploads[0].md5
+            val = uploads[0].usernotes
+            if not val:
+                newnotes = note
+            else:
+                newnotes = val.strip() + '\n' + note
+                
+            curs = self.app.getdb().cursor()
+            curs.execute('UPDATE uploads SET usernotes = ? WHERE md5 = ?', (newnotes, hashval))
 
-        # We are assuming that every upload record for this md5 has the same
-        # usernote info. (Other fields may differ! But usernotes are updated
-        # by md5, so they should all match.)
-
-        hashval = uploads[0].md5
-        val = uploads[0].usernotes
-        if not val:
-            newnotes = note
         else:
-            newnotes = val.strip() + '\n' + note
+            # We must create a new upload record.
+            # Extract an md5 directly from the file.
+            newpath = os.path.join(self.get_dirpath(req), filename)
+            hashval, hashsize = self.app.hasher.get_md5_size(newpath)
+            req.loginfo('### hashval %s, hashsize %d', hashval, hashsize)
+            if not hashsize:
+                return self.render('uploadinfo.html', req,
+                                   op=op,
+                                   filename=filename, filesize=filesize, uploads=uploads,
+                                   formerror='This is a zero-length file, so you cannot add a note.')
+            stat = os.stat(newpath)
+            uploadtime = int(stat.st_mtime)
+            newnotes = note
 
-        curs = self.app.getdb().cursor()
-        curs.execute('UPDATE uploads SET usernotes = ? WHERE md5 = ?', (newnotes, hashval))
+            curs = self.app.getdb().cursor()
+            curs.execute('INSERT INTO uploads (uploadtime, md5, size, filename, origfilename, permission, usernotes) VALUES (?, ?, ?, ?, ?, ?, ?)', (uploadtime, hashval, hashsize, filename, filename, 'unknown', newnotes))
 
         # Gotta reload to see the change.
         (uploads, filesize) = self.get_uploadinfo(req, filename)

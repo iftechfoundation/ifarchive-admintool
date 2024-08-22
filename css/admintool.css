@@ -459,7 +459,7 @@ body.DarkMode {
 }
 
 .DarkMode .FileList .Selected {
-    background: #FFA;
+    background: #550;
 }
 
 .DarkMode .FileList .Selected .HotButton {
@@ -467,7 +467,7 @@ body.DarkMode {
 }
 
 .DarkMode .SubdirButtons.Selected {
-    background: #FFA;
+    background: #550;
 }
 
 .DarkMode .FileComments {
@@ -475,5 +475,5 @@ body.DarkMode {
 }
 
 .DarkMode .ResultNote {
-    background: #FFA;
+    background: #550;
 }

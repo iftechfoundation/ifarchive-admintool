@@ -44,7 +44,7 @@ body {
 }
 
 #navbar {
-    background: #641;
+    background-color: #641;
     font-size: 85%;
     padding: 4px 8px;
     margin-bottom: 20px;
@@ -297,4 +297,95 @@ ul.UserInfoList li {
         margin-right: 20px;
     }
     
+}
+
+/* Our handling of dark-vs-light theme requires a bunch of regrettably
+   redundant declarations. All colors (declared above for light mode)
+   will be repeated below under the LightMode class, then their
+   dark equivalents under DarkMode. Then we repeat both *again*
+   with a color-scheme rule, under SysMode.
+
+   See darkmode.js for an explanation of the CSS class handling. */
+
+body.LightMode {
+    background-color: #FAF5E9;
+}
+
+.LightMode #header {
+    background-color: #DAB886;
+}
+
+.LightMode #navbar {
+    background-color: #641;
+}
+
+.LightMode #navbar a {
+    color: white;
+}
+
+.LightMode #navbar .Selected {
+    background-color: #A71;
+    box-shadow: inset 0px 0px 4px #DD0;
+}
+
+.LightMode .FormButton {
+    background-color: white;
+    color: black;
+    border: 1px solid #AAA;
+}
+
+.LightMode .HotButton {
+    background-color: #EFA;
+}
+
+.LightMode a {
+    color: #B50000;
+}
+
+.LightMode #header a {
+    color: #850000;
+}
+
+.LightMode a:hover {
+    color: #D11515;
+}
+
+.LightMode hr {
+    background: #F0D0A0;
+}
+
+.LightMode code {
+    background: #ECE0B0;
+}
+
+.LightMode pre {
+    background: #ECE0B0;
+}
+
+.LightMode ul {
+    border-left: 3px solid #F0D0A0;
+}
+
+.LightMode ul li {
+    background-image: url("cssbullet.png");
+}
+
+.LightMode .FileList .Selected {
+    background: #FFA;
+}
+
+.LightMode .FileList .Selected .HotButton {
+    background-color: #EAFB80;
+}
+
+.LightMode .SubdirButtons.Selected {
+    background: #FFA;
+}
+
+.LightMode .FileComments {
+    border-left: 3px solid #F0D0A0;
+}
+
+.LightMode .ResultNote {
+    background: #FFA;
 }

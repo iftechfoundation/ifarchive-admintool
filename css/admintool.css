@@ -427,7 +427,7 @@ body.DarkMode {
 }
 
 .DarkMode a {
-    color: #B50000;
+    color: #FF6840;
 }
 
 .DarkMode #header a {
@@ -435,7 +435,7 @@ body.DarkMode {
 }
 
 .DarkMode a:hover {
-    color: #D11515;
+    color: #FF4820;
 }
 
 .DarkMode hr {

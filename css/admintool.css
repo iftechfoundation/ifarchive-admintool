@@ -389,3 +389,88 @@ body.LightMode {
 .LightMode .ResultNote {
     background: #FFA;
 }
+
+
+
+body.DarkMode {
+    background-color: #FAF5E9;
+}
+
+.DarkMode #header {
+    background-color: #DAB886;
+}
+
+.DarkMode #navbar {
+    background-color: #641;
+}
+
+.DarkMode #navbar a {
+    color: white;
+}
+
+.DarkMode #navbar .Selected {
+    background-color: #A71;
+    box-shadow: inset 0px 0px 4px #DD0;
+}
+
+.DarkMode .FormButton {
+    background-color: white;
+    color: black;
+    border: 1px solid #AAA;
+}
+
+.DarkMode .HotButton {
+    background-color: #EFA;
+}
+
+.DarkMode a {
+    color: #B50000;
+}
+
+.DarkMode #header a {
+    color: #850000;
+}
+
+.DarkMode a:hover {
+    color: #D11515;
+}
+
+.DarkMode hr {
+    background: #F0D0A0;
+}
+
+.DarkMode code {
+    background: #ECE0B0;
+}
+
+.DarkMode pre {
+    background: #ECE0B0;
+}
+
+.DarkMode ul {
+    border-left: 3px solid #F0D0A0;
+}
+
+.DarkMode ul li {
+    background-image: url("cssbullet.png");
+}
+
+.DarkMode .FileList .Selected {
+    background: #FFA;
+}
+
+.DarkMode .FileList .Selected .HotButton {
+    background-color: #EAFB80;
+}
+
+.DarkMode .SubdirButtons.Selected {
+    background: #FFA;
+}
+
+.DarkMode .FileComments {
+    border-left: 3px solid #F0D0A0;
+}
+
+.DarkMode .ResultNote {
+    background: #FFA;
+}

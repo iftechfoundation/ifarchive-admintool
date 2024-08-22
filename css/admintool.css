@@ -330,6 +330,16 @@ body.LightMode {
     box-shadow: inset 0px 0px 4px #DD0;
 }
 
+.LightMode .FormInput {
+    color: black;
+    background-color: white;
+}
+
+.LightMode .FormTextArea {
+    color: black;
+    background-color: white;
+}
+
 .LightMode .FormButton {
     background-color: white;
     color: black;
@@ -414,6 +424,16 @@ body.DarkMode {
 .DarkMode #navbar .Selected {
     background-color: #C90;
     box-shadow: inset 0px 0px 4px #871;
+}
+
+.DarkMode .FormInput {
+    color: white;
+    background-color: black;
+}
+
+.DarkMode .FormTextArea {
+    color: white;
+    background-color: black;
 }
 
 .DarkMode .FormButton {

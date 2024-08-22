@@ -400,20 +400,20 @@ body.DarkMode {
 }
 
 .DarkMode #header {
-    background-color: #DAB886;
-}
-
-.DarkMode #navbar {
     background-color: #641;
 }
 
+.DarkMode #navbar {
+    background-color: #DAB886;
+}
+
 .DarkMode #navbar a {
-    color: white;
+    color: black;
 }
 
 .DarkMode #navbar .Selected {
-    background-color: #A71;
-    box-shadow: inset 0px 0px 4px #DD0;
+    background-color: #C90;
+    box-shadow: inset 0px 0px 4px #871;
 }
 
 .DarkMode .FormButton {

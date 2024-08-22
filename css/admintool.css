@@ -439,7 +439,7 @@ body.DarkMode {
 }
 
 .DarkMode hr {
-    background: #F0D0A0;
+    background: #765215;
 }
 
 .DarkMode code {
@@ -451,7 +451,7 @@ body.DarkMode {
 }
 
 .DarkMode ul {
-    border-left: 3px solid #F0D0A0;
+    border-left: 3px solid #765215;
 }
 
 .DarkMode ul li {
@@ -471,7 +471,7 @@ body.DarkMode {
 }
 
 .DarkMode .FileComments {
-    border-left: 3px solid #F0D0A0;
+    border-left: 3px solid #765215;
 }
 
 .DarkMode .ResultNote {

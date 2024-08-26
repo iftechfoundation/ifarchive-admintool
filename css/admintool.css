@@ -475,7 +475,7 @@ body.DarkMode {
 }
 
 .DarkMode ul li {
-    background-image: url("cssbullet.png");
+    background-image: url("cssbulletdark.png");
 }
 
 .DarkMode .FileList .Selected {

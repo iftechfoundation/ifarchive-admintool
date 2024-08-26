@@ -414,7 +414,7 @@ body.DarkMode {
 }
 
 .DarkMode #navbar {
-    background-color: #DAB886;
+    background-color: #CAA876;
 }
 
 .DarkMode #navbar a {
@@ -422,8 +422,8 @@ body.DarkMode {
 }
 
 .DarkMode #navbar .Selected {
-    background-color: #C90;
-    box-shadow: inset 0px 0px 4px #871;
+    background-color: #BC8900;
+    box-shadow: inset 0px 0px 4px #650;
 }
 
 .DarkMode .FormInput {

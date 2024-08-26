@@ -443,7 +443,7 @@ body.DarkMode {
 }
 
 .DarkMode .HotButton {
-    background-color: #EFA;
+    background-color: #456000;
 }
 
 .DarkMode a {
@@ -483,7 +483,7 @@ body.DarkMode {
 }
 
 .DarkMode .FileList .Selected .HotButton {
-    background-color: #557000;
+    background-color: #607800;
 }
 
 .DarkMode .SubdirButtons.Selected {

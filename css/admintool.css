@@ -497,3 +497,200 @@ body.DarkMode {
 .DarkMode .ResultNote {
     background: #550;
 }
+
+
+@media (prefers-color-scheme: light) {
+
+body.SysMode {
+    background-color: #FAF5E9;
+    color: black;
+}
+
+.SysMode #header {
+    background-color: #DAB886;
+}
+
+.SysMode #navbar {
+    background-color: #641;
+}
+
+.SysMode #navbar a {
+    color: white;
+}
+
+.SysMode #navbar .Selected {
+    background-color: #A71;
+    box-shadow: inset 0px 0px 4px #DD0;
+}
+
+.SysMode .FormInput {
+    color: black;
+    background-color: white;
+}
+
+.SysMode .FormTextArea {
+    color: black;
+    background-color: white;
+}
+
+.SysMode .FormButton {
+    background-color: white;
+    color: black;
+    border: 1px solid #AAA;
+}
+
+.SysMode .HotButton {
+    background-color: #EFA;
+}
+
+.SysMode a {
+    color: #B50000;
+}
+
+.SysMode #header a {
+    color: #850000;
+}
+
+.SysMode a:hover {
+    color: #D11515;
+}
+
+.SysMode hr {
+    background: #F0D0A0;
+}
+
+.SysMode code {
+    background: #ECE0B0;
+}
+
+.SysMode pre {
+    background: #ECE0B0;
+}
+
+.SysMode ul {
+    border-left: 3px solid #F0D0A0;
+}
+
+.SysMode ul li {
+    background-image: url("cssbullet.png");
+}
+
+.SysMode .FileList .Selected {
+    background: #FFA;
+}
+
+.SysMode .FileList .Selected .HotButton {
+    background-color: #EAFB80;
+}
+
+.SysMode .SubdirButtons.Selected {
+    background: #FFA;
+}
+
+.SysMode .FileComments {
+    border-left: 3px solid #F0D0A0;
+}
+
+.SysMode .ResultNote {
+    background: #FFA;
+}
+
+}
+
+@media (prefers-color-scheme: dark) {
+
+body.SysMode {
+    background-color: #262205;
+    color: white;
+}
+
+.SysMode #header {
+    background-color: #641;
+}
+
+.SysMode #navbar {
+    background-color: #CAA876;
+}
+
+.SysMode #navbar a {
+    color: black;
+}
+
+.SysMode #navbar .Selected {
+    background-color: #BC8900;
+    box-shadow: inset 0px 0px 4px #650;
+}
+
+.SysMode .FormInput {
+    color: white;
+    background-color: black;
+}
+
+.SysMode .FormTextArea {
+    color: white;
+    background-color: black;
+}
+
+.SysMode .FormButton {
+    background-color: black;
+    color: white;
+    border: 1px solid #909090;
+}
+
+.SysMode .HotButton {
+    background-color: #456000;
+}
+
+.SysMode a {
+    color: #FF6840;
+}
+
+.SysMode #header a {
+    color: #FF8848;
+}
+
+.SysMode a:hover {
+    color: #FF4820;
+}
+
+.SysMode hr {
+    background: #765215;
+}
+
+.SysMode code {
+    background: #6C4000;
+}
+
+.SysMode pre {
+    background: #6C4000;
+}
+
+.SysMode ul {
+    border-left: 3px solid #765215;
+}
+
+.SysMode ul li {
+    background-image: url("cssbulletdark.png");
+}
+
+.SysMode .FileList .Selected {
+    background: #550;
+}
+
+.SysMode .FileList .Selected .HotButton {
+    background-color: #607800;
+}
+
+.SysMode .SubdirButtons.Selected {
+    background: #550;
+}
+
+.SysMode .FileComments {
+    border-left: 3px solid #765215;
+}
+
+.SysMode .ResultNote {
+    background: #550;
+}
+
+}

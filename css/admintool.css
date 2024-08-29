@@ -306,7 +306,12 @@ ul.UserInfoList li {
    dark equivalents under DarkMode. Then we repeat both *again*
    with a color-scheme rule, under SysMode.
 
+   The magic --- comments assist automated updates of these repeated
+   declarations.
+
    See darkmode.js for an explanation of the CSS class handling. */
+
+/* --- begin LightMode --- */
 
 body.LightMode {
     background-color: #FAF5E9;
@@ -402,7 +407,9 @@ body.LightMode {
     background: #FFA;
 }
 
+/* --- end LightMode --- */
 
+/* --- begin DarkMode --- */
 
 body.DarkMode {
     background-color: #262205;
@@ -498,8 +505,11 @@ body.DarkMode {
     background: #550;
 }
 
+/* --- end DarkMode --- */
 
 @media (prefers-color-scheme: light) {
+
+/* --- begin mediaLightMode --- */
 
 body.SysMode {
     background-color: #FAF5E9;
@@ -595,9 +605,13 @@ body.SysMode {
     background: #FFA;
 }
 
+/* --- end mediaLightMode --- */
+
 }
 
 @media (prefers-color-scheme: dark) {
+
+/* --- begin mediaDarkMode --- */
 
 body.SysMode {
     background-color: #262205;
@@ -692,5 +706,7 @@ body.SysMode {
 .SysMode .ResultNote {
     background: #550;
 }
+
+/* --- end mediaDarkMode --- */
 
 }

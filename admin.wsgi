@@ -15,7 +15,7 @@ import sys
 import time
 import os, os.path
 import hashlib
-import urllib.request
+import urllib.request, urllib.error
 import configparser
 import subprocess
 import logging, logging.handlers
@@ -1115,6 +1115,14 @@ class base_DirectoryPage(AdminHandler):
             reqresult = ifdbreq.read()
             ifdbreq.close()
             reqresult = reqresult.decode()
+        except urllib.error.HTTPError as ex:
+            reqresult = str(ex)
+            try:
+                exmsg = ex.fp.read().decode()
+                if exmsg:
+                    reqresult = reqresult + '\n' + exmsg
+            except:
+                pass
         except Exception as ex:
             reqresult = str(ex)
 

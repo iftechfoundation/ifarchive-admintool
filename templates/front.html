@@ -35,7 +35,7 @@
 </p>
 
 <p>
-  Server storage: {{ diskuse.used|prettybytes }} used, {{ diskuse.free|prettybytes }} free.
+  Server storage: {{ diskuse.used|prettybytes }} used, {{ diskuse.free|prettybytes }} free ({{ "%d%% full"|format(diskuse.used/diskuse.total*100) }}).
 </p>
 
 {% include "rebuild_widget.html" %}

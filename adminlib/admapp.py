@@ -12,7 +12,7 @@ import tinyapp.auth
 from adminlib.session import find_user
 from adminlib.info import formatdate
 from adminlib.util import find_unused_filename
-from adminlib.jenv import DelimNumber, Pluralize, AttrList, SplitURI, AllLatin1
+from adminlib.jenv import DelimNumber, PrettyBytes, Pluralize, AttrList, SplitURI, AllLatin1
 from adminlib.hasher import Hasher
 
 class AdminApp(TinyApp):
@@ -90,6 +90,7 @@ class AdminApp(TinyApp):
                 loader = FileSystemLoader(self.template_path),
                 extensions = [
                     DelimNumber,
+                    PrettyBytes,
                     Pluralize,
                     SplitURI,
                     AttrList,

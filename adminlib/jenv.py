@@ -30,7 +30,27 @@ class DelimNumber(jinja2.ext.Extension):
             ls.append(val[ pos : pos+3 ])
             pos += 3
         return ','.join(ls)
-        
+
+class PrettyBytes(jinja2.ext.Extension):
+    """Display a number as a file size in human-readable form, e.g.
+    "5.26 kB" or "97.20 MB". Units are metric (1000-based).
+    """
+    
+    def __init__(self, env):
+        env.filters['prettybytes'] = self.pretty_bytes
+
+    @staticmethod
+    def pretty_bytes(val):
+        if val < 1000:
+            return '%d bytes' % (val,)
+        if val < 1000000:
+            return '%.2f kB' % (val / 1000,)
+        if val < 1000000000:
+            return '%.2f MB' % (val / 1000000,)
+        if val < 1000000000000:
+            return '%.2f GB' % (val / 1000000000,)
+        return 'BIGNUM: %s' % (val,)
+    
 class Pluralize(jinja2.ext.Extension):
     """Display "" or "s", depending on whether the value is 1.
     Or you can pass any two strings to display one of.

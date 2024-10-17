@@ -43,13 +43,17 @@ class PrettyBytes(jinja2.ext.Extension):
     def pretty_bytes(val):
         if val < 1000:
             return '%d bytes' % (val,)
-        if val < 1000000:
+        if val < 100000:
             return '%.2f kB' % (val / 1000,)
-        if val < 1000000000:
+        if val < 1000000:
+            return '%.1f kB' % (val / 1000,)
+        if val < 100000000:
             return '%.2f MB' % (val / 1000000,)
-        if val < 1000000000000:
+        if val < 1000000000:
+            return '%.1f MB' % (val / 1000000,)
+        if val < 100000000000:
             return '%.2f GB' % (val / 1000000000,)
-        return 'BIGNUM: %s' % (val,)
+        return '%.1f GB' % (val / 1000000000,)
     
 class Pluralize(jinja2.ext.Extension):
     """Display "" or "s", depending on whether the value is 1.

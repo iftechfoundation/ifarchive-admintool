@@ -28,3 +28,7 @@
     {{ text }}
   {%- endif -%}
 {%- endmacro -%}
+
+{%- macro showfilesize(val) -%}
+  {{ val|prettybytes }}
+{%- endmacro -%}

@@ -1,5 +1,5 @@
 {% extends "page.html" %}
-{% from 'macros.html' import optlink %}
+{% from 'macros.html' import optlink, showfilesize %}
 
 {% block usetitle %}{% endblock %}
 
@@ -35,7 +35,7 @@
 </p>
 
 <p>
-  Server storage: {{ diskuse.used|prettybytes }} used, {{ diskuse.free|prettybytes }} free ({{ "%d%% free"|format(diskuse.free/diskuse.total*100) }}).
+  Server storage: {{ showfilesize(diskuse.used) }} used, {{ showfilesize(diskuse.free) }} free ({{ "%d%% free"|format(diskuse.free/diskuse.total*100) }}).
 </p>
 
 {% include "rebuild_widget.html" %}

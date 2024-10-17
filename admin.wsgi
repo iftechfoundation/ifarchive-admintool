@@ -17,6 +17,7 @@ import os, os.path
 import hashlib
 import urllib.request, urllib.error
 import configparser
+import shutil
 import subprocess
 import logging, logging.handlers
 import threading
@@ -65,10 +66,13 @@ class han_Home(AdminHandler):
         locktime = self.app.get_locktime()
         buildtime, builddesc = self.app.get_buildinfo(user=req._user)
 
+        diskuse = shutil.disk_usage('/')
+
         return self.render('front.html', req,
                            incount=incount, unproccount=unproccount,
                            locktime=locktime,
-                           buildtime=buildtime, builddesc=builddesc)
+                           buildtime=buildtime, builddesc=builddesc,
+                           diskuse=diskuse)
 
     def do_post(self, req):
         formname = req.get_input_field('name')

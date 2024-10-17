@@ -34,6 +34,10 @@
   {% endif %}
 </p>
 
+<p>
+  Server storage: {{ diskuse.used|prettybytes }} used, {{ diskuse.free|prettybytes }} free.
+</p>
+
 {% include "rebuild_widget.html" %}
 
 {% endblock %}

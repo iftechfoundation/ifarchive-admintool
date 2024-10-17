@@ -30,5 +30,5 @@
 {%- endmacro -%}
 
 {%- macro showfilesize(val) -%}
-  {{ val|prettybytes }}
+  <span class="ToolTip" title="{{ val|delimnumber }} bytes">{{ val|prettybytes }}</span>
 {%- endmacro -%}

@@ -170,6 +170,11 @@ pre {
     font-family: "Menlo", "Consolas", monospace;
 }
 
+.ToolTip {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+}
+
 .Emph {
     font-style: italic;
 }

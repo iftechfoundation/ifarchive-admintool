@@ -1,4 +1,5 @@
 {% extends "page.html" %}
+{% from 'macros.html' import showfilesize %}
 
 {% block content %}
 
@@ -84,7 +85,7 @@
         <span class="Details Emph">&nbsp; (file not in this directory)</span>
       {% else %}
         <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ file.name|urlencode }}">{{ file.name }}</a></code>
-        <span class="Details">&nbsp; ({{ file.size|delimnumber }} bytes)</span>
+        <span class="Details">&nbsp; ({{ showfilesize(file.size) }})</span>
       {% endif %}
     {% else %}
       <code>{{ file.name }}</code>

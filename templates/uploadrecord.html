@@ -1,3 +1,5 @@
+{% from 'macros.html' import showfilesize %}
+
 <ul class="InfoList">
   <li><span class="ItemName">Upload time:</span>
     <span class="Tabular">{{ uprec.fdate }}</span>
@@ -7,7 +9,7 @@
     <li><span class="ItemName">Original filename:</span> <code>{{ uprec.origfilename }}</code>
   {% endif %}
   <li><span class="ItemName">Size:</span>
-    {{ uprec.size|delimnumber }} bytes
+    {{ showfilesize(uprec.size) }}
   <li><span class="ItemName">Uploader:</span>
     {% if uprec.donorname %}{{ uprec.donorname }}{% else %}Anonymous{% endif %}
     {% if uprec.donoremail %}&lt;{{ uprec.donoremail }}&gt;{% endif %}

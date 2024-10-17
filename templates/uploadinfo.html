@@ -1,5 +1,5 @@
 {% extends "uploadlist_base.html" %}
-{% from 'macros.html' import dirchain %}
+{% from 'macros.html' import dirchain, showfilesize %}
 
 {% block title %}
 Upload Info
@@ -9,7 +9,7 @@ Upload Info
 
 <p>Info for
   {{ dirchain(uribase|splituri) }}/<code><a href="{{ approot }}/{{ uribase|urlencode }}?view=dl&amp;filename={{ filename|urlencode }}">{{ filename }}</a></code>:
-  ({{ filesize|delimnumber }} bytes)
+  ({{ showfilesize(filesize) }})
 </p>
 
 {% if not uploads %}

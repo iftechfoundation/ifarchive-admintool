@@ -493,6 +493,10 @@ class base_DirectoryPage(AdminHandler):
                 ent = self.get_file(filename, req)
                 if ent is None:
                     ent = self.get_dirent(filename, req)
+            elif op == 'rename':
+                ent = self.get_file(filename, req)
+                if ent is None:
+                    ent = self.get_symlink(filename, req)
             else:
                 ent = self.get_file(filename, req)
             if not ent:

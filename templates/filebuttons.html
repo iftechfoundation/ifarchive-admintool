@@ -48,8 +48,11 @@
     {% endif %}
   {% endif %}
   
-  {# Links get different buttons. #}
+  {# Links get different buttons. Note that links to subdirs can be renamed, but file links cannot. #}
   {% if ent.islink %}
+    {% if 'rename' in fileops and ent.isdir %}
+      <input class="FormButton SmallButton" name="rename" type="submit" value="Rename Link">
+    {% endif %}
     {% if 'dellink' in fileops %}
       <input class="FormButton SmallButton" name="dellink" type="submit" value="Delete Link">
     {% endif %}

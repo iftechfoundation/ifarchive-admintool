@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    ports:
+      - 8080:80
+    volumes:
+      - ./tinyapp:/var/ifarchive/wsgi-bin/tinyapp
+      - ./adminlib:/var/ifarchive/wsgi-bin/adminlib
+      - ./templates:/var/ifarchive/lib/admintool
+      - ./css:/var/ifarchive/htdocs/misc
+      - ./admin.wsgi:/var/ifarchive/wsgi-bin/admin.wsgi

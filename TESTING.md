@@ -36,9 +36,35 @@ The `admin.wsgi` file itself is automatically restarted if it changes. Other fil
 
 This test environment does not include the "Rebuild Indexes" script. (That would require more test files which have nothing to do with the admin tool per se.) So hitting that button in the admin interface will fail.
 
-The upload script is a [separate project][upload-py], so that's not available either. You can of course copy files directly into the `testincoming` and `testarchive/unprocessed` directories. To create upload database entries for testing, use the `python3 admin.wsgi addupload` command.
+### Uploading Files
+
+The upload script is a [separate project][upload-py], so that's not available either.
+
+Instead, you can copy files directly into the `incoming` or `unprocessed` directories. To create upload database entries for testing, use the `python3 admin.wsgi addupload` command.
 
 [upload-py]: https://github.com/iftechfoundation/ifarchive-upload-py
+
+For example, in Docker:
+
+```
+% docker compose cp myfile.txt web:/var/ifarchive/incoming
+% docker compose exec web python3 /var/ifarchive/wsgi-bin/admin.wsgi addupload -h
+usage: admin.wsgi addupload [-h] [--name NAME] [--email EMAIL] [--tempid TEMPID] [--tuid TUID] [--origfile ORIGFILE] [--dir DIR] [-m MESSAGE] file
+
+positional arguments:
+  file
+
+options:
+  -h, --help            show this help message and exit
+  --name NAME
+  --email EMAIL
+  --tempid TEMPID
+  --tuid TUID
+  --origfile ORIGFILE
+  --dir DIR
+  -m MESSAGE, --message MESSAGE
+% docker compose exec web python3 /var/ifarchive/wsgi-bin/admin.wsgi addupload --name "Andrew Plotkin" --email zarf@zarfhome.com --tuid 0000000000000000 /var/ifarchive/incoming/myfile.txt
+```
 
 # The hard way: creating a test environment
 

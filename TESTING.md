@@ -1,4 +1,72 @@
-# Creating a test environment
+# The easy way: use Docker
+
+1. Install Docker and Docker Compose. [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
+2. `docker compose up --build`
+3. Run `./docker/createdb.sh` to create your first user, `zarf@zarfhome.com` with password `password`
+4. Visit the site at `http://localhost:8080/admin`. (`http://localhost:8080/` will show a "Forbidden" error.)
+5. Run admin CLI commands (`adduser`, `edituser`, `addupload`, `cleanup`) with `./docker/admin.sh`.
+
+You'll need to restart the instance every time you edit the Python modules in `tinyapp` and `adminlib`.
+
+Stop Docker with Ctrl-C. You can launch it again with `docker compose up`. (The database will be preserved.)
+
+You'll need to `docker compose down` (deleting the database) and `docker compose up --build` again if you modify the `Dockerfile`, the `docker-compose.yml`, or any of the files that we `COPY` in the `Dockerfile`: `sample.config` or `ifarchive-admintool.conf`.
+
+After you `docker compose down` and `docker compose up --build`, you'll need to rerun the `./docker/createdb.sh` script to recreate the DB. If you forget to create the DB, you'll see this error at `http://localhost:8080/admin`:
+
+```
+sqlite3.OperationalError: no such table
+```
+
+## Development notes
+
+If you edit the Python modules in `tinyapp` and `adminlib`, the changes will not be visible until you restart `httpd` (restart Docker).
+
+```
+# On MacOS:
+% brew services restart httpd
+
+# On Linux:
+% sudo apachectl restart
+```
+
+If you change the config file (`ifarch.config` or `test.config`), you should touch `admin.wsgi` to reload the config or restart Docker.
+
+The `admin.wsgi` file itself is automatically restarted if it changes. Other file changes (templates, for example) are picked up immediately and require no restart.
+
+This test environment does not include the "Rebuild Indexes" script. (That would require more test files which have nothing to do with the admin tool per se.) So hitting that button in the admin interface will fail.
+
+### Uploading Files
+
+The upload script is a [separate project][upload-py], so that's not available either.
+
+Instead, you can copy files directly into the `incoming` or `unprocessed` directories. To create upload database entries for testing, use the `python3 admin.wsgi addupload` command.
+
+[upload-py]: https://github.com/iftechfoundation/ifarchive-upload-py
+
+For example, in Docker:
+
+```
+% docker compose cp myfile.txt web:/var/ifarchive/incoming
+% docker compose exec web python3 /var/ifarchive/wsgi-bin/admin.wsgi addupload -h
+usage: admin.wsgi addupload [-h] [--name NAME] [--email EMAIL] [--tempid TEMPID] [--tuid TUID] [--origfile ORIGFILE] [--dir DIR] [-m MESSAGE] file
+
+positional arguments:
+  file
+
+options:
+  -h, --help            show this help message and exit
+  --name NAME
+  --email EMAIL
+  --tempid TEMPID
+  --tuid TUID
+  --origfile ORIGFILE
+  --dir DIR
+  -m MESSAGE, --message MESSAGE
+% docker compose exec web python3 /var/ifarchive/wsgi-bin/admin.wsgi addupload --name "Andrew Plotkin" --email zarf@zarfhome.com --tuid 0000000000000000 /var/ifarchive/incoming/myfile.txt
+```
+
+# The hard way: creating a test environment
 
 A note on Python versions: This software requires Python 3.7 or later. I have tested on 3.7 and 3.11.
 
@@ -230,26 +298,3 @@ Create the SQLite database (which, as configured above, will be in `/var/ifarchi
 You should now be able to visit `http://localhost/admin` and log in (`zarf` / `password`, as set up above).
 
 If the login page does not appear, or logging in fails, check both the Apache error log (`/var/log/apache2/error_log`) and the admintool log (`/var/ifarchive/logs/admintool.log`).
-
-
-## Development notes
-
-If you edit the Python modules in `tinyapp` and `adminlib`, the changes will not be visible until you restart `httpd`.
-
-```
-# On MacOS:
-% brew services restart httpd
-
-# On Linux:
-% sudo apachectl restart
-```
-
-If you change the config file (`ifarch.config` or `test.config`), you should touch `admin.wsgi` to reload the config.
-
-The `admin.wsgi` file itself is automatically restarted if it changes. Other file changes (templates, for example) are picked up immediately and require no restart.
-
-This test environment does not include the "Rebuild Indexes" script. (That would require more test files which have nothing to do with the admin tool per se.) So hitting that button in the admin interface will fail.
-
-The upload script is a [separate project][upload-py], so that's not available either. You can of course copy files directly into the `testincoming` and `testarchive/unprocessed` directories. To create upload database entries for testing, use the `python3 admin.wsgi addupload` command.
-
-[upload-py]: https://github.com/iftechfoundation/ifarchive-upload-py

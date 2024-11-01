@@ -1117,9 +1117,12 @@ class base_DirectoryPage(AdminHandler):
         if orignames:
             for origname in orignames:
                 urltofetch += '&original_filename=%s' % (urlencode(origname),)
+
+        urlreq = urllib.request.Request(urltofetch)
+        urlreq.add_header('User-Agent', 'IFArchive-Admintool')
         
         try:
-            ifdbreq = urllib.request.urlopen(urltofetch)
+            ifdbreq = urllib.request.urlopen(urlreq)
             reqresult = ifdbreq.read()
             ifdbreq.close()
             reqresult = reqresult.decode()

@@ -40,31 +40,15 @@ This test environment does not include the "Rebuild Indexes" script. (That would
 
 The upload script is a [separate project][upload-py], so that's not available either.
 
-Instead, you can copy files directly into the `incoming` or `unprocessed` directories. To create upload database entries for testing, use the `python3 admin.wsgi addupload` command.
+In Docker, you can use the `docker/upload.sh` script.
+
+```
+% docker/upload-file.sh --name "Andrew Plotkin" --email zarf@zarfhome.com --tuid 0000000000000000 myfile.txt
+```
+
+The script copies your file directly into the `incoming` directory, and then creates an upload database entry using the admin CLI, `python3 admin.wsgi addupload`. (You can do the same yourself if you're not using Docker.)
 
 [upload-py]: https://github.com/iftechfoundation/ifarchive-upload-py
-
-For example, in Docker:
-
-```
-% docker compose cp myfile.txt web:/var/ifarchive/incoming
-% docker compose exec web python3 /var/ifarchive/wsgi-bin/admin.wsgi addupload -h
-usage: admin.wsgi addupload [-h] [--name NAME] [--email EMAIL] [--tempid TEMPID] [--tuid TUID] [--origfile ORIGFILE] [--dir DIR] [-m MESSAGE] file
-
-positional arguments:
-  file
-
-options:
-  -h, --help            show this help message and exit
-  --name NAME
-  --email EMAIL
-  --tempid TEMPID
-  --tuid TUID
-  --origfile ORIGFILE
-  --dir DIR
-  -m MESSAGE, --message MESSAGE
-% docker compose exec web python3 /var/ifarchive/wsgi-bin/admin.wsgi addupload --name "Andrew Plotkin" --email zarf@zarfhome.com --tuid 0000000000000000 /var/ifarchive/incoming/myfile.txt
-```
 
 # The hard way: creating a test environment
 

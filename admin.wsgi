@@ -645,6 +645,7 @@ class base_DirectoryPage(AdminHandler):
             raise Exception('delete op requires a file')
         
         os.rename(origpath, newpath)
+        os.utime(newpath)
 
         # See if we need to delete an Index entry as well.
         dirname = self.get_dirname(req)
@@ -916,6 +917,7 @@ class base_DirectoryPage(AdminHandler):
             trashname = find_unused_filename(filename, self.app.trash_dir)
             trashpath = os.path.join(self.app.trash_dir, trashname)
             os.rename(origpath, trashpath)
+            os.utime(trashpath)
 
         # Now create a new upload entry with the new md5.
         newmd5, newsize = self.app.hasher.get_md5_size(newpath)

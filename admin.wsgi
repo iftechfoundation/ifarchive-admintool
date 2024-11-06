@@ -66,7 +66,7 @@ class han_Home(AdminHandler):
         locktime = self.app.get_locktime()
         buildtime, builddesc = self.app.get_buildinfo(user=req._user)
 
-        diskuse = shutil.disk_usage('/')
+        diskuse = shutil.disk_usage(self.app.archive_dir)
 
         return self.render('front.html', req,
                            incount=incount, unproccount=unproccount,

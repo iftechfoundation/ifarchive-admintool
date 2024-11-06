@@ -644,7 +644,7 @@ class base_DirectoryPage(AdminHandler):
         if not os.path.isfile(origpath):
             raise Exception('delete op requires a file')
         
-        os.rename(origpath, newpath)
+        shutil.move(origpath, newpath)
         os.utime(newpath)
 
         # See if we need to delete an Index entry as well.
@@ -789,7 +789,7 @@ class base_DirectoryPage(AdminHandler):
             newname = find_unused_filename(filename, self.app.incoming_dir)
             origpath = os.path.join(dirpath, filename)
             newpath = os.path.join(self.app.incoming_dir, newname)
-            os.rename(origpath, newpath)
+            shutil.move(origpath, newpath)
             req.loginfo('Moved "%s" from /%s to /incoming', filename, self.get_dirname(req))
             return self.render(self.template, req,
                                didmove=filename, didnewdir='incoming', didnewuri='incoming', didnewname=newname)
@@ -838,7 +838,7 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='A file named %s already exists in %s.' % (filename, newdir,))
             
-        os.rename(origpath, newpath)
+        shutil.move(origpath, newpath)
 
         # See if we need to move an Index entry as well.
         indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
@@ -882,7 +882,7 @@ class base_DirectoryPage(AdminHandler):
                                op=op, opfile=filename,
                                selecterror='Filename already in use: "%s"' % (newname,))
         
-        os.rename(origpath, newpath)
+        shutil.move(origpath, newpath)
         
         # See if we need to rename an Index entry as well.
         dirname = self.get_dirname(req)
@@ -916,7 +916,7 @@ class base_DirectoryPage(AdminHandler):
         if dirpath != 'trash':
             trashname = find_unused_filename(filename, self.app.trash_dir)
             trashpath = os.path.join(self.app.trash_dir, trashname)
-            os.rename(origpath, trashpath)
+            shutil.move(origpath, trashpath)
             os.utime(trashpath)
 
         # Now create a new upload entry with the new md5.

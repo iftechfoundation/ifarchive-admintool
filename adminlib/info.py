@@ -60,6 +60,9 @@ def get_dir_entries(dirpath, archivedir, dirs=False, user=None, shortdate=False)
             file = FileEntry(ent.name, stat, user=user, shortdate=shortdate)
             filelist.append(file)
         elif dirs and ent.is_dir():
+            if ent.name == 'lost+found':
+                # special case; skip it
+                continue
             stat = ent.stat()
             dir = DirEntry(ent.name, stat, user=user, shortdate=shortdate)
             filelist.append(dir)
@@ -157,9 +160,16 @@ class FileEntry(ListEntry):
 class DirEntry(ListEntry):
     """Represents one subdirectory in a directory.
     """
+    
+    # Some subdirectories have special meaning for the Archive.
+    specialnames = set([
+        'lost+found',
+    ])
+
     def __init__(self, dirname, stat, user=None, shortdate=False):
         ListEntry.__init__(self, dirname)
         self.date = stat.st_mtime
+        self.isspecial = (dirname in self.specialnames)
         self.isdir = True
 
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)

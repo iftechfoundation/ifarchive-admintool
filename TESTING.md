@@ -40,7 +40,7 @@ This test environment does not include the "Rebuild Indexes" script. (That would
 
 The upload script is a [separate project][upload-py], so that's not available either.
 
-In Docker, you can use the `docker/upload.sh` script.
+In Docker, you can use the `docker/upload-file.sh` script.
 
 ```
 % docker/upload-file.sh --name "Andrew Plotkin" --email zarf@zarfhome.com --tuid 0000000000000000 myfile.txt

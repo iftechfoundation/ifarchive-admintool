@@ -27,6 +27,7 @@ parser.add_argument('--host', dest='host', default='localhost')
 parser.add_argument('-p', '--port', dest='port', type=int, default=8001)
 parser.add_argument('-u', '--uri', dest='uri')
 parser.add_argument('-d', '--dir', dest='dir')
+parser.add_argument('--threaded', action='store_true', dest='threaded')
 
 args = parser.parse_args()
 
@@ -92,5 +93,5 @@ static_files = None
 if args.dir:
     static_files = { '/': args.dir }
 
-werkzeug.serving.run_simple(args.host, args.port, application, use_reloader=True, static_files=static_files)
+werkzeug.serving.run_simple(args.host, args.port, application, threaded=args.threaded, use_reloader=True, static_files=static_files)
 

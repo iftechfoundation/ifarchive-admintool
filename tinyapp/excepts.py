@@ -5,7 +5,7 @@ from tinyapp.constants import PLAINTEXT
 class HTTPRawResponse(Exception):
     """This exception bypasses the normal app handler sequence that
     converts string output to bytes. If you raise this, you want
-    to set the status, headers, and repsonse bytes directly.
+    to set the status, headers, and response bytes directly.
     (You are also responsible for setting Content-Length!) The
     outiter argument should be an iterator of byteses.
     """

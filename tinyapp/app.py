@@ -258,7 +258,7 @@ class TinyRequest:
             pass
         
         # Form fields in a POST request. (Note that we store these
-        # separately from query inputs.
+        # separately from query inputs.)
         self.input = {}
         if 'wsgi.input' in env:
             try:

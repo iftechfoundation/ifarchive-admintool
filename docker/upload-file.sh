@@ -1,6 +1,7 @@
 #!/bin/bash -e
 FILE=${@: -1}
 docker compose cp $FILE web:/var/ifarchive/incoming
+docker compose exec web chown -R www-data /var/ifarchive/incoming
 
 # pop last argument https://stackoverflow.com/a/26163980/54829
 set -- "${@:1:$(($#-1))}"

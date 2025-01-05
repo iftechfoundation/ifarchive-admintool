@@ -793,6 +793,8 @@ class base_DirectoryPage(AdminHandler):
             origpath = os.path.join(dirpath, filename)
             newpath = os.path.join(self.app.incoming_dir, newname)
             shutil.move(origpath, newpath)
+            # We don't update Index, so this could leave behind an orphan
+            # Index entry. This is deliberate.
             req.loginfo('Moved "%s" from /%s to /incoming', filename, self.get_dirname(req))
             return self.render(self.template, req,
                                didmove=filename, didnewdir='incoming', didnewuri='incoming', didnewname=newname)
@@ -844,9 +846,11 @@ class base_DirectoryPage(AdminHandler):
         shutil.move(origpath, newpath)
 
         # See if we need to move an Index entry as well.
+        # We skip this if moving to unprocessed, so that case could leave
+        # behind an orphan Index entry. This is deliberate.
         indexdir = IndexDir(dirname, rootdir=self.app.archive_dir, orblank=True)
         ient = indexdir.getmap().get(filename)
-        if ient:
+        if ient and newdir != 'unprocessed':
             indexdir2 = IndexDir(newdir, rootdir=self.app.archive_dir, orblank=True)
             indexdir2.add(ient)
             indexdir.delete(filename)

@@ -17,7 +17,7 @@ EOF
 
 COPY sample.config /var/ifarchive/lib/ifarch.config
 RUN sed -i 's/SecureSite = true/SecureSite = false/g' /var/ifarchive/lib/ifarch.config
-COPY ifarchive-admintool.conf /etc/apache2/sites-available
+COPY docker/ifarchive-admintool.conf /etc/apache2/sites-available
 
 COPY docker/internal-createdb.sh /var/ifarchive/wsgi-bin
 RUN chmod 777 /var/ifarchive/wsgi-bin/internal-createdb.sh

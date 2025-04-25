@@ -1692,7 +1692,7 @@ class han_RebuildIndexes(AdminHandler):
             if self.app.secure_site:
                 args.insert(0, '/usr/bin/sudo')
             if reqall:
-                args.append('--all')
+                args.append('-a')
             subprocess.run(args, check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as ex:
             errortext = ''

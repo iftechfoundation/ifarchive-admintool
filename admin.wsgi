@@ -1686,6 +1686,7 @@ class han_RebuildIndexes(AdminHandler):
                                buildtime=buildtime, builddesc=builddesc,
                                formerror='Button not pressed')
         reqall = req.get_input_field('reqall')
+        reqsearch = req.get_input_field('reqsearch')
 
         try:
             args = [ self.app.build_script_path ]
@@ -1693,6 +1694,8 @@ class han_RebuildIndexes(AdminHandler):
                 args.insert(0, '/usr/bin/sudo')
             if reqall:
                 args.append('-a')
+            if reqsearch:
+                args.append('-s')
             subprocess.run(args, check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as ex:
             errortext = ''

@@ -954,7 +954,7 @@ class base_DirectoryPage(AdminHandler):
             if ziptoo:
                 args.append('--zip')
             args.append('if-archive/%s/%s' % (dirname, filename,))
-            if self.app.secure_site:
+            if self.app.sudo_scripts:
                 args.insert(0, '/usr/bin/sudo')
             subprocess.run(args, check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as ex:
@@ -1690,7 +1690,7 @@ class han_RebuildIndexes(AdminHandler):
 
         try:
             args = [ self.app.build_script_path ]
-            if self.app.secure_site:
+            if self.app.sudo_scripts:
                 args.insert(0, '/usr/bin/sudo')
             if reqall:
                 args.append('-a')

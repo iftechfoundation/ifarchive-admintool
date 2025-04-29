@@ -48,6 +48,7 @@ class AdminApp(TinyApp):
         self.unprocessed_dir = os.path.join(self.archive_dir, 'unprocessed')
         self.ifdb_commit_key = config['DEFAULT']['IFDBCommitKey']
 
+        self.sudo_scripts = config['AdminTool'].getboolean('SudoScripts')
         self.max_session_age = config['AdminTool'].getint('MaxSessionAge')
         self.max_trash_age = config['AdminTool'].getint('MaxTrashAge')
 

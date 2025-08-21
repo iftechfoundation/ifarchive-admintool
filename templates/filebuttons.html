@@ -53,6 +53,9 @@
     {% if 'rename' in fileops and ent.isdir %}
       <input class="FormButton SmallButton" name="rename" type="submit" value="Rename Link">
     {% endif %}
+    {% if 'uncache' in fileops and ent.isfile and not ent.isbroken %}
+      <input class="FormButton SmallButton" name="uncache" type="submit" value="Uncache">
+    {% endif %}
     {% if 'dellink' in fileops %}
       <input class="FormButton SmallButton" name="dellink" type="submit" value="Delete Link">
     {% endif %}

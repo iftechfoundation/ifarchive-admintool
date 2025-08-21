@@ -53,7 +53,7 @@ def get_dir_entries(dirpath, archivedir, dirs=False, user=None, shortdate=False)
             else:
                 # Gotta use the link's own stat
                 stat = os.lstat(ent.path)
-                file = SymlinkEntry(ent.name, target, stat, isdir=False, broken=True, user=user, shortdate=shortdate)
+                file = SymlinkEntry(ent.name, target, stat, isdir=False, isbroken=True, user=user, shortdate=shortdate)
                 filelist.append(file)
         elif ent.is_file():
             stat = ent.stat()
@@ -182,14 +182,14 @@ class SymlinkEntry(ListEntry):
     The stat argument is the target file, unless the link is broken,
     in which case it's the link itself.
     """
-    def __init__(self, filename, target, stat, broken=False, isdir=False, realpath=None, user=None, shortdate=False):
+    def __init__(self, filename, target, stat, isbroken=False, isdir=False, realpath=None, user=None, shortdate=False):
         ListEntry.__init__(self, filename)
         self.target = target
         self.realpath = realpath
         self.date = stat.st_mtime
         self.isdir = isdir
         self.isfile = not isdir
-        self.broken = broken
+        self.isbroken = isbroken
         self.islink = True
 
         if self.realpath is None:
@@ -207,7 +207,7 @@ class SymlinkEntry(ListEntry):
         self.fdate = formatdate(self.date, user=user, shortdate=shortdate)
 
     def __repr__(self):
-        isbroken = ' (broken)' if self.broken else ''
+        isbroken = ' (broken)' if self.isbroken else ''
         istype = ' (file)' if self.isfile else ' (dir)'
         return '<SymlinkEntry "%s" to "%s"%s%s>' % (self.name, self.target, istype, isbroken)
 

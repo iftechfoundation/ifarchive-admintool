@@ -320,7 +320,7 @@ class base_DirectoryPage(AdminHandler):
         else:
             # Gotta use the link's own stat
             stat = os.lstat(pathname)
-            return SymlinkEntry(filename, target, stat, isdir=False, broken=True, user=req._user)
+            return SymlinkEntry(filename, target, stat, isdir=False, isbroken=True, user=req._user)
         
     def get_filelist(self, req, dirs=False, shortdate=False, sort=None):
         """Get a list of FileEntries from our directory.

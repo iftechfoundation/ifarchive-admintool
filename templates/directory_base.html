@@ -38,9 +38,9 @@
       {% else %}
         <code>{{ dir.name }}</code>
         <span class="Details">&nbsp; (symlink
-        {% if dir.broken %}<b>broken</b>{% endif %}
+        {% if dir.isbroken %}<b>broken</b>{% endif %}
         &#x2192;
-        {% if dir.broken %}
+        {% if dir.isbroken %}
           <code>{{ dir.target }}</code>
         {%- else -%}
           <code><a href="{{ approot }}/{{ dir.realuri|urlencode }}">{{ dir.target }}</a></code>
@@ -94,9 +94,9 @@
     {% else %}
       <code>{{ file.name }}</code>
       <span class="Details">(symlink
-      {% if file.broken %}<b>broken</b>{% endif %}
+      {% if file.isbroken %}<b>broken</b>{% endif %}
       &#x2192;
-      {% if file.broken %}
+      {% if file.isbroken %}
         <code>{{ file.target }}</code>
       {%- else -%}
         <code><a href="{{ approot }}/{{ file.realuri|urlencode }}">{{ file.target }}</a></code>

@@ -17,15 +17,20 @@ def xsrf_cookie(cookiename='_xsrf'):
     return func
 
 
-def xsrf_check_post(fieldname='_xsrf'):
+def xsrf_check_post(fieldname='_xsrf', skip_path_prefixes=()):
     """Request filter which checks the XSRF field of a POST response against
     the user's XSRF cookie. (Has no effect on GET.)
     Note that the fieldname does not have to match the cookiename used
     by xsrf_cookie(). That's a HTTP cookie name; this is an HTML form
     field name.
+    Paths whose PATH_INFO starts with any entry in skip_path_prefixes
+    are not checked (used for /api/ form-password endpoints).
     """
     def func(req, han):
         if req.request_method == 'POST':
+            for prefix in skip_path_prefixes:
+                if req.path_info.startswith(prefix):
+                    return han(req)
             if (fieldname not in req.input
                 or not req.input[fieldname]
                 or req.input[fieldname][0] != req._xsrf):

@@ -30,6 +30,7 @@ from tinyapp.util import random_bytes, time_now
 from adminlib.admapp import AdminApp, AdminHandler
 from adminlib.session import User, Session
 from adminlib.session import require_user, require_role
+from adminlib.api import han_ApiUpload, han_ApiMove, han_ApiIndex
 from adminlib.util import bad_filename, in_user_time, clean_newlines
 from adminlib.util import zip_compress
 from adminlib.util import find_unused_filename
@@ -1750,6 +1751,9 @@ handlers = [
     ('/admin/allusers', han_AllUsers),
     ('/admin/allsessions', han_AllSessions),
     ('/admin/hashcache', han_HashCache),
+    ('/api/upload', han_ApiUpload),
+    ('/api/move', han_ApiMove),
+    ('/api/index', han_ApiIndex),
     ('/incoming', han_Incoming),
     ('/trash', han_Trash),
     ('/arch', han_ArchiveRoot),

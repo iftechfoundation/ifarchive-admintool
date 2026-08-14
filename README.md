@@ -37,6 +37,7 @@ All activity is logged, and users can review the log (at least the recent part).
 - `templates`: HTML templates for various admin pages. Lives in /var/ifarchive/lib/admintool.
 - `sample.config`: Config file. Lives in /var/ifarchive/lib/ifarch.config. Note that the version in this repository is an incomplete sample. The real ifarch.config has settings for other tools (upload, ifmap).
 - `css/admintool.css`: Stylesheet. Lives in /var/ifarchive/htdocs/misc.
+- [API.md](API.md): JSON form API for bulk upload, move, and Index updates.
 
 The tool also makes use of the SQLite database in /var/ifarchive/lib/sql. This must be writable by both Apache and the admins.
 

@@ -1,0 +1,147 @@
+{% extends "page.html" %}
+{% from 'macros.html' import dirchain, showfilesize %}
+
+{% block title %}Extract {{ filename }}{% endblock %}
+
+{% block content %}
+
+<p>
+  Extract
+  {{ dirchain(uribase|splituri) }}/<code>{{ filename }}</code>
+  ({{ member_count }} {{ member_count|plural('file', 'files') }},
+  {{ showfilesize(uncompressed) }} uncompressed)
+</p>
+
+{% if selecterror %}
+<p class="ResultNote">{{ selecterror }}</p>
+{% endif %}
+
+{% if stage == 'options' %}
+
+<form method="post" action="{{ requri }}?view=extract&amp;filename={{ filename|urlencode }}">
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+
+<div class="FormAction">Destination</div>
+<div>
+  <input id="destopt_unp" type="radio" name="destopt" value="unp"
+    {% if not destopt or destopt == 'unp' %} checked {% endif %}>
+  <label for="destopt_unp">if-archive/unprocessed</label>
+</div>
+{% if 'filing' in user.roles %}
+  {% if subdirs %}
+    {% for subdir in subdirs %}
+      <div>
+        <input id="destopt_dir_{{ subdir.name }}" type="radio" name="destopt" value="dir_{{ subdir.name }}"
+          {% if destopt == 'dir_' ~ subdir.name %} checked {% endif %}>
+        <label for="destopt_dir_{{ subdir.name }}">if-archive/{% if dirname %}{{ dirname }}/{% endif %}{{ subdir.name }}</label>
+      </div>
+    {% endfor %}
+  {% endif %}
+  <div>
+    <input id="destopt_other" type="radio" name="destopt" value="other"
+      {% if destopt == 'other' %} checked {% endif %}>
+    <label for="destopt_other">if-archive/</label>
+    <input class="FormInput" autocomplete="disabled"
+      id="dest_field" name="destination" type="input"
+      value="{{ destination or '' }}" placeholder="Directory (created if missing)">
+  </div>
+{% endif %}
+
+<div class="FormAction">Path layout</div>
+<div>
+  <input id="pathmode_preserve" type="radio" name="pathmode" value="preserve"
+    {% if pathmode != 'flat' %} checked {% endif %}>
+  <label for="pathmode_preserve">Preserve paths (default)</label>
+</div>
+<div>
+  <input id="pathmode_flat" type="radio" name="pathmode" value="flat"
+    {% if pathmode == 'flat' %} checked {% endif %}>
+  <label for="pathmode_flat">Flat (basenames only)</label>
+</div>
+
+{% if toplevel %}
+<div class="FormAction">Top-level folder</div>
+<div>
+  <input id="strip" type="checkbox" name="strip" value="1"
+    {% if strip %} checked {% endif %}>
+  <label for="strip">Strip top-level folder <code>{{ toplevel }}</code></label>
+</div>
+{% endif %}
+
+<div>
+  <input class="FormButton HotButton" name="preview" type="submit" value="Preview">
+  <input class="FormButton" name="cancel" type="submit" value="Cancel">
+</div>
+</form>
+
+<hr>
+<div class="FormAction">Zip contents</div>
+<ul class="InfoList">
+{% for mem in members %}
+  <li>
+    {% if mem.is_dir %}
+      <code>{{ mem.name }}/</code> <span class="Details">(dir)</span>
+    {% else %}
+      <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=zipmem&amp;filename={{ filename|urlencode }}&amp;member={{ mem.name|urlencode }}">{{ mem.name }}</a></code>
+      <span class="Details">({{ showfilesize(mem.size) }})</span>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
+
+{% elif stage == 'preview' %}
+
+<form method="post" action="{{ requri }}?view=extract&amp;filename={{ filename|urlencode }}">
+<input type="hidden" name="_xsrf" value="{{ req._xsrf }}"/>
+<input type="hidden" name="pathmode" value="{{ pathmode }}"/>
+{% if strip %}<input type="hidden" name="strip" value="1"/>{% endif %}
+{% if destopt %}<input type="hidden" name="destopt" value="{{ destopt }}"/>{% endif %}
+{% if destination %}<input type="hidden" name="destination" value="{{ destination }}"/>{% endif %}
+
+<div class="FormAction">
+  Preview extract into <code>/{{ dest_rel }}</code>
+  ({{ pathmode }}{% if strip %}, strip <code>{{ toplevel }}</code>{% endif %})
+</div>
+{% if conflicts %}
+<p class="Emph">Extract blocked — nothing will be written. Conflicting paths:</p>
+<ul class="InfoList">
+  {% for c in conflicts[:50] %}
+  <li><code>/{{ dest_rel }}/{{ c }}</code></li>
+  {% endfor %}
+  {% if conflicts|length > 50 %}
+  <li>…and {{ conflicts|length - 50 }} more</li>
+  {% endif %}
+</ul>
+{% else %}
+<p>
+  {{ planned_files|length }} {{ planned_files|length|plural('file', 'files') }}
+  will be written. The zip file will be left in place.
+</p>
+{% endif %}
+
+<div class="FormAction">Expanded layout</div>
+<ul class="InfoList">
+{% for item in planned %}
+  <li>
+    {% if item.member.is_dir %}
+      <code>/{{ dest_rel }}/{{ item.relpath }}/</code> <span class="Details">(dir)</span>
+    {% else %}
+      <code><a href="{{ approot }}/{{ uribase|urlencode }}?view=zipmem&amp;filename={{ filename|urlencode }}&amp;member={{ item.member.name|urlencode }}">/{{ dest_rel }}/{{ item.relpath }}</a></code>
+      <span class="Details">({{ showfilesize(item.member.size) }})</span>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
+
+<div>
+  {% if not conflicts %}
+  <input class="FormButton HotButton" name="confirm" type="submit" value="Extract">
+  {% endif %}
+  <input class="FormButton" name="back" type="submit" value="Back">
+  <input class="FormButton" name="cancel" type="submit" value="Cancel">
+</div>
+</form>
+
+{% endif %}
+
+{% endblock %}

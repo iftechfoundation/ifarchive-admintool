@@ -57,6 +57,20 @@
 </p>
 {% endif %}
 
+{% if didextract %}
+<p class="ResultNote">
+  Extracted <code>{{ didextract }}</code>
+  ({{ didextractcount }} {{ didextractcount|plural('file', 'files') }})
+  into
+  {% if didnewuri %}
+    <a href="{{ approot }}/{{ didnewuri|urlencode }}"><code>/{{ didnewdir }}</code></a>.
+  {% else %}
+    <code>/{{ didnewdir }}</code>.
+  {% endif %}
+  The zip file was left in place.
+</p>
+{% endif %}
+
 
 {# The following are subdirops, but we report them here. #}
 

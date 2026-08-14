@@ -27,6 +27,9 @@
     {% if 'zip' in fileops and ent.ishtml %}
       <input class="FormButton SmallButton" name="zip" type="submit" value="Zip">
     {% endif %}
+    {% if 'extract' in fileops and ent.name.lower().endswith('.zip') %}
+      <input class="FormButton SmallButton" name="extract" type="submit" value="Extract">
+    {% endif %}
     {% if 'uncache' in fileops %}
       <input class="FormButton SmallButton" name="uncache" type="submit" value="Uncache">
     {% endif %}

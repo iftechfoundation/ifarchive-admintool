@@ -40,6 +40,21 @@ from adminlib.util import log_files_tail
 from adminlib.info import FileEntry, DirEntry, SymlinkEntry, IndexOnlyEntry, UploadEntry
 from adminlib.info import get_dir_entries, dir_is_empty
 from adminlib.index import IndexDir, update_file_entries
+from adminlib.extract import (
+    ExtractError,
+    is_zip_filename,
+    list_zip_members,
+    common_toplevel,
+    plan_extract_paths,
+    uncompressed_bytes,
+    check_disk_space,
+    find_conflicts,
+    check_unprocessed_extract,
+    ensure_archive_dest,
+    perform_extract,
+    find_zip_member,
+    iter_zip_member_bytes,
+)
 
 
     
@@ -387,6 +402,10 @@ class base_DirectoryPage(AdminHandler):
                 return self.do_get_info(req, filename)
             if view == 'dl':
                 return self.do_get_download(req, filename)
+            if view == 'extract':
+                return self.do_get_extract(req, filename)
+            if view == 'zipmem':
+                return self.do_get_zipmem(req, filename)
             raise HTTPError('404 Not Found', 'View "%s" not found: %s' % (view, filename,))
         # Show the list of files and their buttons.
         return self.render(self.template, req)
@@ -441,7 +460,31 @@ class base_DirectoryPage(AdminHandler):
             fl.close()
             return
         raise HTTPRawResponse('200 OK', response_headers, resp())
-    
+
+    def do_get_zipmem(self, req, filename):
+        """Download one member from a zip (used by the extract preview)."""
+        member_name = req.get_query_field('member')
+        try:
+            zippath, members = self._load_extract_zip(req, filename)
+            mem = find_zip_member(members, member_name)
+        except ExtractError as ex:
+            raise HTTPError('404 Not Found', str(ex))
+
+        # Download as the member basename (same disposition rules as file dl).
+        base = mem.name.split('/')[-1]
+        encname = urlencode(base)
+        if encname == base:
+            disp = 'filename="%s"' % (encname,)
+        else:
+            disp = 'filename*=UTF-8\'\'%s' % (encname,)
+        response_headers = [
+            ('Content-Type', BINARY),
+            ('Content-Length', str(mem.size)),
+            ('Content-Disposition', 'attachment; ' + disp),
+        ]
+        raise HTTPRawResponse(
+            '200 OK', response_headers, iter_zip_member_bytes(zippath, mem.raw_name),
+        )    
     def do_get_info(self, req, filename):
         """Handler to show upload info for a file within a directory.
         """
@@ -451,6 +494,208 @@ class base_DirectoryPage(AdminHandler):
             raise HTTPError('404 Not Found', msg)
 
         return self.render('uploadinfo.html', req, filename=filename, filesize=filesize, uploads=uploads)
+
+    def _extract_page_params(self, req, filename):
+        """Common template params for the extract view."""
+        dirname = self.get_dirname(req)
+        if not dirname:
+            uribase = 'arch'
+        elif dirname == 'incoming':
+            uribase = 'incoming'
+        elif dirname == 'trash':
+            uribase = 'trash'
+        else:
+            uribase = 'arch/' + dirname
+        # Sibling subdirs for filing dest radios (same idea as Move).
+        subdirs = []
+        if req._user.has_role('filing') and dirname not in ('incoming', 'trash'):
+            dirpath = self.get_dirpath(req)
+            ls = get_dir_entries(dirpath, self.app.archive_dir, dirs=True, user=req._user)
+            subdirs = [ent for ent in ls if ent.isdir and not ent.islink and not ent.isspecial]
+            subdirs.sort(key=lambda ent: sortcanon(ent.name))
+        return {
+            'filename': filename,
+            'dirname': dirname,
+            'uribase': uribase,
+            'fileops': req._fileops,
+            'subdirs': subdirs,
+            'navtab': getattr(self, 'renderparams', {}).get('navtab'),
+        }
+
+    def _load_extract_zip(self, req, filename):
+        """Validate filename/role and return (abspath, members)."""
+        if 'extract' not in req._fileops:
+            raise HTTPError('403 Forbidden', 'Extract not permitted')
+        if bad_filename(filename) or not is_zip_filename(filename):
+            raise HTTPError('404 Not Found', 'Not found: %s' % (filename,))
+        dirpath = self.get_dirpath(req)
+        zippath = os.path.join(dirpath, filename)
+        if not os.path.isfile(zippath):
+            raise HTTPError('404 Not Found', 'Not found: %s' % (filename,))
+        members = list_zip_members(zippath)
+        return zippath, members
+
+    def _parse_extract_options(self, req):
+        """Read pathmode/strip/dest fields from the extract form."""
+        pathmode = req.get_input_field('pathmode') or 'preserve'
+        if pathmode not in ('preserve', 'flat'):
+            pathmode = 'preserve'
+        strip = bool(req.get_input_field('strip'))
+        destopt = req.get_input_field('destopt')
+        destdir = req.get_input_field('destination')
+        return pathmode, strip, destopt, destdir
+
+    def _resolve_extract_dest(self, req, destopt, destdir):
+        """Resolve extract destination to (relpath, abspath). May create dirs.
+
+        Role rules match Move: incoming-only users may only target unprocessed;
+        filing may target archive paths.
+        """
+        dirname = self.get_dirname(req)
+        has_filing = req._user.has_role('filing')
+        has_incoming = req._user.has_role('incoming')
+
+        if (not destopt or destopt == 'other') and not destdir:
+            destopt = 'unp'
+
+        if destopt == 'inc':
+            raise ExtractError('You cannot extract files into /incoming.')
+
+        if destopt == 'unp':
+            if not (has_incoming or has_filing):
+                raise ExtractError('Not permitted.')
+            rel = 'unprocessed'
+            abs_dest = self.app.unprocessed_dir
+            if not os.path.isdir(abs_dest):
+                raise ExtractError('Unprocessed directory is missing.')
+            return rel, abs_dest
+
+        if not has_filing:
+            raise ExtractError('Only filing users can extract into Archive directories.')
+
+        if destopt and destopt.startswith('dir_'):
+            sibling = destopt[4:]
+            if bad_filename(sibling):
+                raise ExtractError('Invalid destination.')
+            newdir = os.path.join(dirname, sibling) if dirname else sibling
+            rel = canon_archivedir(newdir, archivedir=req.app.archive_dir)
+            if not rel:
+                raise ExtractError('You cannot extract files to the Archive root.')
+            abs_dest = os.path.join(self.app.archive_dir, rel)
+            return rel, abs_dest
+
+        if not destdir:
+            raise ExtractError('You must select a destination.')
+        rel = ensure_archive_dest(destdir, self.app.archive_dir, create=True)
+        abs_dest = os.path.join(self.app.archive_dir, *rel.split('/'))
+        return rel, abs_dest
+
+    def do_get_extract(self, req, filename):
+        """Show extract options + zip TOC."""
+        self.check_fileops(req)
+        zippath, members = self._load_extract_zip(req, filename)
+        toplevel = common_toplevel(members)
+        params = self._extract_page_params(req, filename)
+        params.update({
+            'members': members,
+            'member_count': len([m for m in members if not m.is_dir]),
+            'uncompressed': uncompressed_bytes(members),
+            'toplevel': toplevel,
+            'pathmode': 'preserve',
+            'strip': False,
+            'stage': 'options',
+        })
+        return self.render('extract.html', req, **params)
+
+    def do_post_extract(self, req, filename):
+        """Preview or confirm zip extraction."""
+        self.check_fileops(req)
+        params = self._extract_page_params(req, filename)
+
+        if req.get_input_field('cancel'):
+            raise HTTPRedirectPost(self.app.approot + req.path_info + '#list_' + urlencode(filename))
+
+        try:
+            zippath, members = self._load_extract_zip(req, filename)
+        except ExtractError as ex:
+            return self.render(self.template, req, formerror=str(ex))
+
+        pathmode, strip, destopt, destdir = self._parse_extract_options(req)
+        toplevel = common_toplevel(members)
+        if strip and not toplevel:
+            strip = False
+
+        params.update({
+            'members': members,
+            'member_count': len([m for m in members if not m.is_dir]),
+            'uncompressed': uncompressed_bytes(members),
+            'toplevel': toplevel,
+            'pathmode': pathmode,
+            'strip': strip,
+            'destopt': destopt,
+            'destination': destdir,
+        })
+
+        # "Back" from preview returns to options with fields preserved.
+        if req.get_input_field('back') or not (
+            req.get_input_field('preview') or req.get_input_field('confirm')
+        ):
+            params['stage'] = 'options'
+            return self.render('extract.html', req, **params)
+
+        try:
+            dest_rel, dest_abs = self._resolve_extract_dest(req, destopt, destdir)
+            planned = plan_extract_paths(
+                members, pathmode=pathmode, strip=strip, strip_prefix=toplevel,
+            )
+            check_unprocessed_extract(dest_rel, planned)
+            need = uncompressed_bytes(members)
+            check_disk_space(dest_abs, need)
+            conflicts = find_conflicts(dest_abs, planned)
+        except (ExtractError, FileConsistency) as ex:
+            params['stage'] = 'options'
+            params['selecterror'] = str(ex)
+            return self.render('extract.html', req, **params)
+
+        params.update({
+            'stage': 'preview',
+            'dest_rel': dest_rel,
+            'planned': planned,
+            'planned_files': [p for p in planned if not p.member.is_dir],
+            'conflicts': conflicts,
+            'space_ok': True,
+        })
+
+        if conflicts:
+            params['selecterror'] = (
+                'Error: %d path%s conflict with existing files; extract cannot proceed.'
+                % (len(conflicts), '' if len(conflicts) == 1 else 's',)
+            )
+            return self.render('extract.html', req, **params)
+
+        if req.get_input_field('preview') and not req.get_input_field('confirm'):
+            return self.render('extract.html', req, **params)
+
+        try:
+            check_disk_space(dest_abs, need)
+            nfiles = perform_extract(zippath, dest_abs, planned)
+        except ExtractError as ex:
+            params['stage'] = 'preview'
+            params['selecterror'] = str(ex)
+            return self.render('extract.html', req, **params)
+
+        strip_note = 'strip=%s' % (toplevel if strip else 'no',)
+        req.loginfo(
+            'Extracted "%s" (%d files) to /%s (%s, %s)',
+            filename, nfiles, dest_rel, pathmode, strip_note,
+        )
+        return self.render(
+            self.template, req,
+            didextract=filename,
+            didextractcount=nfiles,
+            didnewdir=dest_rel,
+            didnewuri='arch/' + dest_rel,
+        )
 
     def do_post(self, req):
         """The POST case has to handle showing the "confirm/cancel" buttons
@@ -465,6 +710,8 @@ class base_DirectoryPage(AdminHandler):
             filename = req.get_query_field('filename')
             if view == 'info':
                 return self.do_post_info(req, filename)
+            if view == 'extract':
+                return self.do_post_extract(req, filename)
             raise HTTPError('404 Not Found', 'View "%s" not found: %s' % (view, filename,))
         
         # The operation may be defined by an "op" hidden field or by the
@@ -477,6 +724,13 @@ class base_DirectoryPage(AdminHandler):
                 if req.get_input_field(val):
                     op = val
                     break
+        # Extract starts as a dedicated view (GET), not an inline confirm.
+        if op == 'extract' and op in (req._fileops or []):
+            filename = req.get_input_field('filename')
+            raise HTTPRedirectPost(
+                self.app.approot + req.path_info
+                + '?view=extract&filename=' + urlencode(filename or '')
+            )
         if not op or op not in req._fileops:
             return self.render(self.template, req,
                                formerror='Invalid operation: %s' % (op,))
@@ -1175,7 +1429,7 @@ class han_Incoming(base_DirectoryPage):
 
     def get_fileops(self, req):
         if req._user.has_role('incoming'):
-            return ['move', 'rename', 'delete', 'zip']
+            return ['move', 'rename', 'delete', 'zip', 'extract']
 
     def get_dirname(self, req):
         return 'incoming'
@@ -1227,7 +1481,7 @@ class han_Unprocessed(base_DirectoryPage):
 
     def get_fileops(self, req):
         if req._user.has_role('incoming', 'filing'):
-            return ['delete', 'move', 'rename', 'uncache']
+            return ['delete', 'move', 'rename', 'uncache', 'extract']
 
     def get_dirname(self, req):
         return 'unprocessed'
@@ -1308,7 +1562,7 @@ class han_ArchiveDir(base_DirectoryPage):
     def get_fileops(self, req):
         ls = []
         if req._user.has_role('filing'):
-            ls = ['rename', 'delete', 'dellink', 'move', 'linkto', 'csubdir', 'deldir', 'uncache', 'notifyifdb']
+            ls = ['rename', 'delete', 'dellink', 'move', 'linkto', 'csubdir', 'deldir', 'uncache', 'notifyifdb', 'extract']
         if req._user.has_role('index'):
             ls.append('eindex')
         return ls

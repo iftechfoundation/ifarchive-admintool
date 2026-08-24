@@ -484,7 +484,8 @@ class base_DirectoryPage(AdminHandler):
         ]
         raise HTTPRawResponse(
             '200 OK', response_headers, iter_zip_member_bytes(zippath, mem.raw_name),
-        )    
+        )
+    
     def do_get_info(self, req, filename):
         """Handler to show upload info for a file within a directory.
         """

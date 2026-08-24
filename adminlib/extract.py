@@ -66,7 +66,7 @@ def _normalize_member_name(raw: str) -> str:
     if any(p == '..' for p in parts):
         raise ExtractError('Zip contains a path with "..": %s' % (raw,))
     if any(bad_filename(p) for p in parts):
-        # bad_filename rejects empty, '.', '..', '/', NUL — already handled
+        # bad_filename rejects empty, '.', '..', '/', NUL -- already handled
         # mostly; also reject oddities consistently.
         raise ExtractError('Zip contains an invalid path segment: %s' % (raw,))
     return '/'.join(parts)

@@ -5,6 +5,12 @@
 
 {% block content %}
 
+<p class="Emph">
+  <b>Warning:</b> This feature is intended for "big zip" competition uploads,
+  typically in "zip of zip files" format. Normal game uploads should not be
+  unzipped.
+</p>
+
 <p>
   Extract
   {{ dirchain(uribase|splituri) }}/<code>{{ filename }}</code>
@@ -103,7 +109,7 @@
   ({{ pathmode }}{% if strip %}, strip <code>{{ toplevel }}</code>{% endif %})
 </div>
 {% if conflicts %}
-<p class="Emph">Extract blocked — nothing will be written. Conflicting paths:</p>
+<p class="Emph">Extract blocked &#x2014; nothing will be written. Conflicting paths:</p>
 <ul class="InfoList">
   {% for c in conflicts[:50] %}
   <li><code>/{{ dest_rel }}/{{ c }}</code></li>
